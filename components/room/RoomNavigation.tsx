@@ -7,7 +7,7 @@ import * as THREE from "three";
 import {ROOM_VIEWS,pickRoomZone,RoomHoverIntent,type Vec3} from "@/lib/room-navigation";
 import type {Zone} from "@/lib/room-types";
 
-type Props={zone:Zone;revision:number;locked:boolean;onZone:(zone:Zone)=>void;onHover:(zone:Zone|null)=>void};
+type Props={zone:Zone;revision:number;locked:boolean;onZone:(zone:Zone)=>void;onHover?:(zone:Zone|null)=>void};
 function useRoomPreferences(){
   const [prefs,setPrefs]=useState({mouse:false,reduced:false});
   useEffect(()=>{
@@ -32,9 +32,9 @@ function MouseNavigation({zone,revision,locked,onZone,onHover,reduced}:Props&{re
   const focal=useRef(new THREE.Vector3(...ROOM_VIEWS[zone].target));
   const hover=useRef<Zone|null>(null);
   const vectors=useMemo(()=>({position:new THREE.Vector3(),target:new THREE.Vector3(),right:new THREE.Vector3(),forward:new THREE.Vector3(),up:new THREE.Vector3(0,1,0),ray:new THREE.Raycaster(),ndc:new THREE.Vector2()}),[]);
-  const feedback=()=>{if(hover.current!==intent.candidate){hover.current=intent.candidate;live.current.onHover(intent.candidate);}};
+  const feedback=()=>{if(hover.current!==intent.candidate){hover.current=intent.candidate;live.current.onHover?.(intent.candidate);}};
   useEffect(()=>{
-    intent.reset(Date.now(),1100);hover.current=null;onHover(null);pointer.current.surface=false;warmup.current=12;invalidate();
+    intent.reset(Date.now(),1100);hover.current=null;onHover?.(null);pointer.current.surface=false;warmup.current=12;invalidate();
   },[zone,revision,locked,reduced,intent,invalidate,onHover]);
   useEffect(()=>{
     const stage=gl.domElement.closest<HTMLElement>(".scene-stage");if(!stage)return;
