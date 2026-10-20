@@ -29,7 +29,7 @@ export default function ConnectedRoom({records}:{records:RoomRecord[]}) {
       const response=await fetch(config.url+'/auth/v1/settings',{headers:{apikey:config.publishableKey},signal:AbortSignal.timeout(12000)});
       if(!response.ok)throw new Error('登录暂时不可用，请稍后重试。');
       const settings=await response.json();
-      if(!settings.external?.github)throw new Error('站主登录暂未启用，请稍后再试。');
+      if(!settings.external?.github)throw new Error('GitHub 登录暂未启用，请稍后再试。');
       sessionStorage.setItem('room-login-zone',location.hash);
       const {error}=await client.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.origin+location.pathname}});
       if(error)throw new Error('GitHub 登录暂时不可用，请稍后重试。');
@@ -39,10 +39,10 @@ export default function ConnectedRoom({records}:{records:RoomRecord[]}) {
   useEffect(()=>{
     if(!signedIn)return;
     const zone=sessionStorage.getItem('room-login-zone');
-    if(zone&&/^#(overview|office|books|cinema)$/.test(zone)){
+    if(zone&&/^#(overview|office|books|cinema|guestbook)$/.test(zone)){
       // Keep the restored view after the SDK removes the one-time callback code.
       sessionStorage.removeItem('room-login-zone');
-      history.replaceState(null,'',location.pathname+zone);
+      history.replaceState(null,'',location.pathname+zone);window.dispatchEvent(new HashChangeEvent('hashchange'));
     }
   },[signedIn]);
   return <RoomServicesContext.Provider value={services}><RoomApp publishedRecords={records}/></RoomServicesContext.Provider>;

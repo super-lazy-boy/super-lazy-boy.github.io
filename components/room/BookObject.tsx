@@ -25,7 +25,8 @@ function useBookSpine(record:RoomRecord|undefined){
   ctx.fillStyle=color;ctx.fillRect(0,0,192,768);
   const rgb=new THREE.Color(color),light=rgb.r*.2126+rgb.g*.7152+rgb.b*.0722;
   ctx.fillStyle=light>.45?'#313532':'#faf8ef';
-  const chars=Array.from(record.title),columns=Math.max(1,Math.ceil(chars.length/14)),font=Math.min(43,150/(columns+1));
+  const mainTitle=record.title.split(/\s[:：]\s|：/)[0];
+  const chars=Array.from(mainTitle),columns=Math.max(1,Math.ceil(chars.length/14)),font=Math.min(43,150/(columns+1));
   ctx.font=`500 ${font}px "Microsoft YaHei",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
   chars.forEach((char,i)=>{const column=Math.floor(i/14),row=i%14;ctx.fillText(char,96+(columns-1)*font*.52-column*font*1.04,84+row*43,font);});
   ctx.globalAlpha=.38;ctx.fillRect(24,24,144,2);ctx.fillRect(24,720,144,2);

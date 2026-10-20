@@ -21,8 +21,10 @@ export default function MemoryDrawer({active,locked,opening,request,onRequest,on
   if(!active||!opening){started.current=null;setHover(false);if(tray.current)tray.current.position.z=0;return;}
   if(request!==lastRequest.current){lastRequest.current=request;started.current=performance.now();invalidate();}
  },[request,active,opening,invalidate]);
- useFrame(()=>{
-  if(started.current===null||!tray.current)return;
+ useEffect(()=>{invalidate();},[hover,invalidate]);
+ useFrame((_,delta)=>{
+  if(!tray.current)return;
+  if(started.current===null){const end=hover&&active&&!locked?.04:0;tray.current.position.z=THREE.MathUtils.damp(tray.current.position.z,end,12,reduced.current?1:delta);if(Math.abs(tray.current.position.z-end)>.0001)invalidate();return;}
   const pose=memoryDrawerPose(performance.now()-started.current,reduced.current);
   tray.current.position.z=pose.extension;
   if(pose.complete){started.current=null;document.body.style.cursor='';callback.current();}

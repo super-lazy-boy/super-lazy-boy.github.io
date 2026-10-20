@@ -8,7 +8,7 @@ const message=(error:unknown)=>error instanceof Error?error.message:'操作未�
 export function createRoomRequest(client:SupabaseClient) {
   const rpc=async(name:string,args:Record<string,unknown>={})=>{
     const {data,error}=await client.rpc(name,args);
-    if(error)throw new Error(error.code==='42501'?'只有站点主人可以录入和修改记录。':error.message);
+    if(error)throw new Error(error.code==='42501'&&!name.startsWith('room_guestbook_')?'只有站点主人可以录入和修改记录。':error.message);
     return data;
   };
   const hydrate=async(records:RoomRecord[])=>{
@@ -25,6 +25,18 @@ export function createRoomRequest(client:SupabaseClient) {
   return async(path:string,init:RequestInit={}):Promise<Response>=>{
     const url=new URL(path,'https://room.invalid'),method=(init.method||'GET').toUpperCase();
     try{
+      if(url.pathname==='/api/guestbook'&&method==='GET')return reply(await rpc('room_guestbook_list',{
+        p_before:url.searchParams.get('before'),p_before_id:url.searchParams.get('id'),
+        p_limit:24,p_deleted:url.searchParams.get('deleted')==='true',
+      }));
+      if((url.pathname==='/api/guestbook'&&method==='POST')||(/^\/api\/guestbook\/[a-f0-9-]{36}$/.test(url.pathname)&&method==='PATCH')){
+        const payload=JSON.parse(String(init.body));
+        return reply(await rpc('room_guestbook_save',{p_body:payload.body,p_color:payload.color,p_id:method==='PATCH'?url.pathname.split('/').pop():null}),method==='POST'?201:200);
+      }
+      if(url.pathname==='/api/guestbook/settings'&&method==='POST')return reply(await rpc('room_guestbook_configure',{p_enabled:JSON.parse(String(init.body)).enabled}));
+      if(/^\/api\/guestbook\/[a-f0-9-]{36}\/moderate$/.test(url.pathname)&&method==='POST')return reply(await rpc('room_guestbook_moderate',{
+        p_id:url.pathname.split('/')[3],p_restore:JSON.parse(String(init.body)).restore===true,
+      }));
       if(url.pathname==='/api/records'&&method==='GET'){
         const result=await rpc('room_records_list',{p_archived:url.searchParams.get('archived')==='true'});
         return reply({...result,records:await hydrate(result.records)});

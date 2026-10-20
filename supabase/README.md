@@ -10,7 +10,7 @@
 3. Authorization callback URL：`https://rxundohqfaanmhucmbcq.supabase.co/auth/v1/callback`。
 4. 注册应用后，在应用详情页复制 Client ID，并点击 Generate a new client secret 生成密钥。它们不是 GitHub 用户名、账号密码或个人访问令牌。将这两项只填写到 Supabase → Authentication → Sign In / Providers → GitHub；启用后保存。不要提交到仓库。
 5. Supabase → Authentication → URL Configuration：Site URL 和 Redirect URLs 都添加 `https://super-lazy-boy.github.io/`。
-6. 建议关闭 Email、Phone 和匿名登录；仅启用 GitHub。GitHub 的新访客即使完成登录，也没有任何写入权限。
+6. 建议关闭 Email、Phone 和匿名登录；仅启用 GitHub。GitHub 访客登录后可以新增和编辑自己的便签，不能写入站主的阅读、观影或工作记录。
 
 前端仅使用 `content/services.json` 中的项目 URL 和公开 publishable key。构建会拒绝 secret key、旧式 JWT 或额外配置字段。
 
@@ -28,9 +28,12 @@
 
 ## 验证
 
+便签迁移 `20261020134646_room_guestbook.sql` 包含独立设置、留言、作者编辑校验、站主开关和可恢复删除。仅开放经过身份校验的 RPC；浏览器不能直接访问私有表。便签为公开内容，不返回作者账户 ID 或邮箱。暂停留言会阻止新增和编辑，已有留言保持可读。
+
 ```text
 npm run typecheck
 node --test scripts/public-records.test.mjs scripts/room-navigation.test.mjs scripts/room-permissions.test.mjs
+node --test scripts/guestbook-permissions.test.mjs scripts/guestbook-adapter.test.mjs
 node scripts/check-backend.mjs
 ```
 

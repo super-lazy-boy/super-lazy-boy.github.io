@@ -17,9 +17,12 @@ import MemoryDrawer from './MemoryDrawer';
 import BookArchive from './BookArchive';
 import BookObject from './BookObject';
 import BookStack from './BookStack';
+import GuestbookBoard,{GuestbookCamera} from './GuestbookBoard';
+import type {GuestbookData} from '@/lib/guestbook';
 
 type Vec3 = [number, number, number];
 type Props = {
+  guestbookOpen:boolean;guestbookData:GuestbookData|null;onGuestbook:()=>void;
   zone: Zone; navigationLocked:boolean; language:"zh"|"en"; viewRevision: number; records: RoomRecord[]; owner: boolean; bookPage: number; filmPage: number;
   onZone: (zone: Zone) => void; onRecord: (record: RoomRecord) => void;
   onBlank: (kind: "book" | "movie", slot: number) => void;
@@ -223,6 +226,7 @@ function Furniture({props}:{props:Props}) {
     <group position={[-3.50,0,.55]} rotation={[0,Math.PI/2,0]}><Desk onClick={()=>props.onZone("office")}>
       <Html transform position={[0,2.70,.067]} distanceFactor={1} occlude style={{pointerEvents:props.zone==="office"?"auto":"none"}}><div className="monitor-content" inert={props.zone!=="office"} onClick={e=>e.stopPropagation()} onPointerDown={e=>e.stopPropagation()} onWheel={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()}>{props.computer}</div></Html>
     </Desk><Chair/></group>
+    <GuestbookBoard data={props.guestbookData} onOpen={props.onGuestbook}/>
     <RoomAccessories playing={!!props.loadedTapeId}/>
     <Bookcase records={props.records} page={props.bookPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onOpenBooks={props.onOpenBooks} active={props.zone==="books"&&!props.navigationLocked}/>
     <Cinema records={props.records} page={props.filmPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onClick={()=>props.onZone("cinema")} drawer={<MemoryDrawer active={props.zone==='cinema'} locked={props.navigationLocked} opening={props.drawerOpening} request={props.drawerRequest} onRequest={props.onDrawerRequest} onOpened={props.onOpenLibrary}/> }>
@@ -235,7 +239,7 @@ export default function RoomScene(props:Props) {
   const [ready,setReady]=useState(false);
   useEffect(()=>setReady(true),[]);
   if(!ready)return null;
-  return <Canvas className="room-canvas" shadows frameloop="demand" dpr={[1,1.7]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.1,far:100}}
+  return <Canvas className="room-canvas" inert={props.guestbookOpen} shadows frameloop="demand" dpr={[1,1.7]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.1,far:100}}
     gl={{antialias:true,alpha:false,powerPreference:"high-performance"}} onCreated={({gl})=>{gl.setClearColor("#ffffff");gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.0;}}>
     <color attach="background" args={["#ffffff"]}/>
     <fog attach="fog" args={["#ffffff",25,50]}/>
@@ -246,8 +250,9 @@ export default function RoomScene(props:Props) {
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.015,0]}><planeGeometry args={[200,200]}/><meshBasicMaterial color="#ffffff" toneMapped={false}/></mesh>
     <Suspense fallback={null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank("book",slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <SoftShadows size={18} samples={12} focus={.3}/>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.004,0]} receiveShadow><planeGeometry args={[200,200]}/><shadowMaterial transparent opacity={.13}/></mesh>
-    {!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.004,0]} receiveShadow><planeGeometry args={[200,200]}/><shadowMaterial transparent opacity={.18}/></mesh>
+    {props.guestbookOpen&&<GuestbookCamera/>}
+    {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;
 }
 export function ReviewScene({item}:{item:string}) {
@@ -257,7 +262,7 @@ export function ReviewScene({item}:{item:string}) {
   return <Canvas key={item} shadows frameloop="demand" dpr={[1,1.5]} camera={{position:item==="glasses"?[1.7,.90,2.5]:item==="sofa"?[2.8,2.2,-3.8]:item==="books"||item==="cinema"?[6,4.2,7]:[4,3.0,5],fov:40}}>
     <color attach="background" args={["#ffffff"]}/><StudioLight/><ambientLight intensity={.8}/><hemisphereLight args={["#fff","#cfd4d2",.8]}/><directionalLight position={[3,7,5]} intensity={2.5} castShadow shadow-mapSize={[1024,1024]}/>
     <Center>{item==="glasses"?<primitive object={glasses!}/>:item==="sofa"?<LazySofa standalone/>:item==="desk"?<Desk/>:item==="chair"?<Chair/>:item==="books"?<Bookcase records={[]} page={0} onRecord={()=>{}} onBlank={()=>{}} owner={false}/>:<Cinema records={[]} page={0} onRecord={()=>{}} onBlank={()=>{}} owner={false} onClick={()=>{}}>{null}</Cinema>}</Center>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,ground,0]} receiveShadow><planeGeometry args={[200,200]}/><shadowMaterial transparent opacity={.13}/></mesh>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,ground,0]} receiveShadow><planeGeometry args={[200,200]}/><shadowMaterial transparent opacity={.18}/></mesh>
     <CameraControls makeDefault minDistance={item==="glasses"?1.3:3} maxDistance={item==="glasses"?6:16} minPolarAngle={.3} maxPolarAngle={1.6}/>
   </Canvas>;
 }

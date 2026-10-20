@@ -95,7 +95,7 @@ export function LazySofa({standalone=false}:{standalone?:boolean}) {
   useEffect(()=>()=>{shape.top.dispose();shape.side.dispose();},[shape]);
   const fabric=<meshStandardMaterial color="#788271" map={map} roughness={.97} bumpMap={map} bumpScale={.006}/>;
   const rim=Array.from({length:97},(_,i)=>{const p=loungeTop(1,i/96*Math.PI*2);p[1]+=.004;return p;});
-  return <group position={standalone?[0,0,0]:[2.95,0,1.05]} rotation={[0,standalone?0:-.28,0]} scale={standalone?1:1.08}>
+  return <group position={standalone?[0,0,0]:[3.06,0,1.10]} rotation={[0,standalone?0:.035,0]} scale={standalone?1:1.08}>
     <mesh geometry={shape.side} castShadow receiveShadow>{fabric}</mesh>
     <mesh geometry={shape.top} castShadow receiveShadow>{fabric}</mesh>
     <Cable points={rim} color="#74806c" r={.055}/>
@@ -112,7 +112,7 @@ export function LazySofa({standalone=false}:{standalone?:boolean}) {
   </group>;
 }
 function Projector() {
-  return <group position={[4.50,.81,.85]} rotation={[0,.04,0]}>
+  return <group position={[4.10,1.04,2.63]} rotation={[0,.04,0]}>
     <Block size={[.66,.24,.49]} position={[0,.13,0]} color="#deded8" radius={.04}/>
     <Block size={[.59,.045,.43]} position={[0,.025,0]} color="#646e6e"/>
     <Round r={.09} h={.045} position={[-.15,.145,-.255]} rotation={[Math.PI/2,0,0]} color="#353f44" metal={.6}/>
@@ -121,7 +121,7 @@ function Projector() {
     {Array.from({length:10},(_,i)=><Block key={i} size={[.008,.105,.008]} position={[.03+i*.022,.14,-.249]} color="#88928f" radius={.002}/>)}
     <Round r={.022} h={.006} position={[.13,.254,.05]} color="#647b6e"/>
     <Block size={[.13,.01,.025]} position={[-.13,.253,.03]} color="#969e98"/>
-    <Cable points={[[.25,.05,.20],[.31,-.25,.36],[.13,-.77,.55],[-.10,-.79,.64]]} r={.008}/>
+    <Cable points={[[.25,.05,.20],[.31,-.25,.36],[.13,-1.02,.55],[-.10,-1.02,.64]]} r={.008}/>
   </group>;
 }
 export function RoomAccessories({playing=false}:{playing?:boolean}) {
@@ -133,6 +133,8 @@ export function RoomAccessories({playing=false}:{playing?:boolean}) {
     <ShelfDetails/>
     <LazySofa/>
     <group position={[4.50,.77,.85]}><mesh receiveShadow castShadow><cylinderGeometry args={[.48,.48,.055,48]}/><meshStandardMaterial color={OAK} roughness={.65}/></mesh>{[0,1,2].map(i=>{const a=i*Math.PI*2/3;return <Round key={i} r={.023} h={.75} position={[Math.sin(a)*.29,-.38,Math.cos(a)*.29]} color="#8b928b" metal={.7}/>;})}</group>
+    <group position={[4.10,.98,2.63]}><OakPanel size={[.78,.045,.62]} position={[0,.04,0]}/>{[-.29,.29].map(x=><Block key={x} size={[.035,1.0,.035]} position={[x,-.48,0]} color="#a9b1a7"/>)}<Block size={[.70,.04,.48]} position={[0,-.94,0]} color="#c4cbc0"/></group>
+    <group position={[4.50,.81,.85]}><Round r={.14} h={.012} color="#c8b79d"/><Round r={.08} h={.17} position={[0,.10,0]} color="#e9e3d9"/><Round r={.064} h={.007} position={[0,.19,0]} color="#55412e"/><Block size={[.18,.015,.31]} position={[.21,.015,-.04]} color="#434b48"/><Block size={[.015,.014,.07]} position={[.21,.027,.03]} color="#bbc2b2"/></group>
     <Projector/>
     <group position={[3.2,1.425,-3.75]}><Block size={[.97,.15,.42]} position={[-.85,.10,0]} color="#9da5a1"/>{Array.from({length:6},(_,i)=><Block key={i} size={[.035,.005,.16]} position={[-1.20+i*.10,.18,.01]} color="#727e78" radius={.001}/>)}<Block size={[.79,.098,.008]} position={[-.85,.10,.217]} color="#29352f" radius={.003}/><Block size={[.12,.012,.007]} position={[-1.20,.04,.221]} color="#c4cbbb"/><mesh position={[-.50,.15,.224]}><sphereGeometry args={[.008,12,8]}/><meshStandardMaterial color={playing||loadingTape?"#b5cc92":"#7c867b"} emissive={playing||loadingTape?"#607a3d":"#000000"} emissiveIntensity={.6}/></mesh><Round r={.034} h={.018} position={[-.50,.10,.22]} rotation={[Math.PI/2,0,0]} color="#65726c" metal={.8}/></group>
     <Speaker position={[5.75,.22,-3.54]} scale={1.7}/><OakPanel size={[.62,.18,.57]} position={[5.75,.11,-3.54]}/>

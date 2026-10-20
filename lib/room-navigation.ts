@@ -6,7 +6,7 @@ export const ROOM_VIEWS:Record<Zone,{camera:Vec3;target:Vec3;distance:[number,nu
   overview:{camera:[9.2,6.4,11.25],target:[.35,1.9,-.8],distance:[12,21]},
   office:{camera:[-.35,2.92,.55],target:[-3.5,2.7,.55],distance:[2.65,4.6]},
   books:{camera:[-1.9,2.5,-.65],target:[-1.9,2.25,-3.4],distance:[2.5,4.2]},
-  cinema:{camera:[3.2,3,1.72],target:[3.2,2.48,-3.56],distance:[4.7,6.8]}
+  cinema:{camera:[3.2,2.95,.75],target:[3.2,2.73,-3.56],distance:[4.1,6.2]}
 };
 type Bounds=[Vec3,Vec3];
 const box=([min,max]:Bounds)=>new THREE.Box3(new THREE.Vector3(...min),new THREE.Vector3(...max));
