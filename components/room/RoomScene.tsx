@@ -1,8 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Canvas, useThree, type ThreeEvent } from "@react-three/fiber";
+import { Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Canvas, type ThreeEvent } from "@react-three/fiber";
 import { CameraControls, CameraControlsImpl, Center, Html, RoundedBox, SoftShadows, useGLTF } from "@react-three/drei";
+import RoomNavigation from "./RoomNavigation";
+import {ROOM_VIEWS} from "@/lib/room-navigation";
 import { createAviators } from "./models/aviators";
 import * as THREE from "three";
 import { DeskDetails, LazySofa, OakPanel, RoomAccessories, StudioLight, useSurface } from "./RoomDecor";
@@ -11,7 +13,7 @@ import { assetUrl, type RoomRecord, type Zone } from "@/lib/room-types";
 
 type Vec3 = [number, number, number];
 type Props = {
-  zone: Zone; language:"zh"|"en"; viewRevision: number; records: RoomRecord[]; owner: boolean; bookPage: number; filmPage: number;
+  zone: Zone; navigationLocked:boolean; language:"zh"|"en"; viewRevision: number; records: RoomRecord[]; owner: boolean; bookPage: number; filmPage: number;
   onZone: (zone: Zone) => void; onRecord: (record: RoomRecord) => void;
   onBlank: (kind: "book" | "movie", slot: number) => void;
   computer: ReactNode; projection: ReactNode; review?: string;
@@ -209,43 +211,13 @@ function SavedModel({record}:{record:RoomRecord}) {
   const placements:Record<string,Vec3>={"books-top":[-2.0,4.36,-3.75],"books-middle":[-.30,2.70,-3.34],"cinema-left":[1.80,1.48,-3.69],"cinema-right":[4.75,1.48,-3.69]};
   return <group position={placements[record.modelPlacement]||placements["books-middle"]} rotation={[0,record.modelRotation*Math.PI/180,0]}><primitive object={clone}/></group>;
 }
-const views:Record<Zone,{camera:Vec3;target:Vec3;az:[number,number];distance:[number,number]}>={
-  overview:{camera:[9.2,6.4,11.25],target:[.35,1.9,-.80],az:[.38,1.10],distance:[12,21]},
-  office:{camera:[-.35,2.92,.55],target:[-3.50,2.70,.55],az:[1.40,1.74],distance:[2.65,4.6]},
-  books:{camera:[-1.90,2.50,-.65],target:[-1.90,2.25,-3.40],az:[-.16,.16],distance:[2.5,4.2]},
-  cinema:{camera:[3.20,3.0,1.72],target:[3.20,2.48,-3.56],az:[-.16,.16],distance:[4.7,6.8]},
-};
-function CameraRig({zone,revision}:{zone:Zone;revision:number}) {
-  const controls=useRef<CameraControlsImpl>(null);
-  const {size,camera}=useThree();
-  const [reduced,setReduced]=useState(false);
-  useEffect(()=>{const query=window.matchMedia("(prefers-reduced-motion: reduce)");const update=()=>setReduced(query.matches);update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update);},[]);
-  const view=views[zone];
-  useEffect(()=>{
-    const c=controls.current;if(!c)return;
-    if(camera instanceof THREE.PerspectiveCamera){camera.fov=size.width<650?(zone==="books"?118:zone==="office"?70:zone==="cinema"?84:38):(zone==="office"?31:zone==="cinema"?50:zone==="books"?83:38);camera.updateProjectionMatrix();}
-    c.minAzimuthAngle=-Infinity;c.maxAzimuthAngle=Infinity;
-    const pos=new THREE.Vector3(...view.camera),target=new THREE.Vector3(...view.target);
-    if(size.width<650 && zone==="overview")pos.sub(target).multiplyScalar(2.30).add(target);
-    let cancelled=false;
-    c.setLookAt(...pos.toArray() as Vec3,...view.target,!reduced).then(()=>{
-      if(!cancelled&&controls.current){controls.current.minAzimuthAngle=view.az[0];controls.current.maxAzimuthAngle=view.az[1];}
-    });
-    return()=>{cancelled=true;};
-  },[zone,revision,size.width,reduced]);
-  return <CameraControls ref={controls} makeDefault smoothTime={.55} draggingSmoothTime={.13}
-    minPolarAngle={.84} maxPolarAngle={1.48} minDistance={size.width<650?(zone==="books"?1.8:zone==="office"?2.65:view.distance[0]*1.25):view.distance[0]}
-    maxDistance={size.width<650?(zone==="books"?2.65:zone==="overview"?36:view.distance[1]*1.6):view.distance[1]} dollySpeed={.35}
-    mouseButtons={{left:CameraControlsImpl.ACTION.ROTATE,middle:CameraControlsImpl.ACTION.NONE,right:CameraControlsImpl.ACTION.NONE,wheel:CameraControlsImpl.ACTION.DOLLY}}
-    touches={{one:CameraControlsImpl.ACTION.TOUCH_ROTATE,two:CameraControlsImpl.ACTION.TOUCH_DOLLY,three:CameraControlsImpl.ACTION.NONE}}/>;
-}
-function Furniture({props}:{props:Props}) {
+function Furniture({props,hovered}:{props:Props;hovered:Zone|null}) {
   return <RecordMotionProvider request={props.recordRequest} records={props.records} activeBookId={props.activeBookId} loadedTapeId={props.loadedTapeId} zone={props.zone} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onComplete={props.onRecord} onStatus={props.onMotionStatus} renderBook={(record,w,h)=><BookVisual record={record} w={w} h={h} detail/>} renderTape={()=> <CassetteBody/>}>
     <group position={[-3.50,0,.55]} rotation={[0,Math.PI/2,0]}><Desk onClick={()=>props.onZone("office")}>
       <Html transform position={[0,2.70,.067]} distanceFactor={1} occlude style={{pointerEvents:props.zone==="office"?"auto":"none"}}><div className="monitor-content" inert={props.zone!=="office"} onClick={e=>e.stopPropagation()} onPointerDown={e=>e.stopPropagation()} onWheel={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()}>{props.computer}</div></Html>
     </Desk><Chair/></group>
     <RoomAccessories playing={!!props.loadedTapeId}/>
-    {props.zone==="overview"&&([[[ -3.50,3.65,.55],"office","01","灵感角","Studio"],[[-1.90,4.97,-3.75],"books","02","翻页角","Reading"],[[3.20,4.75,-3.75],"cinema","03","放映角","Screening"]] as const).map(([position,zone,index,label,english])=><Html key={zone} position={[...position]} center zIndexRange={[4,0]}><button className="spatial-label" onClick={event=>{event.stopPropagation();props.onZone(zone);}}><span>{index}</span>{props.language==="en"?english:label}<span aria-hidden>↗</span></button></Html>)}
+    {props.zone==="overview"&&([[[ -3.50,3.65,.55],"office","01","灵感角","Studio"],[[-1.90,4.97,-3.75],"books","02","翻页角","Reading"],[[3.20,4.75,-3.75],"cinema","03","放映角","Screening"]] as const).map(([position,zone,index,label,english])=><Html key={zone} position={[...position]} center zIndexRange={[4,0]}><button data-room-zone={zone} className={"spatial-label"+(hovered===zone?" is-hovered":"")} onClick={event=>{event.stopPropagation();props.onZone(zone);}}><span>{index}</span>{props.language==="en"?english:label}<span aria-hidden>↗</span></button></Html>)}
     <Bookcase records={props.records} page={props.bookPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner}/>
     <Cinema records={props.records} page={props.filmPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onClick={()=>props.onZone("cinema")}>
       {props.zone==="cinema"&&<Html transform position={[0,3.05,-.105]} distanceFactor={1} occlude><div className={"projection-content"+(props.playbackBusy?" projection-loading":"")} onClick={e=>e.stopPropagation()}>{props.projection}</div></Html>}
@@ -254,10 +226,10 @@ function Furniture({props}:{props:Props}) {
   </RecordMotionProvider>;
 }
 export default function RoomScene(props:Props) {
-  const [ready,setReady]=useState(false);
+  const [ready,setReady]=useState(false),[hovered,setHovered]=useState<Zone|null>(null);
   useEffect(()=>setReady(true),[]);
   if(!ready)return null;
-  return <Canvas className="room-canvas" shadows frameloop="demand" dpr={[1,1.7]} camera={{position:views.overview.camera,fov:38,near:.1,far:100}}
+  return <Canvas className="room-canvas" shadows frameloop="demand" dpr={[1,1.7]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.1,far:100}}
     gl={{antialias:true,alpha:false,powerPreference:"high-performance"}} onCreated={({gl})=>{gl.setClearColor("#ffffff");gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.0;}}>
     <color attach="background" args={["#ffffff"]}/>
     <fog attach="fog" args={["#ffffff",25,50]}/>
@@ -266,10 +238,10 @@ export default function RoomScene(props:Props) {
     <directionalLight position={[-7,11,8]} intensity={1.85} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-10} shadow-camera-right={10} shadow-camera-top={10} shadow-camera-bottom={-10} shadow-normalBias={.04} shadow-bias={-.0001}/>
     <directionalLight position={[7,5,3]} intensity={.25}/>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.015,0]}><planeGeometry args={[200,200]}/><meshBasicMaterial color="#ffffff" toneMapped={false}/></mesh>
-    <Suspense fallback={null}><Furniture props={props}/></Suspense>
+    <Suspense fallback={null}><Furniture props={props} hovered={hovered}/></Suspense>
     <SoftShadows size={18} samples={12} focus={.3}/>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.004,0]} receiveShadow><planeGeometry args={[200,200]}/><shadowMaterial transparent opacity={.13}/></mesh>
-    <CameraRig zone={props.zone} revision={props.viewRevision}/>
+    <RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone} onHover={setHovered}/>
   </Canvas>;
 }
 export function ReviewScene({item}:{item:string}) {

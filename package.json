@@ -12,7 +12,8 @@
     "build:github": "node scripts/build-github.mjs",
     "preview": "vite preview --config github-pages/vite.config.ts",
     "test:public": "node --test scripts/public-records.test.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:interaction": "node --test scripts/room-navigation.test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.0",

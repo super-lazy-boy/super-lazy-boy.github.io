@@ -4,6 +4,14 @@
 
 预期地址：https://super-lazy-boy.github.io/
 
+## 房间交互
+
+电脑端移动鼠标即可轻轻环顾；在桌面、书架或影音区停留约 0.34 秒，会平滑靠近对应区域。离开区域后约 0.54 秒返回总览。上方导航也可悬停或点击切换，Esc 返回总览。
+
+在电脑屏幕内阅读、点击和输入时，镜头保持稳定；打开记录或播放取放动画时暂停自动切换。手机端继续使用点击进入、拖动观察和双指缩放。
+
+鼠标交互参考 [Henry Heffernan](https://henryheffernan.com/) 的视角跟随与屏幕靠近方式，扩展到三个区域；房间模型与实现保持独立。
+
 ## 修改内容
 
 个人介绍和兴趣放在 `content/profile.json`；公开阅读、影视、游戏和研究记录放在 `content/public-records.json`。
@@ -46,6 +54,7 @@ GitHub 公开仓库和发布文件里的内容都可以被他人读取。仅自�
 ```text
 npm ci
 npm run test:public
+npm run test:interaction
 npm run build:github
 npm run preview
 ```
