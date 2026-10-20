@@ -8,7 +8,7 @@
 1. 在 GitHub 的 Settings → Developer settings → OAuth Apps 创建本网站的登录应用。
 2. Homepage URL：`https://super-lazy-boy.github.io/`。
 3. Authorization callback URL：`https://rxundohqfaanmhucmbcq.supabase.co/auth/v1/callback`。
-4. Client ID 和 Client secret 只填写到 Supabase → Authentication → Sign In / Providers → GitHub；启用后保存。不要提交到仓库。
+4. 注册应用后，在应用详情页复制 Client ID，并点击 Generate a new client secret 生成密钥。它们不是 GitHub 用户名、账号密码或个人访问令牌。将这两项只填写到 Supabase → Authentication → Sign In / Providers → GitHub；启用后保存。不要提交到仓库。
 5. Supabase → Authentication → URL Configuration：Site URL 和 Redirect URLs 都添加 `https://super-lazy-boy.github.io/`。
 6. 建议关闭 Email、Phone 和匿名登录；仅启用 GitHub。GitHub 的新访客即使完成登录，也没有任何写入权限。
 
@@ -35,3 +35,5 @@ node scripts/check-backend.mjs
 ```
 
 权限测试在本地 PostgreSQL 引擎中模拟匿名、其他 GitHub 用户和站主，验证拒绝写入、私密隔离、素材隔离、录入类型限制及归档行为。线上检查只读取公开配置，并尝试一条应被拒绝的未授权写入，不创建测试记录。
+
+线上检查还会确认 OAuth 回调地址、Client ID 没有误填成用户名，以及 GitHub 是否接受授权入口。检查不会输出或保存 OAuth state，也不会代替用户登录；Client secret 和登录后返回地址仍须通过真实登录确认。
