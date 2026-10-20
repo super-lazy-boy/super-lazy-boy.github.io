@@ -10,6 +10,9 @@ import * as THREE from "three";
 import { DeskDetails, LazySofa, OakPanel, RoomAccessories, StudioLight, useSurface } from "./RoomDecor";
 import { RecordMotionProvider, useRecordAnchor, type RecordRequest, type MotionStatus } from "./RecordMotion";
 import { assetUrl, type RoomRecord, type Zone } from "@/lib/room-types";
+import {filmEntities,keepsakeFilms} from '@/lib/film-library';
+import {TapeCase,TapeTitle} from './TapeSpine';
+import FilmArchive from './FilmArchive';
 
 type Vec3 = [number, number, number];
 type Props = {
@@ -19,6 +22,7 @@ type Props = {
   computer: ReactNode; projection: ReactNode; review?: string;
   recordRequest:RecordRequest; activeBookId:string|null; loadedTapeId:string|null; skipRevision:number; playbackBusy:boolean;
   onSelect:(record:RoomRecord)=>void; onMotionStatus:(status:MotionStatus)=>void;
+  libraryOpen:boolean;onOpenLibrary:()=>void;
 };
 const WHITE="#f9f9f7", INK="#303337";
 const material = (color: string, metalness=0, roughness=.73) => <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />;
@@ -145,11 +149,11 @@ function Bookcase({records,onRecord,onBlank,page,owner}:{records:RoomRecord[];on
     ].map((item,i)=>{const slot=page*96+90+i,record=bySlot.get(slot);return <group key={slot} position={item.p as Vec3} rotation={[0,item.yaw,0]}><group rotation={[0,0,Math.PI/2]} scale={[1,1,1.65]}><Book record={record} w={item.w} h={.64} position={[0,-.32,0]} onClick={()=>record?onRecord(record):owner&&onBlank("book",slot)}/></group></group>;})}
   </group>;
 }
-function Tape({record,position,onClick}:{record?:RoomRecord;position:Vec3;onClick:()=>void}) {
-  const texture=useLabel(record?.title||"","",record?.color||"#50545a",true),anchor=useRecordAnchor(record,.125,.48);
-  return <group ref={anchor.ref} position={[position[0],position[1]+.24,position[2]]} visible={!anchor.hidden} onClick={e=>{e.stopPropagation();if(e.delta<4){pointerOff();record?anchor.select():onClick();}}} onPointerOver={pointerOn} onPointerOut={pointerOff}>
-    <Box size={[.125,.48,.31]} color="#2c3034"/>
-    <mesh position={[0,.01,.158]}><planeGeometry args={[.110,.435]}/><meshBasicMaterial map={texture} color={record?"#ffffff":"#50545a"}/></mesh>
+function Tape({record,position,onClick,slot=0}:{record?:RoomRecord;position:Vec3;onClick:()=>void;slot?:number}) {
+  const anchor=useRecordAnchor(record,.125,.48),[hover,setHover]=useState(false);
+  return <group ref={anchor.ref} position={[position[0],position[1]+.24,position[2]]} visible={!anchor.hidden} onClick={e=>{e.stopPropagation();if(e.delta<4){pointerOff();record?anchor.select():onClick();}}} onPointerOver={e=>{pointerOn(e);setHover(true);}} onPointerOut={()=>{pointerOff();setHover(false);}}>
+    <group position={[0,0,hover?.04:0]}><TapeCase record={record} slot={slot}/></group>
+    {hover&&record&&<Html center position={[0,.38,.2]} style={{pointerEvents:'none'}}><TapeTitle record={record} slot={slot}/></Html>}
     {!record&&<Box size={[.065,.10,.004]} position={[0,-.08,.161]} color="#cdd0cd"/>}
   </group>;
 }
@@ -169,20 +173,27 @@ function Cassette() {
     <Box size={[.47,.009,.08]} position={[0,.116,.14]} color="#e5e6df"/>
   </group>;
 }
-function Cinema({records,onRecord,onBlank,page,owner,onClick,children}:{records:RoomRecord[];onRecord:(r:RoomRecord)=>void;onBlank:Props["onBlank"];page:number;owner:boolean;onClick:()=>void;children:ReactNode}) {
-  const films=records.filter(r=>r.kind==="movie"||r.kind==="game");
+function Cinema({records,onRecord,onBlank,page,owner,onClick,children,onOpenLibrary}:{records:RoomRecord[];onRecord:(r:RoomRecord)=>void;onBlank:Props["onBlank"];page:number;owner:boolean;onClick:()=>void;children:ReactNode;onOpenLibrary?:()=>void}) {
+  const entities=filmEntities(records),bySlot=new Map(entities.map(entity=>[entity.slot,entity]));
+  const keepsakes=keepsakeFilms(entities),keptIds=new Set(keepsakes.map(entity=>entity.record.id));
   const screen=useSurface("screen");
   return <group position={[3.20,0,-3.75]}>
     <Box size={[4.25,1.35,.04]} position={[0,.75,-.26]} color="#e7e9e5"/>
     {[-2.16,2.16].map(x=><Box key={x} size={[.09,1.40,.65]} position={[x,.70,0]}/>)}
     {[.10,.72,1.36].map(y=><Box key={y} size={[4.30,.075,.65]} position={[0,y,0]}/>)}
     {Array.from({length:56},(_,i)=>{
-      const slot=page*56+i,record=films[slot];
-      return <Tape key={slot} record={record} position={[-1.98+(i%28)*.146,.15+Math.floor(i/28)*.62,.02]} onClick={()=>record?onRecord(record):owner&&onBlank("movie",slot)}/>;
+      const slot=page*56+i,record=bySlot.get(slot)?.record;
+      if(record&&keptIds.has(record.id))return null;
+      return <Tape key={slot} slot={slot} record={record} position={[-1.98+(i%28)*.146,.15+Math.floor(i/28)*.62,.02]} onClick={()=>record?onRecord(record):owner&&onBlank("movie",slot)}/>;
     })}
     <OakPanel size={[4.34,.06,.68]} position={[0,1.42,0]}/>
     <OakPanel size={[4.25,.08,.59]} position={[0,.055,0]}/>
     <Cassette/>
+    {keepsakes.map((entity,i)=>{
+      const positions:Vec3[]=[[-1.38,1.52,.14],[-1.34,1.65,.13],[-.89,1.53,.17],[1.53,.10,.67],[1.57,.22,.64],[1.12,.085,1.04]];
+      return <group key={entity.record.id} position={positions[i]} rotation={[0,[-.12,.04,.16,-.24,-.15,.23][i],Math.PI/2]}><Tape slot={entity.slot} record={entity.record} position={[0,-.24,0]} onClick={()=>onRecord(entity.record)}/></group>;
+    })}
+    {onOpenLibrary&&<Html center position={[-.15,1.58,.36]}><button className="open-memory-cabinet" onClick={event=>{event.stopPropagation();onOpenLibrary();}}>打开回忆柜 <span>{entities.length} 盘 ↗</span></button></Html>}
     <group onClick={e=>{e.stopPropagation();if(e.delta<4)onClick();}} onPointerOver={pointerOn} onPointerOut={pointerOff}>
       <Cylinder h={4.15} r={.025} position={[-1.99,2.15,-.20]} color="#9da4a6"/>
       <Cylinder h={4.15} r={.025} position={[1.99,2.15,-.20]} color="#9da4a6"/>
@@ -219,7 +230,7 @@ function Furniture({props,hovered}:{props:Props;hovered:Zone|null}) {
     <RoomAccessories playing={!!props.loadedTapeId}/>
     {props.zone==="overview"&&([[[ -3.50,3.65,.55],"office","01","灵感角","Studio"],[[-1.90,4.97,-3.75],"books","02","翻页角","Reading"],[[3.20,4.75,-3.75],"cinema","03","放映角","Screening"]] as const).map(([position,zone,index,label,english])=><Html key={zone} position={[...position]} center zIndexRange={[4,0]}><button data-room-zone={zone} className={"spatial-label"+(hovered===zone?" is-hovered":"")} onClick={event=>{event.stopPropagation();props.onZone(zone);}}><span>{index}</span>{props.language==="en"?english:label}<span aria-hidden>↗</span></button></Html>)}
     <Bookcase records={props.records} page={props.bookPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner}/>
-    <Cinema records={props.records} page={props.filmPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onClick={()=>props.onZone("cinema")}>
+    <Cinema records={props.records} page={props.filmPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onClick={()=>props.onZone("cinema")} onOpenLibrary={props.onOpenLibrary}>
       {props.zone==="cinema"&&<Html transform position={[0,3.05,-.105]} distanceFactor={1} occlude><div className={"projection-content"+(props.playbackBusy?" projection-loading":"")} onClick={e=>e.stopPropagation()}>{props.projection}</div></Html>}
     </Cinema>
     {props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><Suspense key={record.id} fallback={null}><SavedModel record={record}/></Suspense>)}
@@ -238,10 +249,10 @@ export default function RoomScene(props:Props) {
     <directionalLight position={[-7,11,8]} intensity={1.85} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-10} shadow-camera-right={10} shadow-camera-top={10} shadow-camera-bottom={-10} shadow-normalBias={.04} shadow-bias={-.0001}/>
     <directionalLight position={[7,5,3]} intensity={.25}/>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.015,0]}><planeGeometry args={[200,200]}/><meshBasicMaterial color="#ffffff" toneMapped={false}/></mesh>
-    <Suspense fallback={null}><Furniture props={props} hovered={hovered}/></Suspense>
+    <Suspense fallback={null}>{props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props} hovered={hovered}/>}</Suspense>
     <SoftShadows size={18} samples={12} focus={.3}/>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.004,0]} receiveShadow><planeGeometry args={[200,200]}/><shadowMaterial transparent opacity={.13}/></mesh>
-    <RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone} onHover={setHovered}/>
+    {!props.libraryOpen&&<RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone} onHover={setHovered}/>}
   </Canvas>;
 }
 export function ReviewScene({item}:{item:string}) {
