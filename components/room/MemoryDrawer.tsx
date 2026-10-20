@@ -29,7 +29,7 @@ export default function MemoryDrawer({active,locked,opening,request,onRequest,on
   else invalidate();
  });
  const over=(event:ThreeEvent<PointerEvent>)=>{event.stopPropagation();if(active&&!locked){setHover(true);document.body.style.cursor='pointer';}};
- return <group position={[-.13,1.60,.015]} onClick={event=>{event.stopPropagation();if(active&&!locked&&event.delta<4)onRequest();}} onPointerOver={over} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
+ return <group position={[.35,1.60,.015]} onClick={event=>{event.stopPropagation();if(active&&!locked&&event.delta<4)onRequest();}} onPointerOver={over} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
   <Part size={[.94,.025,.53]} position={[0,-.134,0]} color="#c4ae93"/>
   <Part size={[.94,.025,.53]} position={[0,.134,0]} color="#e9e6dc"/>
   {[-.456,.456].map(x=><Part key={x} size={[.027,.245,.53]} position={[x,0,0]}/>)}

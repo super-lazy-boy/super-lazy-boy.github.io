@@ -162,7 +162,7 @@ function CassetteBody(){
   </group>;
 }
 function Cassette() {
-  return <group position={[.80,1.40,.01]} rotation={[0,-.08,0]}>
+  return <group position={[1.50,1.44,.01]} rotation={[0,-.08,0]}>
     <Bevel size={[.74,.10,.43]} position={[0,.06,0]} color="#353a3d" radius={.01}/>
     <Box size={[.62,.008,.25]} position={[0,.115,-.035]} color="#798082"/>
     {[-.18,.18].map(x=><group key={x}><Cylinder r={.092} h={.012} position={[x,.125,-.035]} color="#282e31"/><Cylinder r={.032} h={.014} position={[x,.135,-.035]} color="#b4b9b8"/></group>)}
@@ -186,7 +186,7 @@ function Cinema({records,onRecord,onBlank,page,owner,onClick,children,drawer}:{r
     <OakPanel size={[4.25,.08,.59]} position={[0,.055,0]}/>
     <Cassette/>
     {keepsakes.map((entity,i)=>{
-      const positions:Vec3[]=[[-1.38,1.52,.14],[-1.34,1.65,.13],[-.89,1.53,.17],[1.53,.10,.67],[1.57,.22,.64],[1.12,.085,1.04]];
+      const positions:Vec3[]=[[-1.76,1.5175,.11],[-1.73,1.645,.10],[-1.75,1.7725,.10],[1.53,.10,.67],[1.57,.22,.64],[1.12,.085,1.04]];
       return <group key={entity.record.id} position={positions[i]} rotation={[0,[-.12,.04,.16,-.24,-.15,.23][i],Math.PI/2]}><Tape slot={entity.slot} record={entity.record} position={[0,-.24,0]} onClick={()=>onRecord(entity.record)}/></group>;
     })}
     {drawer}

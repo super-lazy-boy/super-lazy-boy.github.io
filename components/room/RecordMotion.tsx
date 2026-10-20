@@ -37,7 +37,7 @@ function Actor({motion,renderBook,renderTape,onFinish,onStage}:{motion:Motion;re
       node.quaternion.copy(start.quaternion).slerp(bookRotation(start),t);node.scale.copy(start.scale);
     }else{
       const pull=start.position.clone().add(new THREE.Vector3(0,.04,.67));
-      const front=new THREE.Vector3(2.35,1.52,-2.91),inside=new THREE.Vector3(2.35,1.52,-3.79);
+      const front=new THREE.Vector3(2.35,1.525,-2.91),inside=new THREE.Vector3(2.35,1.525,-3.79);
       const upright=start.quaternion.clone().multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),Math.PI/2));
       if(p<.28){node.position.lerpVectors(start.position,pull,smooth(p/.28));node.quaternion.copy(upright);node.scale.set(.65,1.25,.72);}
       else if(p<.73){const t=smooth((p-.28)/.45);node.position.lerpVectors(pull,front,t);node.position.y+=Math.sin(t*Math.PI)*.46;node.quaternion.copy(upright).slerp(new THREE.Quaternion(),t);node.scale.lerpVectors(new THREE.Vector3(.65,1.25,.72),new THREE.Vector3(1,1,1),t);}
