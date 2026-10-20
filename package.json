@@ -13,11 +13,14 @@
     "preview": "vite preview --config github-pages/vite.config.ts",
     "test:public": "node --test scripts/public-records.test.mjs",
     "typecheck": "tsc --noEmit",
-    "test:interaction": "node --test scripts/room-navigation.test.mjs"
+    "test:interaction": "node --test scripts/room-navigation.test.mjs",
+    "test:permissions": "node --test scripts/room-permissions.test.mjs",
+    "check:backend": "node scripts/check-backend.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.0",
     "@react-three/fiber": "9.3.0",
+    "@supabase/supabase-js": "2.118.0",
     "lucide-react": "1.31.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
@@ -25,6 +28,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
