@@ -2,6 +2,7 @@ import * as THREE from "three";
 import type {Zone} from "./room-types";
 
 export type Vec3=[number,number,number];
+export const ROOM_HOVER_TIMING={enter:1000,leave:1300,cooldown:1400} as const;
 export const ROOM_VIEWS:Record<Zone,{camera:Vec3;target:Vec3;distance:[number,number]}>= {
   overview:{camera:[9.2,6.4,11.25],target:[.35,1.9,-.8],distance:[12,21]},
   office:{camera:[-.35,2.92,.55],target:[-3.5,2.7,.55],distance:[2.65,4.6]},
@@ -53,7 +54,7 @@ export class RoomHoverIntent {
   cancel(){this.candidate=null;this.since=0;}
   step(current:Zone,now:number):Zone|null {
     if(this.candidate===null||this.candidate===current)return null;
-    if(now-this.since<(this.candidate==="overview"?540:340))return null;
-    const next=this.candidate;this.reset(now,1100);return next;
+    if(now-this.since<(this.candidate==="overview"?ROOM_HOVER_TIMING.leave:ROOM_HOVER_TIMING.enter))return null;
+    const next=this.candidate;this.reset(now,ROOM_HOVER_TIMING.cooldown);return next;
   }
 }

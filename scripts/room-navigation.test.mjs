@@ -12,20 +12,22 @@ test('passing over an area does not move the camera',()=>{
 });
 test('a settled hover enters once and camera motion alone cannot re-enter',()=>{
   const hover=new RoomHoverIntent();hover.point('office','overview',0);
-  assert.equal(hover.step('overview',340),'office');
+  assert.equal(hover.step('overview',999),null);
+  assert.equal(hover.step('overview',1000),'office');
   hover.cancel();
-  hover.point('overview','office',400);
-  assert.equal(hover.step('office',2000),null);
-  hover.point('overview','office',2100);
-  assert.equal(hover.step('office',2600),null);
-  assert.equal(hover.step('office',2640),'overview');
-  assert.equal(hover.step('overview',5000),null);
+  hover.point('overview','office',1100);
+  assert.equal(hover.step('office',2400),null);
+  hover.point('overview','office',2500);
+  assert.equal(hover.step('office',3799),null);
+  assert.equal(hover.step('office',3800),'overview');
+  assert.equal(hover.step('overview',6000),null);
 });
 test('manual navigation or a dialog cancels the queued area change',()=>{
-  const hover=new RoomHoverIntent();hover.point('books','overview',0);hover.reset(150,1100);
+  const hover=new RoomHoverIntent();hover.point('books','overview',0);hover.reset(150,1400);
   assert.equal(hover.step('overview',1000),null);
-  hover.point('cinema','books',1300);
-  assert.equal(hover.step('books',1640),'cinema');
+  hover.point('cinema','books',1600);
+  assert.equal(hover.step('books',2599),null);
+  assert.equal(hover.step('books',2600),'cinema');
 });
 test('staying in the active area never starts a new camera transition',()=>{
   const hover=new RoomHoverIntent();hover.point('books','books',0);
@@ -44,6 +46,15 @@ test('the guest corner has its own hover target and stays separate from the desk
   const ray=new THREE.Ray(origin,new THREE.Vector3(...ROOM_VIEWS.guestbook.target).sub(origin).normalize());
   assert.equal(pickRoomZone(ray,'overview'),'guestbook');
   const hover=new RoomHoverIntent();hover.point('guestbook','overview',0);
-  assert.equal(hover.step('overview',339),null);assert.equal(hover.step('overview',340),'guestbook');
+  assert.equal(hover.step('overview',999),null);assert.equal(hover.step('overview',1000),'guestbook');
   assert.notDeepEqual(ROOM_VIEWS.guestbook.target,ROOM_VIEWS.office.target);
+});
+
+test('crossing several areas restarts the full dwell time for the final target',()=>{
+  const hover=new RoomHoverIntent();
+  hover.point('books','overview',0);
+  hover.point('cinema','overview',700);
+  hover.point('guestbook','overview',1200);
+  assert.equal(hover.step('overview',2199),null);
+  assert.equal(hover.step('overview',2200),'guestbook');
 });

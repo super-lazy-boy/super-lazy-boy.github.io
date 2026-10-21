@@ -34,6 +34,7 @@ type Props = {
   libraryOpen:boolean;onOpenLibrary:()=>void;
   bookArchiveOpen:boolean;bookLayer:number;onOpenBooks:()=>void;
   drawerRequest:number;drawerOpening:boolean;onDrawerRequest:()=>void;
+  onInspectCollectible:()=>void;
 };
 const WHITE="#f9f9f7", INK="#303337";
 const material = (color: string, metalness=0, roughness=.73) => <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />;
@@ -174,7 +175,7 @@ function Cassette() {
     <Box size={[.47,.009,.08]} position={[0,.116,.14]} color="#e5e6df"/>
   </group>;
 }
-function Cinema({records,onRecord,onBlank,page,owner,onClick,children,drawer}:{records:RoomRecord[];onRecord:(r:RoomRecord)=>void;onBlank:Props["onBlank"];page:number;owner:boolean;onClick:()=>void;children:ReactNode;drawer?:ReactNode}) {
+function Cinema({records,onRecord,onBlank,page,owner,onClick,children,drawer,onInspect,inspectionLocked=false}:{records:RoomRecord[];onRecord:(r:RoomRecord)=>void;onBlank:Props["onBlank"];page:number;owner:boolean;onClick:()=>void;children:ReactNode;drawer?:ReactNode;onInspect?:()=>void;inspectionLocked?:boolean}) {
   const entities=filmEntities(records),bySlot=new Map(entities.map(entity=>[entity.slot,entity]));
   const keepsakes=keepsakeFilms(entities),keptIds=new Set(keepsakes.map(entity=>entity.record.id));
   const screen=useSurface("screen");
@@ -190,7 +191,7 @@ function Cinema({records,onRecord,onBlank,page,owner,onClick,children,drawer}:{r
     <OakPanel size={[4.34,.06,.68]} position={[0,1.42,0]}/>
     <OakPanel size={[4.25,.08,.59]} position={[0,.055,0]}/>
     <Cassette/>
-    <TardisOrnament/>
+    <TardisOrnament onInspect={onInspect} disabled={inspectionLocked}/>
     {keepsakes.map((entity,i)=>{
       return <group key={entity.record.id} position={CINEMA_LAYOUT.keepsakes[i]} rotation={[0,CINEMA_LAYOUT.keepsakeYaws[i],Math.PI/2]}><Tape slot={entity.slot} record={entity.record} position={[0,-.24,0]} onClick={()=>onRecord(entity.record)}/></group>;
     })}
@@ -231,7 +232,7 @@ function Furniture({props}:{props:Props}) {
     <GuestbookBoard data={props.guestbookData} onOpen={props.onGuestbook}/>
     <RoomAccessories playing={!!props.loadedTapeId}/>
     <Bookcase records={props.records} page={props.bookPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onOpenBooks={props.onOpenBooks} active={props.zone==="books"&&!props.navigationLocked}/>
-    <Cinema records={props.records} page={props.filmPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onClick={()=>props.onZone("cinema")} drawer={<MemoryDrawer active={props.zone==='cinema'} locked={props.navigationLocked} opening={props.drawerOpening} request={props.drawerRequest} onRequest={props.onDrawerRequest} onOpened={props.onOpenLibrary}/> }>
+    <Cinema records={props.records} page={props.filmPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onClick={()=>props.onZone("cinema")} onInspect={props.onInspectCollectible} inspectionLocked={props.navigationLocked} drawer={<MemoryDrawer active={props.zone==='cinema'} locked={props.navigationLocked} opening={props.drawerOpening} request={props.drawerRequest} onRequest={props.onDrawerRequest} onOpened={props.onOpenLibrary}/> }>
       {props.zone==="cinema"&&<Html transform position={[0,3.05,-.105]} distanceFactor={1} occlude><div className={"projection-content"+(props.playbackBusy?" projection-loading":"")} onClick={e=>e.stopPropagation()}>{props.projection}</div></Html>}
     </Cinema>
     {props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><Suspense key={record.id} fallback={null}><SavedModel record={record}/></Suspense>)}

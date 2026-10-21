@@ -1,8 +1,12 @@
 "use client";
 import {useEffect,useMemo} from 'react';
+import {useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {filmStyle,filmAddress,type FilmStyle} from '@/lib/film-library';
 import type {RoomRecord} from '@/lib/room-types';
+
+// Keep rasterized lettering when returning from a cabinet; GPU textures remain per-canvas and disposable.
+const spineCanvases=new Map<string,HTMLCanvasElement>();
 
 const themes:Record<FilmStyle,{paper:string;ink:string;accent:string;font:string;weight:number}>={
  scifi:{paper:'#183238',ink:'#dcefe8',accent:'#82cabb',font:'"Bahnschrift", "Microsoft YaHei", sans-serif',weight:600},
@@ -57,16 +61,23 @@ export function paintTapeSpine(canvas:HTMLCanvasElement,record:RoomRecord,slot:n
 }
 
 export function useTapeTexture(record:RoomRecord|undefined,slot:number){
+ const {invalidate}=useThree();
  const texture=useMemo(()=>{
   if(!record)return null;
-  const canvas=document.createElement('canvas');paintTapeSpine(canvas,record,slot);
+  const key=JSON.stringify([record.id,record.title,record.year,filmStyle(record),slot]);
+  let canvas=spineCanvases.get(key);
+  if(!canvas){canvas=document.createElement('canvas');paintTapeSpine(canvas,record,slot);}
+  spineCanvases.delete(key);spineCanvases.set(key,canvas);
+  if(spineCanvases.size>80)spineCanvases.delete(spineCanvases.keys().next().value!);
   const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=8;return map;
  },[record?.id,record?.title,record?.year,record?.tags,slot]);
+ useEffect(()=>{invalidate();},[texture,invalidate]);
  useEffect(()=>()=>texture?.dispose(),[texture]);return texture;
 }
 export function TapeLabel({record,slot}:{record?:RoomRecord;slot:number}){
  const texture=useTapeTexture(record,slot);
- return <mesh position={[0,0,.158]}><planeGeometry args={[.114,.453]}/><meshBasicMaterial map={texture} color={record?'#ffffff':'#5a605d'} toneMapped={false}/></mesh>;
+ // Blank -> printed changes Three's shader defines, so replace the material as well as its map.
+ return <mesh position={[0,0,.158]}><planeGeometry args={[.114,.453]}/><meshBasicMaterial key={texture?'printed':'blank'} map={texture} color={record?'#ffffff':'#5a605d'} toneMapped={false}/></mesh>;
 }
 export function TapeCase({record,slot=0}:{record?:RoomRecord;slot?:number}){
  return <group><mesh castShadow receiveShadow><boxGeometry args={[.125,.48,.31]}/><meshStandardMaterial color="#303638" roughness={.58}/></mesh><TapeLabel record={record} slot={slot}/><mesh position={[0,.234,.161]}><boxGeometry args={[.121,.008,.003]}/><meshStandardMaterial color="#6b706b" roughness={.56}/></mesh></group>;
