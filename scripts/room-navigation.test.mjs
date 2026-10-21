@@ -32,10 +32,18 @@ test('staying in the active area never starts a new camera transition',()=>{
   assert.equal(hover.candidate,null);assert.equal(hover.step('books',1000),null);
 });
 test('focus camera centres hit their own furniture and empty sky exits',()=>{
-  for(const zone of ['office','books','cinema']){
+  for(const zone of ['office','books','cinema','guestbook']){
     const view=ROOM_VIEWS[zone],origin=new THREE.Vector3(...view.camera);
     const ray=new THREE.Ray(origin,new THREE.Vector3(...view.target).sub(origin).normalize());
     assert.equal(pickRoomZone(ray,zone),zone);
     assert.equal(pickRoomZone(new THREE.Ray(origin,new THREE.Vector3(0,1,0)),zone),'overview');
   }
+});
+test('the guest corner has its own hover target and stays separate from the desk',()=>{
+  const origin=new THREE.Vector3(...ROOM_VIEWS.overview.camera);
+  const ray=new THREE.Ray(origin,new THREE.Vector3(...ROOM_VIEWS.guestbook.target).sub(origin).normalize());
+  assert.equal(pickRoomZone(ray,'overview'),'guestbook');
+  const hover=new RoomHoverIntent();hover.point('guestbook','overview',0);
+  assert.equal(hover.step('overview',339),null);assert.equal(hover.step('overview',340),'guestbook');
+  assert.notDeepEqual(ROOM_VIEWS.guestbook.target,ROOM_VIEWS.office.target);
 });

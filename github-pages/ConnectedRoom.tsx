@@ -39,7 +39,7 @@ export default function ConnectedRoom({records}:{records:RoomRecord[]}) {
   useEffect(()=>{
     if(!signedIn)return;
     const zone=sessionStorage.getItem('room-login-zone');
-    if(zone&&/^#(overview|office|books|cinema|guestbook)$/.test(zone)){
+    if(zone&&/^#(overview|office|books|cinema|guestbook|guestbook-notes)$/.test(zone)){
       // Keep the restored view after the SDK removes the one-time callback code.
       sessionStorage.removeItem('room-login-zone');
       history.replaceState(null,'',location.pathname+zone);window.dispatchEvent(new HashChangeEvent('hashchange'));

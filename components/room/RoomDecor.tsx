@@ -129,6 +129,16 @@ export function RoomAccessories({playing=false}:{playing?:boolean}) {
   return <>
     <Rug position={[-1.92,.013,.43]} size={[3.65,4.10]}/>
     <Rug position={[3.03,.014,.75]} size={[3.35,3.4]}/>
+    <Rug position={[-5.45,.013,3.94]} size={[2.50,1.80]}/>
+    <Plant position={[-6.48,0,4.08]} scale={.62}/>
+    <group position={[-4.36,.72,4.02]}>
+      <Round r={.31} h={.045} color="#c4ad91"/>
+      <Round r={.035} h={.67} position={[0,-.35,0]} color="#aab3a3" metal={.35}/>
+      <Round r={.23} h={.026} position={[0,-.69,0]} color="#c2c9bb"/>
+      <Block size={[.23,.035,.19]} position={[-.07,.042,.04]} color="#eee2b9" radius={.003}/>
+      <Round r={.055} h={.115} position={[.15,.08,-.08]} color="#e4dfd2"/>
+      {[0,1,2].map(i=><Round key={i} r={.007} h={.18} position={[.13+i*.016,.19,-.08]} rotation={[0,0,(i-1)*.12]} color={['#52634d','#b79a78','#8a939f'][i]}/>)}
+    </group>
     <Plant position={[-4.57,0,-2.30]} scale={1.25}/>
     <ShelfDetails/>
     <LazySofa/>
