@@ -19,6 +19,8 @@ import BookObject from './BookObject';
 import BookStack from './BookStack';
 import GuestbookBoard,{GuestbookCamera} from './GuestbookBoard';
 import type {GuestbookData} from '@/lib/guestbook';
+import TardisOrnament from './TardisOrnament';
+import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 
 type Vec3 = [number, number, number];
 type Props = {
@@ -176,7 +178,7 @@ function Cinema({records,onRecord,onBlank,page,owner,onClick,children,drawer}:{r
   const entities=filmEntities(records),bySlot=new Map(entities.map(entity=>[entity.slot,entity]));
   const keepsakes=keepsakeFilms(entities),keptIds=new Set(keepsakes.map(entity=>entity.record.id));
   const screen=useSurface("screen");
-  return <group position={[3.20,0,-3.75]}>
+  return <group position={CINEMA_LAYOUT.origin}>
     <Box size={[4.25,1.35,.04]} position={[0,.75,-.26]} color="#e7e9e5"/>
     {[-2.16,2.16].map(x=><Box key={x} size={[.09,1.40,.65]} position={[x,.70,0]}/>)}
     {[.10,.72,1.36].map(y=><Box key={y} size={[4.30,.075,.65]} position={[0,y,0]}/>)}
@@ -188,9 +190,9 @@ function Cinema({records,onRecord,onBlank,page,owner,onClick,children,drawer}:{r
     <OakPanel size={[4.34,.06,.68]} position={[0,1.42,0]}/>
     <OakPanel size={[4.25,.08,.59]} position={[0,.055,0]}/>
     <Cassette/>
+    <TardisOrnament/>
     {keepsakes.map((entity,i)=>{
-      const positions:Vec3[]=[[-1.76,1.5175,.11],[-1.73,1.645,.10],[-1.75,1.7725,.10],[1.53,.10,.67],[1.57,.22,.64],[1.12,.085,1.04]];
-      return <group key={entity.record.id} position={positions[i]} rotation={[0,[-.12,.04,.16,-.24,-.15,.23][i],Math.PI/2]}><Tape slot={entity.slot} record={entity.record} position={[0,-.24,0]} onClick={()=>onRecord(entity.record)}/></group>;
+      return <group key={entity.record.id} position={CINEMA_LAYOUT.keepsakes[i]} rotation={[0,CINEMA_LAYOUT.keepsakeYaws[i],Math.PI/2]}><Tape slot={entity.slot} record={entity.record} position={[0,-.24,0]} onClick={()=>onRecord(entity.record)}/></group>;
     })}
     {drawer}
     <group onClick={e=>{e.stopPropagation();if(e.delta<4)onClick();}} onPointerOver={pointerOn} onPointerOut={pointerOff}>

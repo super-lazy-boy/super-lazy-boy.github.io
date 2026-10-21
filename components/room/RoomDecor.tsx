@@ -7,6 +7,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import * as THREE from "three";
 import { createLounge, loungeTop, loungeSide } from "./models/lounge";
 import { useRecordMotion } from "./RecordMotion";
+import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 type V=[number,number,number];
 const OAK="#c4ad8e",DARK="#3c4243";
 function Block({size,position=[0,0,0],color="#f4f3ef",rotation=[0,0,0],radius=.015}:{size:V;position?:V;color?:string;rotation?:V;radius?:number}) {
@@ -146,7 +147,7 @@ export function RoomAccessories({playing=false}:{playing?:boolean}) {
     <group position={[4.10,.98,2.63]}><OakPanel size={[.78,.045,.62]} position={[0,.04,0]}/>{[-.29,.29].map(x=><Block key={x} size={[.035,1.0,.035]} position={[x,-.48,0]} color="#a9b1a7"/>)}<Block size={[.70,.04,.48]} position={[0,-.94,0]} color="#c4cbc0"/></group>
     <group position={[4.50,.81,.85]}><Round r={.14} h={.012} color="#c8b79d"/><Round r={.08} h={.17} position={[0,.10,0]} color="#e9e3d9"/><Round r={.064} h={.007} position={[0,.19,0]} color="#55412e"/><Block size={[.18,.015,.31]} position={[.21,.015,-.04]} color="#434b48"/><Block size={[.015,.014,.07]} position={[.21,.027,.03]} color="#bbc2b2"/></group>
     <Projector/>
-    <group position={[3.2,1.425,-3.75]}><Block size={[.97,.15,.42]} position={[-.85,.10,0]} color="#9da5a1"/>{Array.from({length:6},(_,i)=><Block key={i} size={[.035,.005,.16]} position={[-1.20+i*.10,.18,.01]} color="#727e78" radius={.001}/>)}<Block size={[.79,.098,.008]} position={[-.85,.10,.217]} color="#29352f" radius={.003}/><Block size={[.12,.012,.007]} position={[-1.20,.04,.221]} color="#c4cbbb"/><mesh position={[-.50,.15,.224]}><sphereGeometry args={[.008,12,8]}/><meshStandardMaterial color={playing||loadingTape?"#b5cc92":"#7c867b"} emissive={playing||loadingTape?"#607a3d":"#000000"} emissiveIntensity={.6}/></mesh><Round r={.034} h={.018} position={[-.50,.10,.22]} rotation={[Math.PI/2,0,0]} color="#65726c" metal={.8}/></group>
+    <group position={[CINEMA_LAYOUT.origin[0]+CINEMA_LAYOUT.tapePlayerX+.85,1.425,CINEMA_LAYOUT.origin[2]]}><Block size={[.97,.15,.42]} position={[-.85,.10,0]} color="#9da5a1"/>{Array.from({length:6},(_,i)=><Block key={i} size={[.035,.005,.16]} position={[-1.20+i*.10,.18,.01]} color="#727e78" radius={.001}/>)}<Block size={[.79,.098,.008]} position={[-.85,.10,.217]} color="#29352f" radius={.003}/><Block size={[.12,.012,.007]} position={[-1.20,.04,.221]} color="#c4cbbb"/><mesh position={[-.50,.15,.224]}><sphereGeometry args={[.008,12,8]}/><meshStandardMaterial color={playing||loadingTape?"#b5cc92":"#7c867b"} emissive={playing||loadingTape?"#607a3d":"#000000"} emissiveIntensity={.6}/></mesh><Round r={.034} h={.018} position={[-.50,.10,.22]} rotation={[Math.PI/2,0,0]} color="#65726c" metal={.8}/></group>
     <Speaker position={[5.75,.22,-3.54]} scale={1.7}/><OakPanel size={[.62,.18,.57]} position={[5.75,.11,-3.54]}/>
   </>;
 }

@@ -4,6 +4,7 @@ import {useFrame,useThree,type ThreeEvent} from '@react-three/fiber';
 import {Html,RoundedBox} from '@react-three/drei';
 import * as THREE from 'three';
 import {memoryDrawerPose} from '@/lib/memory-drawer';
+import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 
 function Part({size,position,color='#eeeae1'}:{size:[number,number,number];position:[number,number,number];color?:string}){
  return <mesh position={position} castShadow receiveShadow><boxGeometry args={size}/><meshStandardMaterial color={color} roughness={.72}/></mesh>;
@@ -31,7 +32,7 @@ export default function MemoryDrawer({active,locked,opening,request,onRequest,on
   else invalidate();
  });
  const over=(event:ThreeEvent<PointerEvent>)=>{event.stopPropagation();if(active&&!locked){setHover(true);document.body.style.cursor='pointer';}};
- return <group position={[.35,1.60,.015]} onClick={event=>{event.stopPropagation();if(active&&!locked&&event.delta<4)onRequest();}} onPointerOver={over} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
+ return <group position={[CINEMA_LAYOUT.drawerX,1.60,.015]} onClick={event=>{event.stopPropagation();if(active&&!locked&&event.delta<4)onRequest();}} onPointerOver={over} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
   <Part size={[.94,.025,.53]} position={[0,-.134,0]} color="#c4ae93"/>
   <Part size={[.94,.025,.53]} position={[0,.134,0]} color="#e9e6dc"/>
   {[-.456,.456].map(x=><Part key={x} size={[.027,.245,.53]} position={[x,0,0]}/>)}
