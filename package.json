@@ -15,7 +15,9 @@
     "typecheck": "tsc --noEmit",
     "test:interaction": "node --test scripts/room-navigation.test.mjs",
     "test:permissions": "node --test scripts/room-permissions.test.mjs",
-    "check:backend": "node scripts/check-backend.mjs"
+    "check:backend": "node scripts/check-backend.mjs",
+    "test:e2e": "playwright test",
+    "records:restore": "node scripts/restore-public-records.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.0",
@@ -25,10 +27,15 @@
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "three": "0.180.0",
+    "three-mesh-bvh": "^0.9.18",
     "zod": "3.25.76"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.10",
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",

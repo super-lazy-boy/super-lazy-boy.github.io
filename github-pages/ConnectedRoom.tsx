@@ -13,19 +13,38 @@ const client=createClient(config.url,config.publishableKey,{
 });
 const request=createRoomRequest(client);
 
+// Visitors should still read the published room when the record service is unreachable.
+const offlineRequest=async()=>Response.json(
+  {error:'记录服务暂时不可用，当前显示已发布的记录。'},
+  {status:503,headers:{'Cache-Control':'no-store'}},
+);
+
+const PROBE_TIMEOUT=4000;
+
 export default function ConnectedRoom({records}:{records:RoomRecord[]}) {
   const [revision,setRevision]=useState(0),[signedIn,setSignedIn]=useState(false);
+  const [reachable,setReachable]=useState(false);
   const identity=useRef<string|null>(null);
   useEffect(()=>{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),PROBE_TIMEOUT);
+    fetch(config.url+'/auth/v1/health',{headers:{apikey:config.publishableKey},cache:'no-store',signal:controller.signal})
+      .then(response=>setReachable(response.ok))
+      .catch(()=>setReachable(false))
+      .finally(()=>clearTimeout(timer));
+    return()=>{clearTimeout(timer);controller.abort();};
+  },[]);
+  useEffect(()=>{
+    if(!reachable)return;
     const {data:{subscription}}=client.auth.onAuthStateChange((_event,session)=>{
       const next=session?.user.id||null;
       setSignedIn(!!next);
       if(identity.current!==next){identity.current=next;setRevision(v=>v+1);}
     });
     return()=>subscription.unsubscribe();
-  },[]);
-  const services=useMemo(()=>({connected:true,revision,signedIn,request,
-    signIn:async()=>{
+  },[reachable]);
+  const services=useMemo(()=>({connected:reachable,revision,signedIn,request:reachable?request:offlineRequest,
+    signIn:reachable?async()=>{
       const response=await fetch(config.url+'/auth/v1/settings',{headers:{apikey:config.publishableKey},signal:AbortSignal.timeout(12000)});
       if(!response.ok)throw new Error('登录暂时不可用，请稍后重试。');
       const settings=await response.json();
@@ -33,9 +52,9 @@ export default function ConnectedRoom({records}:{records:RoomRecord[]}) {
       sessionStorage.setItem('room-login-zone',location.hash);
       const {error}=await client.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.origin+location.pathname}});
       if(error)throw new Error('GitHub 登录暂时不可用，请稍后重试。');
-    },
-    signOut:async()=>{const {error}=await client.auth.signOut({scope:'local'});if(error)throw new Error('退出未成功，请重试。');},
-  }),[revision,signedIn]);
+    }:undefined,
+    signOut:reachable?async()=>{const {error}=await client.auth.signOut({scope:'local'});if(error)throw new Error('退出未成功，请重试。');}:undefined,
+  }),[reachable,revision,signedIn]);
   useEffect(()=>{
     if(!signedIn)return;
     const zone=sessionStorage.getItem('room-login-zone');
