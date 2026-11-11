@@ -248,8 +248,8 @@ export default function RoomScene(props:Props) {
   if(!ready)return null;
   return <Canvas className="room-canvas" inert={props.guestbookOpen} shadows frameloop="demand" dpr={[1,1.7]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.1,far:100}}
     gl={{antialias:true,alpha:false,powerPreference:"high-performance"}} onCreated={({gl})=>{gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
-    <color attach="background" args={["#faf8f2"]}/>
-    <fog attach="fog" args={["#f1ebdf",44,92]}/>
+    <color attach="background" args={["#ffffff"]}/>
+    <fog attach="fog" args={["#ffffff",46,96]}/>
     <StudioLight/>
     {/* warm window key, cool sky fill, faint frontal bounce */}
     <ambientLight intensity={.10}/>
@@ -258,7 +258,7 @@ export default function RoomScene(props:Props) {
     <directionalLight position={[7.5,5.5,-6]} intensity={.52} color="#d6e5ff"/>
     <directionalLight position={[5,3.2,9]} intensity={.22} color="#fff6ea"/>
     <ContactShadows position={[0,.004,0]} opacity={.32} scale={46} blur={2.6} far={5.5} resolution={1024} frames={1} color="#4a4238"/>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,0,0]} receiveShadow><planeGeometry args={[200,200]}/><Surface kind="lacquer" color="#ece4d5"/></mesh>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,0,0]} receiveShadow><planeGeometry args={[200,200]}/><Surface kind="lacquer" color="#f8f7f4"/></mesh>
     <Suspense fallback={null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank("book",slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <SoftShadows size={18} samples={12} focus={.3}/>
     <EffectComposer multisampling={0}>
