@@ -5,17 +5,14 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 import type { RoomRecord, Zone } from "@/lib/room-types";
+import { bookPose, smooth, tapePose, type Pose } from "@/lib/record-motion-paths";
 
 export type RecordRequest={id:string;revision:number}|null;
 export type MotionStatus="book-out"|"book-return"|"tape-out"|"tape-insert"|null;
 type Anchor={node:THREE.Group;width:number;height:number};
-type Pose={position:THREE.Vector3;quaternion:THREE.Quaternion;scale:THREE.Vector3};
 type Motion={record:RoomRecord;origin:Pose;width:number;height:number;phase:"take"|"hold"|"return";revision:number};
 type MotionContextValue={register:(id:string,anchor:Anchor)=>()=>void;hiddenId:string|null;loadedId:string|null;select:(record:RoomRecord)=>void;loadingTape:boolean};
 const Context=createContext<MotionContextValue>({register:()=>()=>{},hiddenId:null,loadedId:null,select:()=>{},loadingTape:false});
-const smooth=(p:number)=>{const v=THREE.MathUtils.clamp(p,0,1);return v*v*(3-2*v);};
-const bookEnd=(origin:Pose)=>origin.position.clone().add(new THREE.Vector3(0,Math.max(.14,1.55-origin.position.y),.93));
-const bookRotation=(origin:Pose)=>{const tilt=new THREE.Quaternion().setFromEuler(new THREE.Euler(-.12,-.52,.08));return Math.abs(origin.quaternion.z)>.45?tilt:origin.quaternion.clone().multiply(tilt);};
 export function useRecordMotion(){return useContext(Context);}
 export function useRecordAnchor(record:RoomRecord|undefined,width:number,height:number){
   const ref=useRef<THREE.Group>(null),motion=useRecordMotion();
@@ -33,18 +30,12 @@ function Actor({motion,renderBook,renderTape,onFinish,onStage}:{motion:Motion;re
     const p=motion.phase==="hold"?1:Math.min((performance.now()-started.current)/(duration*1000),1);
     if(isBook){
       const t=motion.phase==="return"?1-smooth(p):smooth(p);
-      node.position.lerpVectors(start.position,bookEnd(start),t);
-      node.position.y+=Math.sin(t*Math.PI)*.045;
-      node.quaternion.copy(start.quaternion).slerp(bookRotation(start),t);node.scale.copy(start.scale);
+      const pose=bookPose(start,t);
+      node.position.copy(pose.position);node.quaternion.copy(pose.quaternion);node.scale.copy(start.scale);
     }else{
-      const pull=start.position.clone().add(new THREE.Vector3(0,.04,.67));
-      const playerX=CINEMA_LAYOUT.origin[0]+CINEMA_LAYOUT.tapePlayerX;
-      const front=new THREE.Vector3(playerX,1.525,-2.91),inside=new THREE.Vector3(playerX,1.525,-3.79);
-      const upright=start.quaternion.clone().multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),Math.PI/2));
-      if(p<.28){node.position.lerpVectors(start.position,pull,smooth(p/.28));node.quaternion.copy(upright);node.scale.set(.65,1.25,.72);}
-      else if(p<.73){const t=smooth((p-.28)/.45);node.position.lerpVectors(pull,front,t);node.position.y+=Math.sin(t*Math.PI)*.46;node.quaternion.copy(upright).slerp(new THREE.Quaternion(),t);node.scale.lerpVectors(new THREE.Vector3(.65,1.25,.72),new THREE.Vector3(1,1,1),t);}
-      else{node.position.lerpVectors(front,inside,smooth((p-.73)/.24));node.quaternion.identity();node.scale.setScalar(1);}
-      const next=p<.73?0:1;if(stage.current!==next){stage.current=next;onStage(next?"tape-insert":"tape-out");}
+      const pose=tapePose(start,p);
+      node.position.copy(pose.position);node.quaternion.copy(pose.quaternion);node.scale.copy(pose.scale);
+      const next=p<.78?0:1;if(stage.current!==next){stage.current=next;onStage(next?"tape-insert":"tape-out");}
     }
     if(p===1&&motion.phase!=="hold"&&!done.current){done.current=true;onFinish();}
     if(motion.phase!=="hold"&&!done.current)invalidate();

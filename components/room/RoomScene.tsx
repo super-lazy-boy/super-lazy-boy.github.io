@@ -2,7 +2,10 @@
 
 import { Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Canvas, type ThreeEvent } from "@react-three/fiber";
-import { CameraControls, CameraControlsImpl, Center, Html, RoundedBox, SoftShadows, useGLTF } from "@react-three/drei";
+import { CameraControls, CameraControlsImpl, Center, ContactShadows, Html, RoundedBox, SoftShadows, useGLTF } from "@react-three/drei";
+import { Bloom, EffectComposer, N8AO, Noise, Vignette } from "@react-three/postprocessing";
+import { Surface, type SurfaceKind } from "./RoomMaterials";
+import RoomProps from "./RoomProps";
 import RoomNavigation from "./RoomNavigation";
 import {ROOM_VIEWS} from "@/lib/room-navigation";
 import { createAviators } from "./models/aviators";
@@ -38,11 +41,11 @@ type Props = {
 };
 const WHITE="#f9f9f7", INK="#303337";
 const material = (color: string, metalness=0, roughness=.73) => <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />;
-function Box({size,position=[0,0,0],color=WHITE,rotation, ...props}:{size:Vec3;position?:Vec3;color?:string;rotation?:Vec3;[key:string]:unknown}) {
-  return <mesh position={position} rotation={rotation} castShadow receiveShadow {...props}><boxGeometry args={size}/>{material(color)}</mesh>;
+function Box({size,position=[0,0,0],color=WHITE,rotation,kind="lacquer", ...props}:{size:Vec3;position?:Vec3;color?:string;rotation?:Vec3;kind?:SurfaceKind;[key:string]:unknown}) {
+  return <mesh position={position} rotation={rotation} castShadow receiveShadow {...props}><boxGeometry args={size}/><Surface kind={kind} color={color}/></mesh>;
 }
-function Bevel({size,position=[0,0,0],color=WHITE,radius=.025, ...props}:{size:Vec3;position?:Vec3;color?:string;radius?:number;[key:string]:unknown}) {
-  return <RoundedBox args={size} position={position} radius={Math.min(radius, ...size.map(v=>v/2-.001))} smoothness={2} castShadow receiveShadow {...props}>{material(color)}</RoundedBox>;
+function Bevel({size,position=[0,0,0],color=WHITE,radius=.025,kind="lacquer", ...props}:{size:Vec3;position?:Vec3;color?:string;radius?:number;kind?:SurfaceKind;[key:string]:unknown}) {
+  return <RoundedBox args={size} position={position} radius={Math.min(radius, ...size.map(v=>v/2-.001))} smoothness={2} castShadow receiveShadow {...props}><Surface kind={kind} color={color}/></RoundedBox>;
 }
 function Cylinder({r=.05,h=.1,position=[0,0,0],color=INK,rotation=[0,0,0]}:{r?:number;h?:number;position?:Vec3;color?:string;rotation?:Vec3}) {
   return <mesh position={position} rotation={rotation} castShadow><cylinderGeometry args={[r,r,h,20]}/>{material(color)}</mesh>;
@@ -80,10 +83,10 @@ function Desk({children,onClick}:{children?:ReactNode;onClick?:()=>void}) {
     {[-1.72,1.72].flatMap(x=>[-.58,.58].map(z=><Box key={x+":"+z} size={[.085,1.57,.085]} position={[x,.785,z]} color="#f3f4f3"/>))}
     <Box size={[3.35,.12,.07]} position={[0,1.40,-.56]} color="#f0f1ef"/>
     <group position={[0,0,-.28]} onClick={e=>{e.stopPropagation();if(e.delta<4)onClick?.();}} onPointerOver={pointerOn} onPointerOut={pointerOff}>
-      <Bevel size={[2.28,1.38,.085]} position={[0,2.69,0]} color="#303336" radius={.024}/>
+      <Bevel size={[2.28,1.38,.085]} position={[0,2.69,0]} color="#2b2f33" radius={.024} kind="plastic"/>
       <Box size={[2.16,1.23,.012]} position={[0,2.70,.05]} color="#fbfbfb"/>
       <Label title="研究 · 想法 · 很多知识" subtitle="SUPER-LAZY-BOY" position={[0,2.70,.058]} size={[2.14,1.20]}/>
-      <Box size={[.105,.37,.09]} position={[0,1.87,-.025]} color="#4c5054"/>
+      <Box size={[.105,.37,.09]} position={[0,1.87,-.025]} color="#4c5054" kind="metal"/>
       <Bevel size={[.64,.035,.39]} position={[0,1.71,.03]} color="#55595d" radius={.018}/>
       <Cylinder r={.008} h={.012} position={[1.03,2.075,.052]} rotation={[Math.PI/2,0,0]} color="#e8ecef"/>
       {children}
@@ -161,16 +164,16 @@ function Tape({record,position,onClick,slot=0}:{record?:RoomRecord;position:Vec3
 }
 function CassetteBody(){
   return <group>
-    <Bevel size={[.74,.10,.43]} color="#353a3d" radius={.01}/>
-    <Box size={[.62,.008,.25]} position={[0,.055,-.035]} color="#798082"/>
+    <Bevel size={[.74,.10,.43]} color="#353a3d" radius={.01} kind="tape"/>
+    <Box size={[.62,.008,.25]} position={[0,.055,-.035]} color="#798082" kind="plastic"/>
     {[-.18,.18].map(x=><group key={x}><Cylinder r={.092} h={.012} position={[x,.065,-.035]} color="#282e31"/><Cylinder r={.032} h={.014} position={[x,.075,-.035]} color="#b4b9b8"/>{[0,1,2,3,4,5].map(i=><Box key={i} size={[.008,.013,.051]} position={[x+Math.sin(i*Math.PI/3)*.029,.078,-.035+Math.cos(i*Math.PI/3)*.029]} color="#939c97"/>)}</group>)}
     <Box size={[.47,.009,.08]} position={[0,.056,.14]} color="#e5e6df"/>
   </group>;
 }
 function Cassette() {
   return <group position={[1.50,1.44,.01]} rotation={[0,-.08,0]}>
-    <Bevel size={[.74,.10,.43]} position={[0,.06,0]} color="#353a3d" radius={.01}/>
-    <Box size={[.62,.008,.25]} position={[0,.115,-.035]} color="#798082"/>
+    <Bevel size={[.74,.10,.43]} position={[0,.06,0]} color="#353a3d" radius={.01} kind="tape"/>
+    <Box size={[.62,.008,.25]} position={[0,.115,-.035]} color="#798082" kind="plastic"/>
     {[-.18,.18].map(x=><group key={x}><Cylinder r={.092} h={.012} position={[x,.125,-.035]} color="#282e31"/><Cylinder r={.032} h={.014} position={[x,.135,-.035]} color="#b4b9b8"/></group>)}
     <Box size={[.47,.009,.08]} position={[0,.116,.14]} color="#e5e6df"/>
   </group>;
@@ -231,6 +234,7 @@ function Furniture({props}:{props:Props}) {
     </Desk><Chair/></group>
     <GuestbookBoard data={props.guestbookData} onOpen={props.onGuestbook}/>
     <RoomAccessories playing={!!props.loadedTapeId}/>
+    <RoomProps/>
     <Bookcase records={props.records} page={props.bookPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onOpenBooks={props.onOpenBooks} active={props.zone==="books"&&!props.navigationLocked}/>
     <Cinema records={props.records} page={props.filmPage} onRecord={props.onRecord} onBlank={props.onBlank} owner={props.owner} onClick={()=>props.onZone("cinema")} onInspect={props.onInspectCollectible} inspectionLocked={props.navigationLocked} drawer={<MemoryDrawer active={props.zone==='cinema'} locked={props.navigationLocked} opening={props.drawerOpening} request={props.drawerRequest} onRequest={props.onDrawerRequest} onOpened={props.onOpenLibrary}/> }>
       {props.zone==="cinema"&&<Html transform position={[0,3.05,-.105]} distanceFactor={1} occlude><div className={"projection-content"+(props.playbackBusy?" projection-loading":"")} onClick={e=>e.stopPropagation()}>{props.projection}</div></Html>}
@@ -243,17 +247,26 @@ export default function RoomScene(props:Props) {
   useEffect(()=>setReady(true),[]);
   if(!ready)return null;
   return <Canvas className="room-canvas" inert={props.guestbookOpen} shadows frameloop="demand" dpr={[1,1.7]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.1,far:100}}
-    gl={{antialias:true,alpha:false,powerPreference:"high-performance"}} onCreated={({gl})=>{gl.setClearColor("#ffffff");gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.0;}}>
-    <color attach="background" args={["#ffffff"]}/>
-    <fog attach="fog" args={["#ffffff",25,50]}/>
+    gl={{antialias:true,alpha:false,powerPreference:"high-performance"}} onCreated={({gl})=>{gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
+    <color attach="background" args={["#faf8f2"]}/>
+    <fog attach="fog" args={["#f1ebdf",44,92]}/>
     <StudioLight/>
-    <ambientLight intensity={.50}/><hemisphereLight args={["#ffffff","#dadbd6",.75]}/>
-    <directionalLight position={[-7,11,8]} intensity={1.85} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-10} shadow-camera-right={10} shadow-camera-top={10} shadow-camera-bottom={-10} shadow-normalBias={.04} shadow-bias={-.0001}/>
-    <directionalLight position={[7,5,3]} intensity={.25}/>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.015,0]}><planeGeometry args={[200,200]}/><meshBasicMaterial color="#ffffff" toneMapped={false}/></mesh>
+    {/* warm window key, cool sky fill, faint frontal bounce */}
+    <ambientLight intensity={.10}/>
+    <hemisphereLight args={["#e6f0ff","#e8d9bc",.32]}/>
+    <directionalLight position={[-7,11,8]} intensity={2.65} color="#ffeed2" castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-11} shadow-camera-right={11} shadow-camera-top={11} shadow-camera-bottom={-11} shadow-normalBias={.04} shadow-bias={-.0001}/>
+    <directionalLight position={[7.5,5.5,-6]} intensity={.52} color="#d6e5ff"/>
+    <directionalLight position={[5,3.2,9]} intensity={.22} color="#fff6ea"/>
+    <ContactShadows position={[0,.004,0]} opacity={.32} scale={46} blur={2.6} far={5.5} resolution={1024} frames={1} color="#4a4238"/>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,0,0]} receiveShadow><planeGeometry args={[200,200]}/><Surface kind="lacquer" color="#ece4d5"/></mesh>
     <Suspense fallback={null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank("book",slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <SoftShadows size={18} samples={12} focus={.3}/>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.004,0]} receiveShadow><planeGeometry args={[200,200]}/><shadowMaterial transparent opacity={.18}/></mesh>
+    <EffectComposer multisampling={0}>
+      <N8AO aoRadius={.62} intensity={2.3} distanceFalloff={1.1} color="#3b352c"/>
+      <Bloom intensity={.18} luminanceThreshold={1.12} mipmapBlur/>
+      <Vignette offset={.2} darkness={.26}/>
+      <Noise opacity={.015}/>
+    </EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}
     {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;

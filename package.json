@@ -17,13 +17,17 @@
     "test:permissions": "node --test scripts/room-permissions.test.mjs",
     "check:backend": "node scripts/check-backend.mjs",
     "test:e2e": "playwright test",
-    "records:restore": "node scripts/restore-public-records.mjs"
+    "records:restore": "node scripts/restore-public-records.mjs",
+    "capture": "node scripts/capture.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.0",
     "@react-three/fiber": "9.3.0",
+    "@react-three/postprocessing": "^3.0.4",
     "@supabase/supabase-js": "2.118.0",
     "lucide-react": "1.31.0",
+    "n8ao": "^2.0.1",
+    "postprocessing": "^6.37.8",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "three": "0.180.0",
