@@ -24,10 +24,10 @@ function Note({ position, rotation, color }: { position: Vec3; rotation: number;
 
 function Mug({ position, color = "#f2efe6" }: { position: Vec3; color?: string }) {
   return <group position={position}>
-    <mesh castShadow receiveShadow raycast={noRay}><cylinderGeometry args={[.058, .052, .13, 28]}/><Surface kind="ceramic" color={color}/></mesh>
-    <mesh position={[0, .038, 0]} castShadow raycast={noRay}><cylinderGeometry args={[.052, .052, .005, 24]}/><Surface kind="glass" color="#3a2a1c"/></mesh>
-    <mesh position={[.070, 0, 0]} rotation={[0, 0, Math.PI / 2]} castShadow raycast={noRay}>
-      <torusGeometry args={[.034, .008, 10, 20, Math.PI]}/>
+    <mesh castShadow receiveShadow raycast={noRay}><cylinderGeometry args={[.075, .067, .17, 28]}/><Surface kind="ceramic" color={color}/></mesh>
+    <mesh position={[0, .050, 0]} castShadow raycast={noRay}><cylinderGeometry args={[.067, .067, .006, 24]}/><Surface kind="glass" color="#3a2a1c"/></mesh>
+    <mesh position={[.090, 0, 0]} rotation={[0, 0, Math.PI / 2]} castShadow raycast={noRay}>
+      <torusGeometry args={[.044, .010, 10, 20, Math.PI]}/>
       <Surface kind="ceramic" color={color}/>
     </mesh>
   </group>;
@@ -35,12 +35,12 @@ function Mug({ position, color = "#f2efe6" }: { position: Vec3; color?: string }
 
 function Headphones({ position, rotation = 0 }: { position: Vec3; rotation?: number }) {
   return <group position={position} rotation={[0, rotation, 0]}>
-    <mesh position={[0, .02, 0]} rotation={[0, 0, 0]} castShadow raycast={noRay}>
-      <torusGeometry args={[.082, .009, 10, 28, Math.PI]}/>
+    <mesh position={[0, .025, 0]} rotation={[0, 0, 0]} castShadow raycast={noRay}>
+      <torusGeometry args={[.115, .012, 10, 28, Math.PI]}/>
       <Surface kind="plastic" color="#22262a"/>
     </mesh>
-    {[-1, 1].map(side => <mesh key={side} position={[side * .082, .012, 0]} rotation={[0, 0, Math.PI / 2]} castShadow raycast={noRay}>
-      <cylinderGeometry args={[.034, .034, .022, 20]}/>
+    {[-1, 1].map(side => <mesh key={side} position={[side * .115, .016, 0]} rotation={[0, 0, Math.PI / 2]} castShadow raycast={noRay}>
+      <cylinderGeometry args={[.048, .048, .030, 20]}/>
       <Surface kind="fabric" color="#2b3034"/>
     </mesh>)}
   </group>;
@@ -67,31 +67,59 @@ function BookStack({ position, colors }: { position: Vec3; colors: string[] }) {
   </group>;
 }
 
+function Notebook({ position, rotation = 0, color = "#3d4a44" }: { position: Vec3; rotation?: number; color?: string }) {
+  return <group position={position} rotation={[0, rotation, 0]}>
+    <mesh castShadow receiveShadow raycast={noRay}><boxGeometry args={[.30, .035, .40]}/><Surface kind="paper" color={color}/></mesh>
+    <mesh position={[0, .019, 0]} raycast={noRay}><boxGeometry args={[.29, .004, .39]}/><Surface kind="paper" color="#f2eee2"/></mesh>
+    <mesh position={[.03, .022, .08]} rotation={[0, .2, 0]} raycast={noRay}><boxGeometry args={[.16, .002, .005]}/><Surface kind="metal" color="#b9bec2"/></mesh>
+  </group>;
+}
+
+function PenCup({ position }: { position: Vec3 }) {
+  return <group position={position}>
+    <mesh castShadow receiveShadow raycast={noRay}><cylinderGeometry args={[.062, .058, .135, 24]}/><Surface kind="ceramic" color="#e7e2d4"/></mesh>
+    {[[-.02, .01, .18], [.018, -.012, .02], [.005, .022, -.12]].map(([dx, dz, rot], i) => (
+      <mesh key={i} position={[dx, .10, dz]} rotation={[.08 * i, 0, rot]} castShadow raycast={noRay}>
+        <cylinderGeometry args={[.0075, .0075, .22, 10]}/>
+        <Surface kind="paper" color={i === 1 ? "#c9a34a" : "#4a5560"}/>
+      </mesh>
+    ))}
+  </group>;
+}
+
+function Phone({ position, rotation = 0 }: { position: Vec3; rotation?: number }) {
+  return <group position={position} rotation={[0, rotation, 0]}>
+    <mesh castShadow receiveShadow raycast={noRay}><boxGeometry args={[.082, .011, .165]}/><Surface kind="plastic" color="#1d2124"/></mesh>
+    <mesh position={[0, .007, 0]} raycast={noRay}><boxGeometry args={[.074, .002, .152]}/><Surface kind="glass" color="#0d1113"/></mesh>
+  </group>;
+}
+
 /** Desk: loose papers, notes, pen, mug, headphones, mouse pad, cable. */
 export function DeskClutter() {
   const top = 1.69;
   return <group>
-    {/* papers sit slightly stacked so the pile reads as thickness */}
-    <Paper position={[-3.20, top + .003, 1.46]} rotation={.28} size={[.33, .46]} color="#f6f1e2"/>
-    <Paper position={[-2.96, top + .0055, 1.66]} rotation={-.42} size={[.32, .45]} color="#dfe7e9"/>
-    <Paper position={[-3.30, top + .008, 1.38]} rotation={.61} size={[.31, .44]} color="#efe6d2"/>
-    <Paper position={[-3.04, top + .003, 2.06]} rotation={.15} size={[.32, .46]} color="#f7f4ea"/>
-    <Paper position={[-3.34, top + .003, -.94]} rotation={-.28} size={[.33, .46]} color="#e9e2cf"/>
-    <Paper position={[-2.90, top + .004, .26]} rotation={-.62} size={[.31, .44]} color="#f3ecdc"/>
-    <Paper position={[-3.02, top + .0065, .18]} rotation={.34} size={[.30, .43]} color="#dfe7e9"/>
-    <Note position={[-3.02, top + .005, 1.96]} rotation={.3} color="#f0d98a"/>
-    <Note position={[-2.90, top + .005, 2.10]} rotation={-.2} color="#a8c4cf"/>
-    <Note position={[-3.14, top + .005, 2.14]} rotation={.5} color="#e0a9a2"/>
-    <Pen position={[-3.16, top + .010, 1.60]} rotation={.9}/>
-    <Mug position={[-2.90, top + .062, 1.22]}/>
-    <Headphones position={[-3.26, top + .020, -1.04]} rotation={.6}/>
-    <BookStack position={[-3.40, top, 2.26]} colors={["#8f3f37", "#2f3f52", "#c8b07a"]}/>
+    {/* loose paper pile */}
+    <Paper position={[-3.18, top + .003, 2.02]} rotation={.28} size={[.38, .54]} color="#f7f2e4"/>
+    <Paper position={[-2.96, top + .0055, 2.22]} rotation={-.42} size={[.37, .52]} color="#dfe7e9"/>
+    <Paper position={[-3.30, top + .008, 1.92]} rotation={.61} size={[.36, .51]} color="#f0e7d3"/>
+    <Paper position={[-3.02, top + .003, -.98]} rotation={-.28} size={[.38, .54]} color="#efe9d6"/>
+    <Paper position={[-3.26, top + .006, -1.16]} rotation={.34} size={[.35, .50]} color="#dfe7e9"/>
+    <Note position={[-3.06, top + .005, 1.80]} rotation={.3} color="#f0d98a"/>
+    <Note position={[-2.92, top + .005, 1.94]} rotation={-.2} color="#a8c4cf"/>
+    <Note position={[-3.18, top + .005, 1.98]} rotation={.5} color="#e0a9a2"/>
+    <Notebook position={[-2.94, top + .018, 1.32]} rotation={.22}/>
+    <PenCup position={[-3.52, top + .068, 1.74]}/>
+    <Phone position={[-2.88, top + .006, -.62]} rotation={-.35}/>
+    <Pen position={[-3.14, top + .010, 1.62]} rotation={.9}/>
+    <Mug position={[-2.92, top + .085, .58]}/>
+    <Headphones position={[-3.28, top + .026, -1.28]} rotation={.6}/>
+    <BookStack position={[-3.40, top, 2.34]} colors={["#8f3f37", "#2f3f52", "#c8b07a"]}/>
     {/* mouse pad + cable routing */}
     <mesh position={[-3.06, top + .002, -.46]} rotation={[0, .08, 0]} receiveShadow raycast={noRay}>
-      <boxGeometry args={[.42, .003, .32]}/>
+      <boxGeometry args={[.46, .003, .34]}/>
       <Surface kind="fabric" color="#3b4046"/>
     </mesh>
-    <Cable points={[[-3.72, top + .01, .58], [-3.86, top + .02, .34], [-3.92, top + .02, -.2], [-3.7, top + .02, -.62]]} radius={.008}/>
+    <Cable points={[[-3.72, top + .01, .58], [-3.86, top + .02, .34], [-3.92, top + .02, -.2], [-3.7, top + .02, -.62]]} radius={.009}/>
     <Cable points={[[-3.06, top + .012, .78], [-3.22, top + .014, 1.02], [-3.52, top + .014, 1.12]]} radius={.006}/>
   </group>;
 }

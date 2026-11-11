@@ -9,8 +9,14 @@ import {ROOM_VIEWS} from '@/lib/room-navigation';
 function Paper({note,index}:{note?:GuestNote;index:number}){
  const texture=useMemo(()=>{
   const c=document.createElement('canvas');c.width=384;c.height=384;const ctx=c.getContext('2d')!;
-  ctx.fillStyle=note?NOTE_COLORS[note.color]:['#f3e6ba','#dce3cf','#e9ddd5'][index%3];ctx.fillRect(0,0,384,384);
-  ctx.fillStyle='#4a5043';ctx.font='24px Microsoft YaHei,sans-serif';
+  const base=note?NOTE_COLORS[note.color]:['#f3e6ba','#dce3cf','#e9ddd5'][index%3];
+  ctx.fillStyle=base;ctx.fillRect(0,0,384,384);
+  ctx.globalAlpha=.22;ctx.fillStyle='#5d5a45';ctx.fillRect(0,0,384,384);ctx.globalAlpha=1;
+  // gentle paper shading keeps the note from reading as flat white
+  const shade=ctx.createLinearGradient(0,0,0,384);
+  shade.addColorStop(0,'rgba(0,0,0,.05)');shade.addColorStop(.45,'rgba(0,0,0,0)');shade.addColorStop(1,'rgba(0,0,0,.09)');
+  ctx.fillStyle=shade;ctx.fillRect(0,0,384,384);
+  ctx.fillStyle='#3a4036';ctx.font='24px Microsoft YaHei,sans-serif';
   const chars=Array.from(note?.body|| (index===0?'来过，留一句。':''));
   for(let row=0;row<5;row++)ctx.fillText(chars.slice(row*10,row*10+10).join(''),34,78+row*44,316);
   if(note){ctx.font='17px sans-serif';ctx.fillStyle='#68705f';ctx.fillText(note.authorName,34,345,300);}
@@ -19,8 +25,7 @@ function Paper({note,index}:{note?:GuestNote;index:number}){
  },[note?.body,note?.authorName,note?.color,index]);
  useEffect(()=>()=>texture.dispose(),[texture]);
  return <group position={[[-.30,.28,-.29,.29][index],[.20,.18,-.24,-.23][index],.047]} rotation={[0,0,[-.035,.045,.025,-.035][index]]}>
-  <mesh castShadow><planeGeometry args={[.45,.43]}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>
-  <mesh position={[0,.203,.003]}><planeGeometry args={[.13,.05]}/><meshStandardMaterial color="#f7f4e8" transparent opacity={.65} roughness={.9}/></mesh>
+  <mesh castShadow receiveShadow><planeGeometry args={[.45,.43]}/><meshStandardMaterial map={texture} roughness={.96} metalness={0} envMapIntensity={.12}/></mesh>
  </group>;
 }
 export function GuestbookCamera(){
@@ -29,7 +34,7 @@ export function GuestbookCamera(){
  useEffect(()=>{camera.getWorldDirection(focal.current);focal.current.multiplyScalar(3.3).add(camera.position);},[camera]);
  useEffect(()=>{invalidate();},[invalidate]);
  useFrame((_,delta)=>{
-  const alpha=reduced?1:1-Math.exp(-Math.min(delta,.05)*5.3);
+  const alpha=reduced?1:1-Math.exp(-Math.min(delta,.20)*5.3);
   camera.position.lerp(end,alpha);focal.current.lerp(target.current,alpha);camera.lookAt(focal.current);
   if(camera instanceof THREE.PerspectiveCamera){camera.fov=THREE.MathUtils.lerp(camera.fov,40,alpha);camera.updateProjectionMatrix();}
   if(camera.position.distanceToSquared(end)>.000001||focal.current.distanceToSquared(target.current)>.000001)invalidate();
@@ -38,8 +43,8 @@ export function GuestbookCamera(){
 export default function GuestbookBoard({data,onOpen}:{data:GuestbookData|null;onOpen:()=>void}){
  const [hover,setHover]=useState(false),notes=data?.notes.slice(0,4)||[];
  return <group position={[-5.5,2.45,3.65]} rotation={[0,Math.PI/2,0]} onClick={e=>{e.stopPropagation();if(e.delta<4)onOpen();}} onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer';}} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
-  <RoundedBox args={[1.23,1.05,.065]} radius={.025} smoothness={3} castShadow><meshStandardMaterial color={hover?'#baa17d':'#c4ad91'} roughness={.70}/></RoundedBox>
-  <mesh position={[0,0,.036]} receiveShadow><planeGeometry args={[1.13,.95]}/><meshStandardMaterial color="#e3e4dc" roughness={1}/></mesh>
+  <RoundedBox args={[1.23,1.05,.065]} radius={.025} smoothness={3} castShadow><meshStandardMaterial color={hover?'#a8875c':'#b39468'} roughness={.72} envMapIntensity={.35}/></RoundedBox>
+  <mesh position={[0,0,.036]} receiveShadow><planeGeometry args={[1.13,.95]}/><meshStandardMaterial color="#cfd0c5" roughness={1} envMapIntensity={.2}/></mesh>
   {[0,1,2,3].map(index=><Paper key={notes[index]?.id||index} note={notes[index]} index={index}/>)}
   {[-.49,.49].map(x=><mesh key={x} position={[x,-1.46,-.03]} castShadow><boxGeometry args={[.035,1.90,.035]}/><meshStandardMaterial color="#c3c8c0" roughness={.5} metalness={.3}/></mesh>)}
   {[-.49,.49].map(x=><mesh key={x} position={[x,-2.40,-.01]} castShadow><boxGeometry args={[.11,.05,.45]}/><meshStandardMaterial color="#b6bdb3" roughness={.55}/></mesh>)}

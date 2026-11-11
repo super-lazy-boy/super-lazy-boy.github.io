@@ -5,10 +5,10 @@ export type Vec3=[number,number,number];
 export const ROOM_HOVER_TIMING={enter:1000,leave:1300,cooldown:1400} as const;
 export const ROOM_VIEWS:Record<Zone,{camera:Vec3;target:Vec3;distance:[number,number]}>= {
   overview:{camera:[9.2,6.4,11.25],target:[.35,1.9,-.8],distance:[12,21]},
-  office:{camera:[-.35,2.92,.55],target:[-3.5,2.7,.55],distance:[2.65,4.6]},
+  office:{camera:[2.60,4.60,2.00],target:[-3.78,2.45,.35],distance:[7.0,10.5]},
   books:{camera:[-1.9,2.5,-.65],target:[-1.9,2.25,-3.4],distance:[2.5,4.2]},
-  cinema:{camera:[3.2,2.95,.75],target:[3.2,2.73,-3.56],distance:[4.1,6.2]},
-  guestbook:{camera:[-1.9,2.7,3.0],target:[-5.5,1.4,3.65],distance:[3.5,6.2]}
+  cinema:{camera:[3.35,3.45,3.75],target:[3.40,2.35,-3.70],distance:[7.2,10.0]},
+  guestbook:{camera:[-2.95,2.80,4.35],target:[-5.50,2.35,3.70],distance:[2.2,4.6]}
 };
 type Bounds=[Vec3,Vec3];
 const box=([min,max]:Bounds)=>new THREE.Box3(new THREE.Vector3(...min),new THREE.Vector3(...max));
