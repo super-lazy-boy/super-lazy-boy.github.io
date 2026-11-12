@@ -5,6 +5,7 @@ import {RoundedBox} from '@react-three/drei';
 import * as THREE from 'three';
 import {filmStyle,filmAddress,type FilmStyle} from '@/lib/film-library';
 import type {RoomRecord} from '@/lib/room-types';
+import {recordPrintMaterial} from '@/lib/record-print-material';
 
 // Keep rasterized lettering when returning from a cabinet; GPU textures remain per-canvas and disposable.
 const spineCanvases=new Map<string,HTMLCanvasElement>();
@@ -77,8 +78,9 @@ export function useTapeTexture(record:RoomRecord|undefined,slot:number){
 }
 export function TapeLabel({record,slot}:{record?:RoomRecord;slot:number}){
  const texture=useTapeTexture(record,slot);
- // Blank -> printed changes Three's shader defines, so replace the material as well as its map.
- return <mesh position={[0,0,.158]}><planeGeometry args={[.114,.453]}/><meshBasicMaterial key={texture?'printed':'blank'} map={texture} color={record?'#ffffff':'#5a605d'} toneMapped={false}/></mesh>;
+ const material=useMemo(()=>recordPrintMaterial(texture,record?'#ffffff':'#5a605d'),[texture,!!record]);
+ useEffect(()=>()=>material.dispose(),[material]);
+ return <mesh position={[0,0,.158]} material={material} receiveShadow><planeGeometry args={[.114,.453]}/></mesh>;
 }
 export function TapeCase({record,slot=0}:{record?:RoomRecord;slot?:number}){
  return <group>

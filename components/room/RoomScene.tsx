@@ -82,7 +82,7 @@ function Tapes(props:Props){
       if(record&&keptIds.has(record.id))return null;
       return <Tape active={props.zone==='cinema'&&!props.navigationLocked} key={slot} slot={slot} record={record} position={[-1.98+(i%28)*.146,.15+Math.floor(i/28)*.62,.02]} onBlank={()=>props.owner&&props.onBlank('movie',slot)}/>;
     })}
-    <TardisOrnament onInspect={()=>props.onInspectCollectible('tardis')} disabled={props.navigationLocked||props.zone!=='cinema'}/>
+    <TardisOrnament onInspect={()=>props.onInspectCollectible('tardis')} disabled={props.navigationLocked}/>
     {keepsakes.map((e,i)=><group key={e.record.id} position={CINEMA_LAYOUT.keepsakes[i]} rotation={[0,CINEMA_LAYOUT.keepsakeYaws[i],Math.PI/2]}><Tape active={props.zone==='cinema'&&!props.navigationLocked} record={e.record} slot={e.slot} position={[0,-.24,0]} onBlank={()=>{}}/></group>)}
     <MemoryDrawer active={props.zone==='cinema'} locked={props.navigationLocked} opening={props.drawerOpening} request={props.drawerRequest} onRequest={props.onDrawerRequest} onOpened={props.onOpenLibrary}/>
     {props.zone==='cinema'&&<Html transform position={[0,3.05,-.105]} distanceFactor={1} occlude><div className={'projection-content'+(props.playbackBusy?' projection-loading':'')} onClick={e=>e.stopPropagation()}>{props.projection}</div></Html>}
@@ -111,7 +111,7 @@ function RoomLoading({language}:{language:'zh'|'en'}){
 function Furniture({props}:{props:Props}){
   return <RecordMotionProvider request={props.recordRequest} records={props.records} activeBookId={props.activeBookId} loadedTapeId={props.loadedTapeId} zone={props.zone} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onComplete={props.onRecord} onStatus={props.onMotionStatus}
     renderBook={(record,w,h)=><BookObject record={record} w={w} h={h} detail/>} renderTape={record=><TapeCase record={record} slot={filmEntities(props.records).find(e=>e.record.id===record.id)?.slot||0}/> }>
-    <SunlitRoom zone={props.zone} night={props.night} playing={!!props.loadedTapeId&&!props.playbackBusy} lamps={props.lamps} onInspectArt={props.zone==='office'&&!props.navigationLocked&&!props.screenFocused?()=>props.onInspectCollectible('starry-night'):undefined}/>
+    <SunlitRoom zone={props.zone} night={props.night} playing={!!props.loadedTapeId&&!props.playbackBusy} lamps={props.lamps} onInspectArt={!props.navigationLocked&&!props.screenFocused?()=>props.onInspectCollectible('starry-night'):undefined}/>
     <group position={[-3.50,0,-.60]} rotation={[0,Math.PI/2,0]}><group position={[0,0,-.28]}>
       <Html transform position={[0,2.70,.067]} distanceFactor={1} occlude style={{pointerEvents:props.zone==='office'?'auto':'none'}}><div className="monitor-content" inert={props.zone!=='office'} onClick={e=>e.stopPropagation()} onPointerDown={e=>e.stopPropagation()} onWheel={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key!=='Escape')e.stopPropagation();}}><div inert={!props.screenFocused} className="monitor-application">{props.computer}</div>{props.zone==='office'&&!props.screenFocused&&<button className="screen-entry" aria-label={props.language==='zh'?'点击使用电脑':'Click to use the computer'} onClick={e=>{e.stopPropagation();props.onScreenFocus();}}/>}</div></Html>
     </group></group>
@@ -124,10 +124,10 @@ function Furniture({props}:{props:Props}){
 export default function RoomScene(props:Props){
   const [ready,setReady]=useState(false);useEffect(()=>setReady(true),[]);if(!ready)return null;
   return <Canvas className="room-canvas" inert={props.guestbookOpen} shadows frameloop="demand" dpr={[1,1.65]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
-    gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.10;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
+    gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
     {/* Transparent pixels composite onto the page's exact white. Tone mapping
         affects the room, never the imagined world outside its finite shell. */}
-    <RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={.65}/>}
+    <RoomLighting objectsMoving={props.navigationLocked||props.drawerOpening} night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
     <Suspense fallback={<RoomLoading language={props.language}/>}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <EffectComposer multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/></EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}

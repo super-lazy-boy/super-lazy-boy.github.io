@@ -1,5 +1,5 @@
 {
-  "version": "sunlit-room-2",
+  "version": "sunlit-room-3",
   "units": "existing room world units, Y up",
   "assets": [
     "architecture",
@@ -38,7 +38,25 @@
     "picture lamp glow",
     "shelf light",
     "shelf lamp glow",
-    "starry night"
+    "starry night",
+    "computer tower",
+    "record console",
+    "turntable",
+    "console lamp",
+    "console lamp glow",
+    "guitar",
+    "coffee table",
+    "shelf ceramics",
+    "console greenery",
+    "flower stand details",
+    "guest lamp",
+    "guest lamp glow",
+    "lounge",
+    "soft furnishings",
+    "lounge",
+    "soft furnishings",
+    "media shelf light",
+    "media lamp glow"
   ],
   "obstacles": [
     {
@@ -330,14 +348,14 @@
     {
       "name": "single lounge envelope",
       "min": [
-        1.95,
+        1.92,
         0.04,
         -0.42
       ],
       "max": [
         4.08,
-        1.55,
-        2.14
+        2.02,
+        2.22
       ]
     },
     {
@@ -352,23 +370,48 @@
         4.15,
         -2.49
       ]
+    },
+    {
+      "name": "record console",
+      "min": [
+        -3.5,
+        0.02,
+        3.35
+      ],
+      "max": [
+        -2.0,
+        2.0,
+        4.15
+      ]
+    },
+    {
+      "name": "guitar and stand",
+      "min": [
+        -4.75,
+        0.02,
+        2.3
+      ],
+      "max": [
+        -4.1,
+        2.2,
+        2.72
+      ]
+    },
+    {
+      "name": "tea table",
+      "min": [
+        2.17,
+        0.01,
+        -2.37
+      ],
+      "max": [
+        3.83,
+        1.05,
+        -1.63
+      ]
     }
   ],
   "components": [
-    {
-      "name": "Lumbar cushion",
-      "group": "soft furnishings",
-      "min": [
-        2.58,
-        0.465754,
-        1.37
-      ],
-      "max": [
-        3.42,
-        1.444196,
-        1.72
-      ]
-    },
     {
       "name": "Floating room foundation",
       "group": "architecture",
@@ -4511,566 +4554,6 @@
         -3.281,
         1.86,
         -1.5265
-      ]
-    },
-    {
-      "name": "Computer tower outer shell",
-      "group": "computer tower",
-      "min": [
-        -3.885,
-        0.06,
-        0.44
-      ],
-      "max": [
-        -2.955,
-        1.24,
-        1.04
-      ]
-    },
-    {
-      "name": "Tower recessed front",
-      "group": "computer tower",
-      "min": [
-        -2.956,
-        0.135,
-        0.49
-      ],
-      "max": [
-        -2.938,
-        1.165,
-        0.99
-      ]
-    },
-    {
-      "name": "Tower fan rim",
-      "group": "computer tower",
-      "min": [
-        -2.939,
-        0.215,
-        0.565
-      ],
-      "max": [
-        -2.923,
-        0.565,
-        0.915
-      ]
-    },
-    {
-      "name": "Tower fan dark cavity",
-      "group": "computer tower",
-      "min": [
-        -2.926,
-        0.23,
-        0.58
-      ],
-      "max": [
-        -2.916,
-        0.55,
-        0.9
-      ]
-    },
-    {
-      "name": "Tower fan hub",
-      "group": "computer tower",
-      "min": [
-        -2.916,
-        0.355,
-        0.705
-      ],
-      "max": [
-        -2.908,
-        0.425,
-        0.775
-      ]
-    },
-    {
-      "name": "Tower fan blade",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.3765,
-        0.609
-      ],
-      "max": [
-        -2.909,
-        0.4035,
-        0.699
-      ]
-    },
-    {
-      "name": "Tower fan blade.001",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.443738,
-        0.64138
-      ],
-      "max": [
-        -2.909,
-        0.470738,
-        0.73138
-      ]
-    },
-    {
-      "name": "Tower fan blade.002",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.460344,
-        0.714137
-      ],
-      "max": [
-        -2.909,
-        0.487344,
-        0.804137
-      ]
-    },
-    {
-      "name": "Tower fan blade.003",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.413814,
-        0.772483
-      ],
-      "max": [
-        -2.909,
-        0.440814,
-        0.862483
-      ]
-    },
-    {
-      "name": "Tower fan blade.004",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.339186,
-        0.772483
-      ],
-      "max": [
-        -2.909,
-        0.366186,
-        0.862483
-      ]
-    },
-    {
-      "name": "Tower fan blade.005",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.292656,
-        0.714137
-      ],
-      "max": [
-        -2.909,
-        0.319656,
-        0.804137
-      ]
-    },
-    {
-      "name": "Tower fan blade.006",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.309262,
-        0.64138
-      ],
-      "max": [
-        -2.909,
-        0.336262,
-        0.73138
-      ]
-    },
-    {
-      "name": "Tower grille rail",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.22,
-        0.886
-      ],
-      "max": [
-        -2.898,
-        0.56,
-        0.894
-      ]
-    },
-    {
-      "name": "Tower grille rail.001",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.22,
-        0.836
-      ],
-      "max": [
-        -2.898,
-        0.56,
-        0.844
-      ]
-    },
-    {
-      "name": "Tower grille rail.002",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.22,
-        0.786
-      ],
-      "max": [
-        -2.898,
-        0.56,
-        0.794
-      ]
-    },
-    {
-      "name": "Tower grille rail.003",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.22,
-        0.736
-      ],
-      "max": [
-        -2.898,
-        0.56,
-        0.744
-      ]
-    },
-    {
-      "name": "Tower grille rail.004",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.22,
-        0.686
-      ],
-      "max": [
-        -2.898,
-        0.56,
-        0.694
-      ]
-    },
-    {
-      "name": "Tower grille rail.005",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.22,
-        0.636
-      ],
-      "max": [
-        -2.898,
-        0.56,
-        0.644
-      ]
-    },
-    {
-      "name": "Tower grille rail.006",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.22,
-        0.586
-      ],
-      "max": [
-        -2.898,
-        0.56,
-        0.594
-      ]
-    },
-    {
-      "name": "Tower fan rim.001",
-      "group": "computer tower",
-      "min": [
-        -2.939,
-        0.645,
-        0.565
-      ],
-      "max": [
-        -2.923,
-        0.995,
-        0.915
-      ]
-    },
-    {
-      "name": "Tower fan dark cavity.001",
-      "group": "computer tower",
-      "min": [
-        -2.926,
-        0.66,
-        0.58
-      ],
-      "max": [
-        -2.916,
-        0.98,
-        0.9
-      ]
-    },
-    {
-      "name": "Tower fan hub.001",
-      "group": "computer tower",
-      "min": [
-        -2.916,
-        0.785,
-        0.705
-      ],
-      "max": [
-        -2.908,
-        0.855,
-        0.775
-      ]
-    },
-    {
-      "name": "Tower fan blade.007",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.8065,
-        0.609
-      ],
-      "max": [
-        -2.909,
-        0.8335,
-        0.699
-      ]
-    },
-    {
-      "name": "Tower fan blade.008",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.873738,
-        0.64138
-      ],
-      "max": [
-        -2.909,
-        0.900737,
-        0.73138
-      ]
-    },
-    {
-      "name": "Tower fan blade.009",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.890344,
-        0.714137
-      ],
-      "max": [
-        -2.909,
-        0.917344,
-        0.804137
-      ]
-    },
-    {
-      "name": "Tower fan blade.010",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.843814,
-        0.772483
-      ],
-      "max": [
-        -2.909,
-        0.870814,
-        0.862483
-      ]
-    },
-    {
-      "name": "Tower fan blade.011",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.769186,
-        0.772483
-      ],
-      "max": [
-        -2.909,
-        0.796186,
-        0.862483
-      ]
-    },
-    {
-      "name": "Tower fan blade.012",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.722656,
-        0.714137
-      ],
-      "max": [
-        -2.909,
-        0.749656,
-        0.804137
-      ]
-    },
-    {
-      "name": "Tower fan blade.013",
-      "group": "computer tower",
-      "min": [
-        -2.913,
-        0.739263,
-        0.64138
-      ],
-      "max": [
-        -2.909,
-        0.766262,
-        0.73138
-      ]
-    },
-    {
-      "name": "Tower grille rail.007",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.65,
-        0.886
-      ],
-      "max": [
-        -2.898,
-        0.99,
-        0.894
-      ]
-    },
-    {
-      "name": "Tower grille rail.008",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.65,
-        0.836
-      ],
-      "max": [
-        -2.898,
-        0.99,
-        0.844
-      ]
-    },
-    {
-      "name": "Tower grille rail.009",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.65,
-        0.786
-      ],
-      "max": [
-        -2.898,
-        0.99,
-        0.794
-      ]
-    },
-    {
-      "name": "Tower grille rail.010",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.65,
-        0.736
-      ],
-      "max": [
-        -2.898,
-        0.99,
-        0.744
-      ]
-    },
-    {
-      "name": "Tower grille rail.011",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.65,
-        0.686
-      ],
-      "max": [
-        -2.898,
-        0.99,
-        0.694
-      ]
-    },
-    {
-      "name": "Tower grille rail.012",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.65,
-        0.636
-      ],
-      "max": [
-        -2.898,
-        0.99,
-        0.644
-      ]
-    },
-    {
-      "name": "Tower grille rail.013",
-      "group": "computer tower",
-      "min": [
-        -2.904,
-        0.65,
-        0.586
-      ],
-      "max": [
-        -2.898,
-        0.99,
-        0.594
-      ]
-    },
-    {
-      "name": "Tower power button",
-      "group": "computer tower",
-      "min": [
-        -2.933,
-        1.138,
-        0.498
-      ],
-      "max": [
-        -2.925,
-        1.182,
-        0.542
-      ]
-    },
-    {
-      "name": "USB port",
-      "group": "computer tower",
-      "min": [
-        -2.9365,
-        1.1475,
-        0.845
-      ],
-      "max": [
-        -2.9275,
-        1.1725,
-        0.915
-      ]
-    },
-    {
-      "name": "USB port.001",
-      "group": "computer tower",
-      "min": [
-        -2.9365,
-        1.1475,
-        0.695
-      ],
-      "max": [
-        -2.9275,
-        1.1725,
-        0.765
-      ]
-    },
-    {
-      "name": "Tower raised base",
-      "group": "computer tower",
-      "min": [
-        -3.905,
-        0.001,
-        0.415
-      ],
-      "max": [
-        -2.935,
-        0.081,
-        1.065
       ]
     },
     {
@@ -10744,118 +10227,6 @@
       ]
     },
     {
-      "name": "Sculpted linen seat surface",
-      "group": "lounge",
-      "min": [
-        2.04,
-        0.36,
-        -0.25
-      ],
-      "max": [
-        3.96,
-        1.491412,
-        1.95
-      ]
-    },
-    {
-      "name": "Sculpted upholstery sidewall",
-      "group": "lounge",
-      "min": [
-        2.032934,
-        0.227,
-        -0.258096
-      ],
-      "max": [
-        3.967066,
-        1.491412,
-        1.958096
-      ]
-    },
-    {
-      "name": "Continuous upholstery welt",
-      "group": "lounge",
-      "min": [
-        2.032311,
-        0.458015,
-        -0.257983
-      ],
-      "max": [
-        3.967689,
-        1.50454,
-        1.957994
-      ]
-    },
-    {
-      "name": "Upholstery side seam",
-      "group": "lounge",
-      "min": [
-        2.9972,
-        0.23966,
-        1.870221
-      ],
-      "max": [
-        3.0028,
-        1.470075,
-        1.968618
-      ]
-    },
-    {
-      "name": "Upholstery side seam.001",
-      "group": "lounge",
-      "min": [
-        3.844672,
-        0.239541,
-        1.169958
-      ],
-      "max": [
-        3.926727,
-        1.04268,
-        1.204454
-      ]
-    },
-    {
-      "name": "Upholstery side seam.002",
-      "group": "lounge",
-      "min": [
-        2.073273,
-        0.239541,
-        1.169958
-      ],
-      "max": [
-        2.155328,
-        1.04268,
-        1.204454
-      ]
-    },
-    {
-      "name": "Upholstery side seam.003",
-      "group": "lounge",
-      "min": [
-        3.600449,
-        0.238551,
-        0.02473
-      ],
-      "max": [
-        3.660304,
-        0.475023,
-        0.098206
-      ]
-    },
-    {
-      "name": "Upholstery side seam.004",
-      "group": "lounge",
-      "min": [
-        2.339696,
-        0.238551,
-        0.02473
-      ],
-      "max": [
-        2.399551,
-        0.475023,
-        0.098206
-      ]
-    },
-    {
       "name": "Footstool oak tray",
       "group": "lounge",
       "min": [
@@ -10867,20 +10238,6 @@
         3.74,
         0.18,
         -0.48
-      ]
-    },
-    {
-      "name": "Footstool woven cushion",
-      "group": "lounge",
-      "min": [
-        2.285,
-        0.17,
-        -1.345
-      ],
-      "max": [
-        3.715,
-        0.47,
-        -0.495
       ]
     },
     {
@@ -10951,230 +10308,6 @@
         1.877167,
         0.36,
         2.055215
-      ]
-    },
-    {
-      "name": "Soft draped oat throw",
-      "group": "soft furnishings",
-      "min": [
-        2.32,
-        0.386216,
-        0.29
-      ],
-      "max": [
-        2.95,
-        0.675999,
-        0.94
-      ]
-    },
-    {
-      "name": "Throw fringe",
-      "group": "soft furnishings",
-      "min": [
-        2.327624,
-        0.496911,
-        0.254479
-      ],
-      "max": [
-        2.337376,
-        0.507643,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.001",
-      "group": "soft furnishings",
-      "min": [
-        2.370624,
-        0.483893,
-        0.254479
-      ],
-      "max": [
-        2.380376,
-        0.494625,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.002",
-      "group": "soft furnishings",
-      "min": [
-        2.413624,
-        0.47197,
-        0.254479
-      ],
-      "max": [
-        2.423376,
-        0.482703,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.003",
-      "group": "soft furnishings",
-      "min": [
-        2.456624,
-        0.462329,
-        0.254479
-      ],
-      "max": [
-        2.466376,
-        0.473061,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.004",
-      "group": "soft furnishings",
-      "min": [
-        2.499624,
-        0.454402,
-        0.254479
-      ],
-      "max": [
-        2.509376,
-        0.465134,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.005",
-      "group": "soft furnishings",
-      "min": [
-        2.542624,
-        0.446353,
-        0.254479
-      ],
-      "max": [
-        2.552376,
-        0.457086,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.006",
-      "group": "soft furnishings",
-      "min": [
-        2.585624,
-        0.437015,
-        0.254479
-      ],
-      "max": [
-        2.595376,
-        0.447748,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.007",
-      "group": "soft furnishings",
-      "min": [
-        2.628624,
-        0.427401,
-        0.254479
-      ],
-      "max": [
-        2.638376,
-        0.438133,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.008",
-      "group": "soft furnishings",
-      "min": [
-        2.671624,
-        0.41987,
-        0.254479
-      ],
-      "max": [
-        2.681376,
-        0.430602,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.009",
-      "group": "soft furnishings",
-      "min": [
-        2.714624,
-        0.415528,
-        0.254479
-      ],
-      "max": [
-        2.724376,
-        0.426261,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.010",
-      "group": "soft furnishings",
-      "min": [
-        2.757624,
-        0.412937,
-        0.254479
-      ],
-      "max": [
-        2.767376,
-        0.423669,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.011",
-      "group": "soft furnishings",
-      "min": [
-        2.800624,
-        0.40998,
-        0.254479
-      ],
-      "max": [
-        2.810376,
-        0.420713,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.012",
-      "group": "soft furnishings",
-      "min": [
-        2.843624,
-        0.406494,
-        0.254479
-      ],
-      "max": [
-        2.853376,
-        0.417226,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.013",
-      "group": "soft furnishings",
-      "min": [
-        2.886624,
-        0.404047,
-        0.254479
-      ],
-      "max": [
-        2.896376,
-        0.41478,
-        0.290521
-      ]
-    },
-    {
-      "name": "Throw fringe.014",
-      "group": "soft furnishings",
-      "min": [
-        2.929624,
-        0.40346,
-        0.254479
-      ],
-      "max": [
-        2.939376,
-        0.414192,
-        0.290521
       ]
     },
     {
@@ -20290,9 +19423,4293 @@
         4.09375,
         -2.55
       ]
+    },
+    {
+      "name": "Tower bottom panel",
+      "group": "computer tower",
+      "min": [
+        -3.885,
+        0.0875,
+        0.44
+      ],
+      "max": [
+        -2.955,
+        0.1225,
+        1.04
+      ]
+    },
+    {
+      "name": "Tower top panel",
+      "group": "computer tower",
+      "min": [
+        -3.885,
+        1.2175,
+        0.44
+      ],
+      "max": [
+        -2.955,
+        1.2525,
+        1.04
+      ]
+    },
+    {
+      "name": "Tower right side panel",
+      "group": "computer tower",
+      "min": [
+        -3.87,
+        0.12,
+        0.44
+      ],
+      "max": [
+        -2.97,
+        1.22,
+        0.456
+      ]
+    },
+    {
+      "name": "Tower rear service panel",
+      "group": "computer tower",
+      "min": [
+        -3.883,
+        0.12,
+        0.46
+      ],
+      "max": [
+        -3.865,
+        1.22,
+        1.02
+      ]
+    },
+    {
+      "name": "Tower corner extrusion",
+      "group": "computer tower",
+      "min": [
+        -3.879,
+        0.105,
+        1.0095
+      ],
+      "max": [
+        -3.851,
+        1.235,
+        1.0365
+      ]
+    },
+    {
+      "name": "Tower corner extrusion.001",
+      "group": "computer tower",
+      "min": [
+        -2.989,
+        0.105,
+        1.0095
+      ],
+      "max": [
+        -2.961,
+        1.235,
+        1.0365
+      ]
+    },
+    {
+      "name": "Tower corner extrusion.002",
+      "group": "computer tower",
+      "min": [
+        -3.879,
+        0.105,
+        0.4435
+      ],
+      "max": [
+        -3.851,
+        1.235,
+        0.4705
+      ]
+    },
+    {
+      "name": "Tower corner extrusion.003",
+      "group": "computer tower",
+      "min": [
+        -2.989,
+        0.105,
+        0.4435
+      ],
+      "max": [
+        -2.961,
+        1.235,
+        0.4705
+      ]
+    },
+    {
+      "name": "Tower side glass window",
+      "group": "computer tower",
+      "min": [
+        -3.83,
+        0.18,
+        1.036
+      ],
+      "max": [
+        -3.02,
+        1.19,
+        1.044
+      ]
+    },
+    {
+      "name": "Window surround",
+      "group": "computer tower",
+      "min": [
+        -3.865,
+        0.157,
+        1.038
+      ],
+      "max": [
+        -2.985,
+        0.183,
+        1.058
+      ]
+    },
+    {
+      "name": "Window surround.001",
+      "group": "computer tower",
+      "min": [
+        -3.865,
+        1.187,
+        1.038
+      ],
+      "max": [
+        -2.985,
+        1.213,
+        1.058
+      ]
+    },
+    {
+      "name": "Window surround.002",
+      "group": "computer tower",
+      "min": [
+        -3.864,
+        0.165,
+        1.038
+      ],
+      "max": [
+        -3.836,
+        1.205,
+        1.058
+      ]
+    },
+    {
+      "name": "Window surround.003",
+      "group": "computer tower",
+      "min": [
+        -3.014,
+        0.165,
+        1.038
+      ],
+      "max": [
+        -2.986,
+        1.205,
+        1.058
+      ]
+    },
+    {
+      "name": "Knurled window thumbscrew",
+      "group": "computer tower",
+      "min": [
+        -3.837,
+        0.183,
+        1.059
+      ],
+      "max": [
+        -3.803,
+        0.217,
+        1.069
+      ]
+    },
+    {
+      "name": "Knurled window thumbscrew.001",
+      "group": "computer tower",
+      "min": [
+        -3.047,
+        0.183,
+        1.059
+      ],
+      "max": [
+        -3.013,
+        0.217,
+        1.069
+      ]
+    },
+    {
+      "name": "Knurled window thumbscrew.002",
+      "group": "computer tower",
+      "min": [
+        -3.837,
+        1.143,
+        1.059
+      ],
+      "max": [
+        -3.803,
+        1.177,
+        1.069
+      ]
+    },
+    {
+      "name": "Knurled window thumbscrew.003",
+      "group": "computer tower",
+      "min": [
+        -3.047,
+        1.143,
+        1.059
+      ],
+      "max": [
+        -3.013,
+        1.177,
+        1.069
+      ]
+    },
+    {
+      "name": "Motherboard PCB",
+      "group": "computer tower",
+      "min": [
+        -3.835,
+        0.41,
+        0.486
+      ],
+      "max": [
+        -3.245,
+        1.09,
+        0.504
+      ]
+    },
+    {
+      "name": "CPU heat spreader",
+      "group": "computer tower",
+      "min": [
+        -3.68,
+        0.735,
+        0.5
+      ],
+      "max": [
+        -3.46,
+        0.945,
+        0.59
+      ]
+    },
+    {
+      "name": "CPU cooler fin",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.7465,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.7535,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.001",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.7625,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.7695,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.002",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.7785,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.7855,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.003",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.7945,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.8015,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.004",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.8105,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.8175,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.005",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.8265,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.8335,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.006",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.8425,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.8495,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.007",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.8585,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.8655,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.008",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.8745,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.8815,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.009",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.8905,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.8975,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.010",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.9065,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.9135,
+        0.71
+      ]
+    },
+    {
+      "name": "CPU cooler fin.011",
+      "group": "computer tower",
+      "min": [
+        -3.695,
+        0.9225,
+        0.54
+      ],
+      "max": [
+        -3.445,
+        0.9295,
+        0.71
+      ]
+    },
+    {
+      "name": "RAM heatspreader",
+      "group": "computer tower",
+      "min": [
+        -3.3825,
+        0.7,
+        0.5025
+      ],
+      "max": [
+        -3.3575,
+        1.0,
+        0.5675
+      ]
+    },
+    {
+      "name": "RAM heatspreader.001",
+      "group": "computer tower",
+      "min": [
+        -3.3275,
+        0.7,
+        0.5025
+      ],
+      "max": [
+        -3.3025,
+        1.0,
+        0.5675
+      ]
+    },
+    {
+      "name": "Graphics card PCB",
+      "group": "computer tower",
+      "min": [
+        -3.76,
+        0.541,
+        0.525
+      ],
+      "max": [
+        -3.22,
+        0.559,
+        0.955
+      ]
+    },
+    {
+      "name": "Graphics card cooler",
+      "group": "computer tower",
+      "min": [
+        -3.74,
+        0.5625,
+        0.54
+      ],
+      "max": [
+        -3.24,
+        0.6175,
+        0.94
+      ]
+    },
+    {
+      "name": "GPU cooling fan",
+      "group": "computer tower",
+      "min": [
+        -3.709,
+        0.619,
+        0.711
+      ],
+      "max": [
+        -3.531,
+        0.631,
+        0.889
+      ]
+    },
+    {
+      "name": "GPU fan surround",
+      "group": "computer tower",
+      "min": [
+        -3.707,
+        0.627,
+        0.713
+      ],
+      "max": [
+        -3.533,
+        0.639,
+        0.887
+      ]
+    },
+    {
+      "name": "GPU fan centre",
+      "group": "computer tower",
+      "min": [
+        -3.645,
+        0.633,
+        0.775
+      ],
+      "max": [
+        -3.595,
+        0.641,
+        0.825
+      ]
+    },
+    {
+      "name": "GPU cooling fan.001",
+      "group": "computer tower",
+      "min": [
+        -3.459,
+        0.619,
+        0.711
+      ],
+      "max": [
+        -3.281,
+        0.631,
+        0.889
+      ]
+    },
+    {
+      "name": "GPU fan surround.001",
+      "group": "computer tower",
+      "min": [
+        -3.457,
+        0.627,
+        0.713
+      ],
+      "max": [
+        -3.283,
+        0.639,
+        0.887
+      ]
+    },
+    {
+      "name": "GPU fan centre.001",
+      "group": "computer tower",
+      "min": [
+        -3.395,
+        0.633,
+        0.775
+      ],
+      "max": [
+        -3.345,
+        0.641,
+        0.825
+      ]
+    },
+    {
+      "name": "PSU shroud",
+      "group": "computer tower",
+      "min": [
+        -3.865,
+        0.13,
+        0.48
+      ],
+      "max": [
+        -3.175,
+        0.36,
+        1.0
+      ]
+    },
+    {
+      "name": "PSU ventilation",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.892
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.908
+      ]
+    },
+    {
+      "name": "PSU ventilation.001",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.852
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.868
+      ]
+    },
+    {
+      "name": "PSU ventilation.002",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.812
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.828
+      ]
+    },
+    {
+      "name": "PSU ventilation.003",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.772
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.788
+      ]
+    },
+    {
+      "name": "PSU ventilation.004",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.732
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.748
+      ]
+    },
+    {
+      "name": "PSU ventilation.005",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.692
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.708
+      ]
+    },
+    {
+      "name": "PSU ventilation.006",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.652
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.668
+      ]
+    },
+    {
+      "name": "PSU ventilation.007",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.612
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.628
+      ]
+    },
+    {
+      "name": "PSU ventilation.008",
+      "group": "computer tower",
+      "min": [
+        -3.72,
+        0.363,
+        0.572
+      ],
+      "max": [
+        -3.32,
+        0.367,
+        0.588
+      ]
+    },
+    {
+      "name": "Sleeved power cable",
+      "group": "computer tower",
+      "min": [
+        -3.265805,
+        0.397377,
+        0.53636
+      ],
+      "max": [
+        -3.176366,
+        0.989938,
+        0.778748
+      ]
+    },
+    {
+      "name": "Sleeved power cable.001",
+      "group": "computer tower",
+      "min": [
+        -3.253805,
+        0.397377,
+        0.53636
+      ],
+      "max": [
+        -3.164366,
+        0.989938,
+        0.778748
+      ]
+    },
+    {
+      "name": "Sleeved power cable.002",
+      "group": "computer tower",
+      "min": [
+        -3.241805,
+        0.397377,
+        0.53636
+      ],
+      "max": [
+        -3.152366,
+        0.989938,
+        0.778748
+      ]
+    },
+    {
+      "name": "Sleeved power cable.003",
+      "group": "computer tower",
+      "min": [
+        -3.229805,
+        0.397377,
+        0.53636
+      ],
+      "max": [
+        -3.140366,
+        0.989938,
+        0.778748
+      ]
+    },
+    {
+      "name": "Front fan mounting frame",
+      "group": "computer tower",
+      "min": [
+        -3.002,
+        0.21,
+        0.51
+      ],
+      "max": [
+        -2.978,
+        0.65,
+        0.97
+      ]
+    },
+    {
+      "name": "Front fan machined rim",
+      "group": "computer tower",
+      "min": [
+        -2.977,
+        0.22,
+        0.53
+      ],
+      "max": [
+        -2.949,
+        0.64,
+        0.95
+      ]
+    },
+    {
+      "name": "Curved cooling impeller",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.43,
+        0.585235
+      ],
+      "max": [
+        -2.945,
+        0.538798,
+        0.695
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.001",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.458925,
+        0.652216
+      ],
+      "max": [
+        -2.945,
+        0.593081,
+        0.718447
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.002",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.474316,
+        0.732186
+      ],
+      "max": [
+        -2.945,
+        0.590727,
+        0.825605
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.003",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.460012,
+        0.7625
+      ],
+      "max": [
+        -2.945,
+        0.540093,
+        0.896246
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.004",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.37019,
+        0.782286
+      ],
+      "max": [
+        -2.945,
+        0.445391,
+        0.901805
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.005",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.285336,
+        0.77756
+      ],
+      "max": [
+        -2.945,
+        0.414609,
+        0.869057
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.006",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.268172,
+        0.707802
+      ],
+      "max": [
+        -2.945,
+        0.391029,
+        0.775922
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.007",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.2859,
+        0.611314
+      ],
+      "max": [
+        -2.945,
+        0.386034,
+        0.732186
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.008",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.367193,
+        0.575039
+      ],
+      "max": [
+        -2.945,
+        0.433608,
+        0.705528
+      ]
+    },
+    {
+      "name": "Fan hub",
+      "group": "computer tower",
+      "min": [
+        -2.944,
+        0.382,
+        0.692
+      ],
+      "max": [
+        -2.932,
+        0.478,
+        0.788
+      ]
+    },
+    {
+      "name": "Front fan mounting frame.001",
+      "group": "computer tower",
+      "min": [
+        -3.002,
+        0.69,
+        0.51
+      ],
+      "max": [
+        -2.978,
+        1.13,
+        0.97
+      ]
+    },
+    {
+      "name": "Front fan machined rim.001",
+      "group": "computer tower",
+      "min": [
+        -2.977,
+        0.7,
+        0.53
+      ],
+      "max": [
+        -2.949,
+        1.12,
+        0.95
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.009",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.91,
+        0.585235
+      ],
+      "max": [
+        -2.945,
+        1.018798,
+        0.695
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.010",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.938925,
+        0.652216
+      ],
+      "max": [
+        -2.945,
+        1.073081,
+        0.718447
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.011",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.954316,
+        0.732186
+      ],
+      "max": [
+        -2.945,
+        1.070727,
+        0.825605
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.012",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.940012,
+        0.7625
+      ],
+      "max": [
+        -2.945,
+        1.020093,
+        0.896246
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.013",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.85019,
+        0.782286
+      ],
+      "max": [
+        -2.945,
+        0.925391,
+        0.901805
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.014",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.765336,
+        0.77756
+      ],
+      "max": [
+        -2.945,
+        0.894609,
+        0.869057
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.015",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.748172,
+        0.707802
+      ],
+      "max": [
+        -2.945,
+        0.871029,
+        0.775922
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.016",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.7659,
+        0.611314
+      ],
+      "max": [
+        -2.945,
+        0.866034,
+        0.732186
+      ]
+    },
+    {
+      "name": "Curved cooling impeller.017",
+      "group": "computer tower",
+      "min": [
+        -2.951,
+        0.847193,
+        0.575039
+      ],
+      "max": [
+        -2.945,
+        0.913608,
+        0.705528
+      ]
+    },
+    {
+      "name": "Fan hub.001",
+      "group": "computer tower",
+      "min": [
+        -2.944,
+        0.862,
+        0.692
+      ],
+      "max": [
+        -2.932,
+        0.958,
+        0.788
+      ]
+    },
+    {
+      "name": "Real perforated hexagonal front grille",
+      "group": "computer tower",
+      "min": [
+        -2.915,
+        0.158349,
+        0.468
+      ],
+      "max": [
+        -2.91,
+        1.169651,
+        1.001
+      ]
+    },
+    {
+      "name": "Front bezel rail",
+      "group": "computer tower",
+      "min": [
+        -2.91,
+        0.15,
+        0.999
+      ],
+      "max": [
+        -2.89,
+        1.22,
+        1.021
+      ]
+    },
+    {
+      "name": "Front bezel rail.001",
+      "group": "computer tower",
+      "min": [
+        -2.91,
+        0.15,
+        0.459
+      ],
+      "max": [
+        -2.89,
+        1.22,
+        0.481
+      ]
+    },
+    {
+      "name": "Front bezel rail.002",
+      "group": "computer tower",
+      "min": [
+        -2.91,
+        0.1215,
+        0.465
+      ],
+      "max": [
+        -2.89,
+        0.1485,
+        1.015
+      ]
+    },
+    {
+      "name": "Front bezel rail.003",
+      "group": "computer tower",
+      "min": [
+        -2.91,
+        1.2115,
+        0.465
+      ],
+      "max": [
+        -2.89,
+        1.2385,
+        1.015
+      ]
+    },
+    {
+      "name": "Recessed power button",
+      "group": "computer tower",
+      "min": [
+        -3.142,
+        1.2425,
+        0.548
+      ],
+      "max": [
+        -3.098,
+        1.2475,
+        0.592
+      ]
+    },
+    {
+      "name": "USB-C port",
+      "group": "computer tower",
+      "min": [
+        -3.162,
+        1.2525,
+        0.8575
+      ],
+      "max": [
+        -3.138,
+        1.2575,
+        0.9225
+      ]
+    },
+    {
+      "name": "USB-C port.001",
+      "group": "computer tower",
+      "min": [
+        -3.162,
+        1.2525,
+        0.7375
+      ],
+      "max": [
+        -3.138,
+        1.2575,
+        0.8025
+      ]
+    },
+    {
+      "name": "Rear expansion slot",
+      "group": "computer tower",
+      "min": [
+        -3.896,
+        0.129,
+        0.57
+      ],
+      "max": [
+        -3.884,
+        0.151,
+        0.91
+      ]
+    },
+    {
+      "name": "Rear expansion slot.001",
+      "group": "computer tower",
+      "min": [
+        -3.896,
+        0.249,
+        0.57
+      ],
+      "max": [
+        -3.884,
+        0.271,
+        0.91
+      ]
+    },
+    {
+      "name": "Rear expansion slot.002",
+      "group": "computer tower",
+      "min": [
+        -3.896,
+        0.369,
+        0.57
+      ],
+      "max": [
+        -3.884,
+        0.391,
+        0.91
+      ]
+    },
+    {
+      "name": "Tower vibration-isolating foot",
+      "group": "computer tower",
+      "min": [
+        -3.815,
+        0.0285,
+        0.915
+      ],
+      "max": [
+        -3.725,
+        0.0935,
+        1.005
+      ]
+    },
+    {
+      "name": "Tower vibration-isolating foot.001",
+      "group": "computer tower",
+      "min": [
+        -3.145,
+        0.0285,
+        0.915
+      ],
+      "max": [
+        -3.055,
+        0.0935,
+        1.005
+      ]
+    },
+    {
+      "name": "Tower vibration-isolating foot.002",
+      "group": "computer tower",
+      "min": [
+        -3.815,
+        0.0285,
+        0.475
+      ],
+      "max": [
+        -3.725,
+        0.0935,
+        0.565
+      ]
+    },
+    {
+      "name": "Tower vibration-isolating foot.003",
+      "group": "computer tower",
+      "min": [
+        -3.145,
+        0.0285,
+        0.475
+      ],
+      "max": [
+        -3.055,
+        0.0935,
+        0.565
+      ]
+    },
+    {
+      "name": "Walnut console shelf",
+      "group": "record console",
+      "min": [
+        -3.5,
+        0.1125,
+        3.37
+      ],
+      "max": [
+        -2.0,
+        0.1675,
+        4.13
+      ]
+    },
+    {
+      "name": "Walnut console shelf.001",
+      "group": "record console",
+      "min": [
+        -3.5,
+        0.6325,
+        3.37
+      ],
+      "max": [
+        -2.0,
+        0.6875,
+        4.13
+      ]
+    },
+    {
+      "name": "Walnut console shelf.002",
+      "group": "record console",
+      "min": [
+        -3.5,
+        1.1725,
+        3.37
+      ],
+      "max": [
+        -2.0,
+        1.2275,
+        4.13
+      ]
+    },
+    {
+      "name": "Console tubular upright",
+      "group": "record console",
+      "min": [
+        -3.434,
+        0.04,
+        3.416
+      ],
+      "max": [
+        -3.406,
+        1.24,
+        3.444
+      ]
+    },
+    {
+      "name": "Console tubular upright.001",
+      "group": "record console",
+      "min": [
+        -3.434,
+        0.04,
+        4.056
+      ],
+      "max": [
+        -3.406,
+        1.24,
+        4.084
+      ]
+    },
+    {
+      "name": "Console tubular upright.002",
+      "group": "record console",
+      "min": [
+        -2.094,
+        0.04,
+        3.416
+      ],
+      "max": [
+        -2.066,
+        1.24,
+        3.444
+      ]
+    },
+    {
+      "name": "Console tubular upright.003",
+      "group": "record console",
+      "min": [
+        -2.094,
+        0.04,
+        4.056
+      ],
+      "max": [
+        -2.066,
+        1.24,
+        4.084
+      ]
+    },
+    {
+      "name": "Console stacked journals",
+      "group": "record console",
+      "min": [
+        -3.07,
+        0.1775,
+        3.48
+      ],
+      "max": [
+        -2.35,
+        0.2225,
+        3.96
+      ]
+    },
+    {
+      "name": "Console stacked journals.001",
+      "group": "record console",
+      "min": [
+        -3.075887,
+        0.2325,
+        3.471076
+      ],
+      "max": [
+        -2.344113,
+        0.2775,
+        3.968924
+      ]
+    },
+    {
+      "name": "Console stacked journals.002",
+      "group": "record console",
+      "min": [
+        -3.07,
+        0.2875,
+        3.48
+      ],
+      "max": [
+        -2.35,
+        0.3325,
+        3.96
+      ]
+    },
+    {
+      "name": "Console stacked journals.003",
+      "group": "record console",
+      "min": [
+        -3.075887,
+        0.3425,
+        3.471076
+      ],
+      "max": [
+        -2.344113,
+        0.3875,
+        3.968924
+      ]
+    },
+    {
+      "name": "Console record sleeve",
+      "group": "record console",
+      "min": [
+        -3.2425,
+        0.71,
+        3.49
+      ],
+      "max": [
+        -3.1575,
+        1.07,
+        3.95
+      ]
+    },
+    {
+      "name": "Console record sleeve.001",
+      "group": "record console",
+      "min": [
+        -3.1225,
+        0.71,
+        3.49
+      ],
+      "max": [
+        -3.0375,
+        1.07,
+        3.95
+      ]
+    },
+    {
+      "name": "Console record sleeve.002",
+      "group": "record console",
+      "min": [
+        -3.0025,
+        0.71,
+        3.49
+      ],
+      "max": [
+        -2.9175,
+        1.07,
+        3.95
+      ]
+    },
+    {
+      "name": "Console record sleeve.003",
+      "group": "record console",
+      "min": [
+        -2.8825,
+        0.71,
+        3.49
+      ],
+      "max": [
+        -2.7975,
+        1.07,
+        3.95
+      ]
+    },
+    {
+      "name": "Console record sleeve.004",
+      "group": "record console",
+      "min": [
+        -2.7625,
+        0.71,
+        3.49
+      ],
+      "max": [
+        -2.6775,
+        1.07,
+        3.95
+      ]
+    },
+    {
+      "name": "Console brass side rail",
+      "group": "record console",
+      "min": [
+        -3.491106,
+        0.7,
+        3.39
+      ],
+      "max": [
+        -2.008894,
+        1.411584,
+        3.41
+      ]
+    },
+    {
+      "name": "Console brass side rail.001",
+      "group": "record console",
+      "min": [
+        -3.491106,
+        0.7,
+        4.09
+      ],
+      "max": [
+        -2.008894,
+        1.411584,
+        4.11
+      ]
+    },
+    {
+      "name": "Turntable walnut plinth",
+      "group": "turntable",
+      "min": [
+        -2.785,
+        1.235,
+        3.485
+      ],
+      "max": [
+        -2.135,
+        1.335,
+        3.955
+      ]
+    },
+    {
+      "name": "Turntable platter",
+      "group": "turntable",
+      "min": [
+        -2.712,
+        1.331,
+        3.518
+      ],
+      "max": [
+        -2.308,
+        1.353,
+        3.922
+      ]
+    },
+    {
+      "name": "Vinyl record",
+      "group": "turntable",
+      "min": [
+        -2.705,
+        1.353,
+        3.525
+      ],
+      "max": [
+        -2.315,
+        1.361,
+        3.915
+      ]
+    },
+    {
+      "name": "Vinyl groove",
+      "group": "turntable",
+      "min": [
+        -2.5864,
+        1.3606,
+        3.6436
+      ],
+      "max": [
+        -2.4336,
+        1.3634,
+        3.7964
+      ]
+    },
+    {
+      "name": "Vinyl groove.001",
+      "group": "turntable",
+      "min": [
+        -2.6214,
+        1.3606,
+        3.6086
+      ],
+      "max": [
+        -2.3986,
+        1.3634,
+        3.8314
+      ]
+    },
+    {
+      "name": "Vinyl groove.002",
+      "group": "turntable",
+      "min": [
+        -2.6614,
+        1.3606,
+        3.5686
+      ],
+      "max": [
+        -2.3586,
+        1.3634,
+        3.8714
+      ]
+    },
+    {
+      "name": "Vinyl groove.003",
+      "group": "turntable",
+      "min": [
+        -2.6914,
+        1.3606,
+        3.5386
+      ],
+      "max": [
+        -2.3286,
+        1.3634,
+        3.9014
+      ]
+    },
+    {
+      "name": "Record centre label",
+      "group": "turntable",
+      "min": [
+        -2.566,
+        1.363,
+        3.664
+      ],
+      "max": [
+        -2.454,
+        1.365,
+        3.776
+      ]
+    },
+    {
+      "name": "Tonearm pivot",
+      "group": "turntable",
+      "min": [
+        -2.247,
+        1.3425,
+        3.563
+      ],
+      "max": [
+        -2.193,
+        1.3975,
+        3.617
+      ]
+    },
+    {
+      "name": "Curved tonearm",
+      "group": "turntable",
+      "min": [
+        -2.315729,
+        1.372208,
+        3.589471
+      ],
+      "max": [
+        -2.208642,
+        1.415056,
+        3.835556
+      ]
+    },
+    {
+      "name": "Pickup cartridge",
+      "group": "turntable",
+      "min": [
+        -2.3225,
+        1.3695,
+        3.807
+      ],
+      "max": [
+        -2.2975,
+        1.3845,
+        3.853
+      ]
+    },
+    {
+      "name": "Speed selector",
+      "group": "turntable",
+      "min": [
+        -2.225,
+        1.336,
+        3.855
+      ],
+      "max": [
+        -2.195,
+        1.342,
+        3.885
+      ]
+    },
+    {
+      "name": "Mushroom lamp base",
+      "group": "console lamp",
+      "min": [
+        -3.395,
+        1.229,
+        3.575
+      ],
+      "max": [
+        -3.105,
+        1.265,
+        3.865
+      ]
+    },
+    {
+      "name": "Mushroom lamp stem",
+      "group": "console lamp",
+      "min": [
+        -3.272,
+        1.265,
+        3.698
+      ],
+      "max": [
+        -3.228,
+        1.665,
+        3.742
+      ]
+    },
+    {
+      "name": "Enamel mushroom shade",
+      "group": "console lamp",
+      "min": [
+        -3.542,
+        1.67,
+        3.428
+      ],
+      "max": [
+        -2.958,
+        1.96,
+        4.012
+      ]
+    },
+    {
+      "name": "Mushroom lamp diffuser",
+      "group": "console lamp glow",
+      "min": [
+        -3.513,
+        1.656,
+        3.457
+      ],
+      "max": [
+        -2.987,
+        1.664,
+        3.983
+      ]
+    },
+    {
+      "name": "Acoustic spruce soundboard",
+      "group": "guitar",
+      "min": [
+        -4.670135,
+        0.2,
+        2.64
+      ],
+      "max": [
+        -4.189866,
+        1.16,
+        2.64
+      ]
+    },
+    {
+      "name": "Guitar walnut back",
+      "group": "guitar",
+      "min": [
+        -4.670135,
+        0.2,
+        2.47
+      ],
+      "max": [
+        -4.189866,
+        1.16,
+        2.47
+      ]
+    },
+    {
+      "name": "Curved guitar ribs",
+      "group": "guitar",
+      "min": [
+        -4.670135,
+        0.2,
+        2.47
+      ],
+      "max": [
+        -4.189866,
+        1.16,
+        2.64
+      ]
+    },
+    {
+      "name": "Guitar cream binding",
+      "group": "guitar",
+      "min": [
+        -4.676183,
+        0.194,
+        2.634
+      ],
+      "max": [
+        -4.183817,
+        1.166,
+        2.646
+      ]
+    },
+    {
+      "name": "Sound hole rosette",
+      "group": "guitar",
+      "min": [
+        -4.522,
+        0.748,
+        2.636
+      ],
+      "max": [
+        -4.338,
+        0.932,
+        2.652
+      ]
+    },
+    {
+      "name": "Guitar neck",
+      "group": "guitar",
+      "min": [
+        -4.4715,
+        1.075,
+        2.495
+      ],
+      "max": [
+        -4.3885,
+        1.945,
+        2.605
+      ]
+    },
+    {
+      "name": "Rosewood fingerboard",
+      "group": "guitar",
+      "min": [
+        -4.467,
+        1.065,
+        2.606
+      ],
+      "max": [
+        -4.393,
+        1.935,
+        2.618
+      ]
+    },
+    {
+      "name": "Guitar headstock",
+      "group": "guitar",
+      "min": [
+        -4.485,
+        1.945,
+        2.5275
+      ],
+      "max": [
+        -4.375,
+        2.185,
+        2.5925
+      ]
+    },
+    {
+      "name": "Guitar nickel fret",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.119,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.121,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.001",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.167,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.169,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.002",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.215,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.217,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.003",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.263,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.265,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.004",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.311,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.313,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.005",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.359,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.361,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.006",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.407,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.409,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.007",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.455,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.457,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.008",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.503,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.505,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.009",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.551,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.553,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.010",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.599,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.601,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.011",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.647,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.649,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.012",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.695,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.697,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.013",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.743,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.745,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.014",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.791,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.793,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.015",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.839,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.841,
+        2.6215
+      ]
+    },
+    {
+      "name": "Guitar nickel fret.016",
+      "group": "guitar",
+      "min": [
+        -4.469,
+        1.887,
+        2.6185
+      ],
+      "max": [
+        -4.391,
+        1.889,
+        2.6215
+      ]
+    },
+    {
+      "name": "Tuning machine peg",
+      "group": "guitar",
+      "min": [
+        -4.5195,
+        1.978,
+        2.554
+      ],
+      "max": [
+        -4.4845,
+        2.002,
+        2.578
+      ]
+    },
+    {
+      "name": "Tuning machine peg.001",
+      "group": "guitar",
+      "min": [
+        -4.3755,
+        1.978,
+        2.554
+      ],
+      "max": [
+        -4.3405,
+        2.002,
+        2.578
+      ]
+    },
+    {
+      "name": "Tuning machine peg.002",
+      "group": "guitar",
+      "min": [
+        -4.5195,
+        2.048,
+        2.554
+      ],
+      "max": [
+        -4.4845,
+        2.072,
+        2.578
+      ]
+    },
+    {
+      "name": "Tuning machine peg.003",
+      "group": "guitar",
+      "min": [
+        -4.3755,
+        2.048,
+        2.554
+      ],
+      "max": [
+        -4.3405,
+        2.072,
+        2.578
+      ]
+    },
+    {
+      "name": "Tuning machine peg.004",
+      "group": "guitar",
+      "min": [
+        -4.5195,
+        2.118,
+        2.554
+      ],
+      "max": [
+        -4.4845,
+        2.142,
+        2.578
+      ]
+    },
+    {
+      "name": "Tuning machine peg.005",
+      "group": "guitar",
+      "min": [
+        -4.3755,
+        2.118,
+        2.554
+      ],
+      "max": [
+        -4.3405,
+        2.142,
+        2.578
+      ]
+    },
+    {
+      "name": "Acoustic bridge",
+      "group": "guitar",
+      "min": [
+        -4.525,
+        0.3825,
+        2.6355
+      ],
+      "max": [
+        -4.335,
+        0.4175,
+        2.6605
+      ]
+    },
+    {
+      "name": "Guitar string",
+      "group": "guitar",
+      "min": [
+        -4.453,
+        0.399974,
+        2.600012
+      ],
+      "max": [
+        -4.451,
+        2.100154,
+        2.667
+      ]
+    },
+    {
+      "name": "Guitar string.001",
+      "group": "guitar",
+      "min": [
+        -4.4442,
+        0.399974,
+        2.600012
+      ],
+      "max": [
+        -4.4422,
+        2.100154,
+        2.667
+      ]
+    },
+    {
+      "name": "Guitar string.002",
+      "group": "guitar",
+      "min": [
+        -4.4354,
+        0.399974,
+        2.600012
+      ],
+      "max": [
+        -4.4334,
+        2.100154,
+        2.667
+      ]
+    },
+    {
+      "name": "Guitar string.003",
+      "group": "guitar",
+      "min": [
+        -4.4266,
+        0.399974,
+        2.600012
+      ],
+      "max": [
+        -4.4246,
+        2.100154,
+        2.667
+      ]
+    },
+    {
+      "name": "Guitar string.004",
+      "group": "guitar",
+      "min": [
+        -4.4178,
+        0.399974,
+        2.600012
+      ],
+      "max": [
+        -4.4158,
+        2.100154,
+        2.667
+      ]
+    },
+    {
+      "name": "Guitar string.005",
+      "group": "guitar",
+      "min": [
+        -4.409,
+        0.399974,
+        2.600012
+      ],
+      "max": [
+        -4.407,
+        2.100154,
+        2.667
+      ]
+    },
+    {
+      "name": "Guitar stand foot",
+      "group": "guitar",
+      "min": [
+        -4.670969,
+        0.021211,
+        2.391301
+      ],
+      "max": [
+        -4.419031,
+        0.113789,
+        2.698699
+      ]
+    },
+    {
+      "name": "Guitar stand foot.001",
+      "group": "guitar",
+      "min": [
+        -4.440969,
+        0.021211,
+        2.391301
+      ],
+      "max": [
+        -4.189031,
+        0.113789,
+        2.698699
+      ]
+    },
+    {
+      "name": "Guitar stand rear",
+      "group": "guitar",
+      "min": [
+        -4.444,
+        0.038163,
+        2.326121
+      ],
+      "max": [
+        -4.416,
+        0.721837,
+        2.443879
+      ]
+    },
+    {
+      "name": "Rounded walnut tea table",
+      "group": "coffee table",
+      "min": [
+        2.175,
+        0.4475,
+        -2.37
+      ],
+      "max": [
+        3.825,
+        0.5125,
+        -1.63
+      ]
+    },
+    {
+      "name": "Tea table tapered leg",
+      "group": "coffee table",
+      "min": [
+        2.38,
+        0.02,
+        -2.26
+      ],
+      "max": [
+        2.42,
+        0.46,
+        -2.22
+      ]
+    },
+    {
+      "name": "Tea table tapered leg.001",
+      "group": "coffee table",
+      "min": [
+        2.38,
+        0.02,
+        -1.78
+      ],
+      "max": [
+        2.42,
+        0.46,
+        -1.74
+      ]
+    },
+    {
+      "name": "Tea table tapered leg.002",
+      "group": "coffee table",
+      "min": [
+        3.58,
+        0.02,
+        -2.26
+      ],
+      "max": [
+        3.62,
+        0.46,
+        -2.22
+      ]
+    },
+    {
+      "name": "Tea table tapered leg.003",
+      "group": "coffee table",
+      "min": [
+        3.58,
+        0.02,
+        -1.78
+      ],
+      "max": [
+        3.62,
+        0.46,
+        -1.74
+      ]
+    },
+    {
+      "name": "Tea table journal",
+      "group": "coffee table",
+      "min": [
+        2.345,
+        0.519,
+        -2.19
+      ],
+      "max": [
+        2.675,
+        0.561,
+        -1.83
+      ]
+    },
+    {
+      "name": "Tea coaster",
+      "group": "coffee table",
+      "min": [
+        2.825,
+        0.515,
+        -2.155
+      ],
+      "max": [
+        3.075,
+        0.523,
+        -1.905
+      ]
+    },
+    {
+      "name": "Glazed open mug.002",
+      "group": "coffee table",
+      "min": [
+        2.872,
+        0.525,
+        -2.108
+      ],
+      "max": [
+        3.028,
+        0.6576,
+        -1.952
+      ]
+    },
+    {
+      "name": "Coffee surface.002",
+      "group": "coffee table",
+      "min": [
+        2.88682,
+        0.6361,
+        -2.09318
+      ],
+      "max": [
+        3.01318,
+        0.6401,
+        -1.96682
+      ]
+    },
+    {
+      "name": "Mug handle.002",
+      "group": "coffee table",
+      "min": [
+        2.98354,
+        0.54294,
+        -2.04092
+      ],
+      "max": [
+        3.09586,
+        0.65526,
+        -2.01908
+      ]
+    },
+    {
+      "name": "Blue bud vase",
+      "group": "coffee table",
+      "min": [
+        3.39,
+        0.515,
+        -2.09
+      ],
+      "max": [
+        3.57,
+        0.755,
+        -1.91
+      ]
+    },
+    {
+      "name": "Blue bud vase lip",
+      "group": "coffee table",
+      "min": [
+        3.4098,
+        0.75005,
+        -2.0702
+      ],
+      "max": [
+        3.5502,
+        0.75995,
+        -1.9298
+      ]
+    },
+    {
+      "name": "Blue bud vase bottom",
+      "group": "coffee table",
+      "min": [
+        3.4188,
+        0.5306,
+        -2.0612
+      ],
+      "max": [
+        3.5412,
+        0.5378,
+        -1.9388
+      ]
+    },
+    {
+      "name": "Dried flower stem",
+      "group": "coffee table",
+      "min": [
+        3.477675,
+        0.719082,
+        -2.0025
+      ],
+      "max": [
+        3.557325,
+        0.910918,
+        -1.9975
+      ]
+    },
+    {
+      "name": "Dried chamomile petals",
+      "group": "coffee table",
+      "min": [
+        3.569,
+        0.904,
+        -2.01
+      ],
+      "max": [
+        3.607,
+        0.916,
+        -1.99
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.001",
+      "group": "coffee table",
+      "min": [
+        3.556575,
+        0.904,
+        -1.9842
+      ],
+      "max": [
+        3.594575,
+        0.916,
+        -1.9642
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.002",
+      "group": "coffee table",
+      "min": [
+        3.528657,
+        0.904,
+        -1.977827
+      ],
+      "max": [
+        3.566657,
+        0.916,
+        -1.957827
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.003",
+      "group": "coffee table",
+      "min": [
+        3.506268,
+        0.904,
+        -1.995682
+      ],
+      "max": [
+        3.544268,
+        0.916,
+        -1.975682
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.004",
+      "group": "coffee table",
+      "min": [
+        3.506268,
+        0.904,
+        -2.024318
+      ],
+      "max": [
+        3.544268,
+        0.916,
+        -2.004318
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.005",
+      "group": "coffee table",
+      "min": [
+        3.528657,
+        0.904,
+        -2.042173
+      ],
+      "max": [
+        3.566657,
+        0.916,
+        -2.022173
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.006",
+      "group": "coffee table",
+      "min": [
+        3.556575,
+        0.904,
+        -2.0358
+      ],
+      "max": [
+        3.594575,
+        0.916,
+        -2.0158
+      ]
+    },
+    {
+      "name": "Dried flower centre",
+      "group": "coffee table",
+      "min": [
+        3.541,
+        0.898,
+        -2.014
+      ],
+      "max": [
+        3.569,
+        0.922,
+        -1.986
+      ]
+    },
+    {
+      "name": "Dried flower stem.001",
+      "group": "coffee table",
+      "min": [
+        3.422328,
+        0.719326,
+        -2.002433
+      ],
+      "max": [
+        3.482419,
+        0.965674,
+        -1.956995
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.007",
+      "group": "coffee table",
+      "min": [
+        3.438746,
+        0.959,
+        -1.969428
+      ],
+      "max": [
+        3.476746,
+        0.971,
+        -1.949428
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.008",
+      "group": "coffee table",
+      "min": [
+        3.426321,
+        0.959,
+        -1.943628
+      ],
+      "max": [
+        3.464321,
+        0.971,
+        -1.923628
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.009",
+      "group": "coffee table",
+      "min": [
+        3.398403,
+        0.959,
+        -1.937255
+      ],
+      "max": [
+        3.436403,
+        0.971,
+        -1.917255
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.010",
+      "group": "coffee table",
+      "min": [
+        3.376014,
+        0.959,
+        -1.95511
+      ],
+      "max": [
+        3.414014,
+        0.971,
+        -1.93511
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.011",
+      "group": "coffee table",
+      "min": [
+        3.376014,
+        0.959,
+        -1.983746
+      ],
+      "max": [
+        3.414014,
+        0.971,
+        -1.963746
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.012",
+      "group": "coffee table",
+      "min": [
+        3.398403,
+        0.959,
+        -2.001601
+      ],
+      "max": [
+        3.436403,
+        0.971,
+        -1.981601
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.013",
+      "group": "coffee table",
+      "min": [
+        3.426321,
+        0.959,
+        -1.995228
+      ],
+      "max": [
+        3.464321,
+        0.971,
+        -1.975228
+      ]
+    },
+    {
+      "name": "Dried flower centre.001",
+      "group": "coffee table",
+      "min": [
+        3.410746,
+        0.953,
+        -1.973428
+      ],
+      "max": [
+        3.438746,
+        0.977,
+        -1.945428
+      ]
+    },
+    {
+      "name": "Dried flower stem.002",
+      "group": "coffee table",
+      "min": [
+        3.477514,
+        0.719509,
+        -2.062218
+      ],
+      "max": [
+        3.488899,
+        1.020491,
+        -1.997563
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.014",
+      "group": "coffee table",
+      "min": [
+        3.500413,
+        1.014,
+        -2.06978
+      ],
+      "max": [
+        3.538413,
+        1.026,
+        -2.04978
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.015",
+      "group": "coffee table",
+      "min": [
+        3.487988,
+        1.014,
+        -2.04398
+      ],
+      "max": [
+        3.525988,
+        1.026,
+        -2.02398
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.016",
+      "group": "coffee table",
+      "min": [
+        3.46007,
+        1.014,
+        -2.037608
+      ],
+      "max": [
+        3.49807,
+        1.026,
+        -2.017608
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.017",
+      "group": "coffee table",
+      "min": [
+        3.437681,
+        1.014,
+        -2.055462
+      ],
+      "max": [
+        3.475681,
+        1.026,
+        -2.035462
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.018",
+      "group": "coffee table",
+      "min": [
+        3.437681,
+        1.014,
+        -2.084098
+      ],
+      "max": [
+        3.475681,
+        1.026,
+        -2.064098
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.019",
+      "group": "coffee table",
+      "min": [
+        3.46007,
+        1.014,
+        -2.101953
+      ],
+      "max": [
+        3.49807,
+        1.026,
+        -2.081953
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.020",
+      "group": "coffee table",
+      "min": [
+        3.487988,
+        1.014,
+        -2.095581
+      ],
+      "max": [
+        3.525988,
+        1.026,
+        -2.075581
+      ]
+    },
+    {
+      "name": "Dried flower centre.002",
+      "group": "coffee table",
+      "min": [
+        3.472413,
+        1.008,
+        -2.07378
+      ],
+      "max": [
+        3.500413,
+        1.032,
+        -2.04578
+      ]
+    },
+    {
+      "name": "Dried flower stem.003",
+      "group": "coffee table",
+      "min": [
+        3.477568,
+        0.71918,
+        -2.002429
+      ],
+      "max": [
+        3.528236,
+        0.91082,
+        -1.95006
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.021",
+      "group": "coffee table",
+      "min": [
+        3.539805,
+        0.904,
+        -1.96249
+      ],
+      "max": [
+        3.577805,
+        0.916,
+        -1.94249
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.022",
+      "group": "coffee table",
+      "min": [
+        3.52738,
+        0.904,
+        -1.936689
+      ],
+      "max": [
+        3.56538,
+        0.916,
+        -1.916689
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.023",
+      "group": "coffee table",
+      "min": [
+        3.499461,
+        0.904,
+        -1.930317
+      ],
+      "max": [
+        3.537462,
+        0.916,
+        -1.910317
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.024",
+      "group": "coffee table",
+      "min": [
+        3.477073,
+        0.904,
+        -1.948171
+      ],
+      "max": [
+        3.515073,
+        0.916,
+        -1.928172
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.025",
+      "group": "coffee table",
+      "min": [
+        3.477073,
+        0.904,
+        -1.976808
+      ],
+      "max": [
+        3.515073,
+        0.916,
+        -1.956808
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.026",
+      "group": "coffee table",
+      "min": [
+        3.499461,
+        0.904,
+        -1.994662
+      ],
+      "max": [
+        3.537462,
+        0.916,
+        -1.974662
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.027",
+      "group": "coffee table",
+      "min": [
+        3.52738,
+        0.904,
+        -1.98829
+      ],
+      "max": [
+        3.56538,
+        0.916,
+        -1.96829
+      ]
+    },
+    {
+      "name": "Dried flower centre.003",
+      "group": "coffee table",
+      "min": [
+        3.511805,
+        0.898,
+        -1.96649
+      ],
+      "max": [
+        3.539805,
+        0.922,
+        -1.93849
+      ]
+    },
+    {
+      "name": "Dried flower stem.004",
+      "group": "coffee table",
+      "min": [
+        3.403728,
+        0.719272,
+        -2.0127
+      ],
+      "max": [
+        3.482369,
+        0.965728,
+        -1.997524
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.028",
+      "group": "coffee table",
+      "min": [
+        3.420097,
+        0.959,
+        -2.020223
+      ],
+      "max": [
+        3.458097,
+        0.971,
+        -2.000223
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.029",
+      "group": "coffee table",
+      "min": [
+        3.407672,
+        0.959,
+        -1.994423
+      ],
+      "max": [
+        3.445672,
+        0.971,
+        -1.974423
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.030",
+      "group": "coffee table",
+      "min": [
+        3.379753,
+        0.959,
+        -1.988051
+      ],
+      "max": [
+        3.417753,
+        0.971,
+        -1.968051
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.031",
+      "group": "coffee table",
+      "min": [
+        3.357365,
+        0.959,
+        -2.005905
+      ],
+      "max": [
+        3.395365,
+        0.971,
+        -1.985905
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.032",
+      "group": "coffee table",
+      "min": [
+        3.357365,
+        0.959,
+        -2.034541
+      ],
+      "max": [
+        3.395365,
+        0.971,
+        -2.014541
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.033",
+      "group": "coffee table",
+      "min": [
+        3.379753,
+        0.959,
+        -2.052396
+      ],
+      "max": [
+        3.417753,
+        0.971,
+        -2.032396
+      ]
+    },
+    {
+      "name": "Dried chamomile petals.034",
+      "group": "coffee table",
+      "min": [
+        3.407672,
+        0.959,
+        -2.046024
+      ],
+      "max": [
+        3.445672,
+        0.971,
+        -2.026024
+      ]
+    },
+    {
+      "name": "Dried flower centre.004",
+      "group": "coffee table",
+      "min": [
+        3.392097,
+        0.953,
+        -2.024223
+      ],
+      "max": [
+        3.420097,
+        0.977,
+        -1.996223
+      ]
+    },
+    {
+      "name": "Shelf studio pottery",
+      "group": "shelf ceramics",
+      "min": [
+        -3.02,
+        4.38,
+        -3.89
+      ],
+      "max": [
+        -2.78,
+        4.66,
+        -3.65
+      ]
+    },
+    {
+      "name": "Shelf studio pottery lip",
+      "group": "shelf ceramics",
+      "min": [
+        -2.9936,
+        4.6534,
+        -3.8636
+      ],
+      "max": [
+        -2.8064,
+        4.6666,
+        -3.6764
+      ]
+    },
+    {
+      "name": "Shelf studio pottery bottom",
+      "group": "shelf ceramics",
+      "min": [
+        -2.9816,
+        4.3982,
+        -3.8516
+      ],
+      "max": [
+        -2.8184,
+        4.4066,
+        -3.6884
+      ]
+    },
+    {
+      "name": "Shelf studio pottery.001",
+      "group": "shelf ceramics",
+      "min": [
+        -2.62,
+        4.38,
+        -3.87
+      ],
+      "max": [
+        -2.42,
+        4.75,
+        -3.67
+      ]
+    },
+    {
+      "name": "Shelf studio pottery lip.001",
+      "group": "shelf ceramics",
+      "min": [
+        -2.598,
+        4.7445,
+        -3.848
+      ],
+      "max": [
+        -2.442,
+        4.7555,
+        -3.692
+      ]
+    },
+    {
+      "name": "Shelf studio pottery bottom.001",
+      "group": "shelf ceramics",
+      "min": [
+        -2.588,
+        4.40405,
+        -3.838
+      ],
+      "max": [
+        -2.452,
+        4.41515,
+        -3.702
+      ]
+    },
+    {
+      "name": "Shelf studio pottery.002",
+      "group": "shelf ceramics",
+      "min": [
+        -2.29,
+        4.38,
+        -3.9
+      ],
+      "max": [
+        -2.03,
+        4.6,
+        -3.64
+      ]
+    },
+    {
+      "name": "Shelf studio pottery lip.002",
+      "group": "shelf ceramics",
+      "min": [
+        -2.2614,
+        4.59285,
+        -3.8714
+      ],
+      "max": [
+        -2.0586,
+        4.60715,
+        -3.6686
+      ]
+    },
+    {
+      "name": "Shelf studio pottery bottom.002",
+      "group": "shelf ceramics",
+      "min": [
+        -2.2484,
+        4.3943,
+        -3.8584
+      ],
+      "max": [
+        -2.0716,
+        4.4009,
+        -3.6816
+      ]
+    },
+    {
+      "name": "Pot saucer.004",
+      "group": "console greenery",
+      "min": [
+        -1.449408,
+        0.0,
+        4.250592
+      ],
+      "max": [
+        -1.150592,
+        0.01624,
+        4.549408
+      ]
+    },
+    {
+      "name": "Ceramic planter.004",
+      "group": "console greenery",
+      "min": [
+        -1.432667,
+        0.0174,
+        4.267333
+      ],
+      "max": [
+        -1.167333,
+        0.2668,
+        4.532668
+      ]
+    },
+    {
+      "name": "Planter rim soil.004",
+      "group": "console greenery",
+      "min": [
+        -1.422728,
+        0.26448,
+        4.277272
+      ],
+      "max": [
+        -1.177272,
+        0.27144,
+        4.522728
+      ]
+    },
+    {
+      "name": "Planter rolled lip.004",
+      "group": "console greenery",
+      "min": [
+        -1.439432,
+        0.2639,
+        4.260568
+      ],
+      "max": [
+        -1.160568,
+        0.2813,
+        4.539432
+      ]
+    },
+    {
+      "name": "Living plant petiole.044",
+      "group": "console greenery",
+      "min": [
+        -1.304299,
+        0.197774,
+        4.39536
+      ],
+      "max": [
+        -1.088,
+        0.49636,
+        4.40464
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.044",
+      "group": "console greenery",
+      "min": [
+        -1.13064,
+        0.47734,
+        4.3304
+      ],
+      "max": [
+        -0.93344,
+        0.5336,
+        4.4696
+      ]
+    },
+    {
+      "name": "Leaf midrib.044",
+      "group": "console greenery",
+      "min": [
+        -1.091668,
+        0.491939,
+        4.39884
+      ],
+      "max": [
+        -0.933904,
+        0.538062,
+        4.40116
+      ]
+    },
+    {
+      "name": "Living plant petiole.045",
+      "group": "console greenery",
+      "min": [
+        -1.458131,
+        0.197774,
+        4.395527
+      ],
+      "max": [
+        -1.295542,
+        0.605546,
+        4.545522
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.045",
+      "group": "console greenery",
+      "min": [
+        -1.573906,
+        0.58754,
+        4.507296
+      ],
+      "max": [
+        -1.420915,
+        0.6438,
+        4.655094
+      ]
+    },
+    {
+      "name": "Leaf midrib.045",
+      "group": "console greenery",
+      "min": [
+        -1.570114,
+        0.602139,
+        4.540336
+      ],
+      "max": [
+        -1.453028,
+        0.648262,
+        4.648021
+      ]
+    },
+    {
+      "name": "Living plant petiole.046",
+      "group": "console greenery",
+      "min": [
+        -1.304623,
+        0.197774,
+        4.187682
+      ],
+      "max": [
+        -1.277523,
+        0.715147,
+        4.404284
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.046",
+      "group": "console greenery",
+      "min": [
+        -1.346433,
+        0.69774,
+        4.034782
+      ],
+      "max": [
+        -1.207743,
+        0.754,
+        4.23126
+      ]
+    },
+    {
+      "name": "Leaf midrib.046",
+      "group": "console greenery",
+      "min": [
+        -1.283302,
+        0.712339,
+        4.035245
+      ],
+      "max": [
+        -1.2676,
+        0.758462,
+        4.192431
+      ]
+    },
+    {
+      "name": "Living plant petiole.047",
+      "group": "console greenery",
+      "min": [
+        -1.304455,
+        0.197774,
+        4.395589
+      ],
+      "max": [
+        -1.167968,
+        0.824978,
+        4.569821
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.047",
+      "group": "console greenery",
+      "min": [
+        -1.208225,
+        0.80794,
+        4.532702
+      ],
+      "max": [
+        -1.064473,
+        0.8642,
+        4.69166
+      ]
+    },
+    {
+      "name": "Leaf midrib.047",
+      "group": "console greenery",
+      "min": [
+        -1.173398,
+        0.822539,
+        4.564573
+      ],
+      "max": [
+        -1.075889,
+        0.868662,
+        4.690229
+      ]
+    },
+    {
+      "name": "Living plant petiole.048",
+      "group": "console greenery",
+      "min": [
+        -1.5089,
+        0.197774,
+        4.359851
+      ],
+      "max": [
+        -1.295764,
+        0.49636,
+        4.404572
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.048",
+      "group": "console greenery",
+      "min": [
+        -1.6612,
+        0.47734,
+        4.284837
+      ],
+      "max": [
+        -1.466883,
+        0.5336,
+        4.42385
+      ]
+    },
+    {
+      "name": "Leaf midrib.048",
+      "group": "console greenery",
+      "min": [
+        -1.660743,
+        0.491939,
+        4.336598
+      ],
+      "max": [
+        -1.505281,
+        0.538062,
+        4.365566
+      ]
+    },
+    {
+      "name": "Living plant petiole.049",
+      "group": "console greenery",
+      "min": [
+        -1.304331,
+        0.197774,
+        4.282794
+      ],
+      "max": [
+        -1.12021,
+        0.605546,
+        4.404404
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.049",
+      "group": "console greenery",
+      "min": [
+        -1.157541,
+        0.58754,
+        4.184062
+      ],
+      "max": [
+        -0.991664,
+        0.6438,
+        4.326121
+      ]
+    },
+    {
+      "name": "Leaf midrib.049",
+      "group": "console greenery",
+      "min": [
+        -1.125088,
+        0.602139,
+        4.201421
+      ],
+      "max": [
+        -0.991782,
+        0.648262,
+        4.28806
+      ]
+    },
+    {
+      "name": "Living plant petiole.050",
+      "group": "console greenery",
+      "min": [
+        -1.357527,
+        0.197774,
+        4.395842
+      ],
+      "max": [
+        -1.295512,
+        0.715147,
+        4.606109
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.050",
+      "group": "console greenery",
+      "min": [
+        -1.437717,
+        0.69774,
+        4.563805
+      ],
+      "max": [
+        -1.298417,
+        0.754,
+        4.754537
+      ]
+    },
+    {
+      "name": "Leaf midrib.050",
+      "group": "console greenery",
+      "min": [
+        -1.39394,
+        0.712339,
+        4.601422
+      ],
+      "max": [
+        -1.351917,
+        0.758462,
+        4.754099
+      ]
+    },
+    {
+      "name": "Living plant petiole.051",
+      "group": "console greenery",
+      "min": [
+        -1.401849,
+        0.197774,
+        4.211051
+      ],
+      "max": [
+        -1.295679,
+        0.824978,
+        4.40422
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.051",
+      "group": "console greenery",
+      "min": [
+        -1.495308,
+        0.80794,
+        4.075843
+      ],
+      "max": [
+        -1.354902,
+        0.8642,
+        4.250232
+      ]
+    },
+    {
+      "name": "Leaf midrib.051",
+      "group": "console greenery",
+      "min": [
+        -1.471624,
+        0.822539,
+        4.076051
+      ],
+      "max": [
+        -1.396459,
+        0.868662,
+        4.21603
+      ]
+    },
+    {
+      "name": "Living plant petiole.052",
+      "group": "console greenery",
+      "min": [
+        -1.304049,
+        0.197774,
+        4.395629
+      ],
+      "max": [
+        -1.100091,
+        0.49636,
+        4.474483
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.052",
+      "group": "console greenery",
+      "min": [
+        -1.140474,
+        0.47734,
+        4.420509
+      ],
+      "max": [
+        -0.954724,
+        0.5336,
+        4.559447
+      ]
+    },
+    {
+      "name": "Leaf midrib.052",
+      "group": "console greenery",
+      "min": [
+        -1.103911,
+        0.491939,
+        4.46902
+      ],
+      "max": [
+        -0.955077,
+        0.538062,
+        4.52379
+      ]
+    },
+    {
+      "name": "Living plant petiole.053",
+      "group": "console greenery",
+      "min": [
+        -1.496191,
+        0.197774,
+        4.395727
+      ],
+      "max": [
+        -1.295922,
+        0.605546,
+        4.485612
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.053",
+      "group": "console greenery",
+      "min": [
+        -1.637603,
+        0.58754,
+        4.434448
+      ],
+      "max": [
+        -1.455981,
+        0.6438,
+        4.574323
+      ]
+    },
+    {
+      "name": "Leaf midrib.053",
+      "group": "console greenery",
+      "min": [
+        -1.637307,
+        0.602139,
+        4.48027
+      ],
+      "max": [
+        -1.491681,
+        0.648262,
+        4.543412
+      ]
+    },
+    {
+      "name": "Living plant petiole.054",
+      "group": "console greenery",
+      "min": [
+        -1.304247,
+        0.197774,
+        4.205912
+      ],
+      "max": [
+        -1.20908,
+        0.715147,
+        4.404128
+      ]
+    },
+    {
+      "name": "Curved botanical leaf.054",
+      "group": "console greenery",
+      "min": [
+        -1.25885,
+        0.69774,
+        4.066513
+      ],
+      "max": [
+        -1.118689,
+        0.754,
+        4.245921
+      ]
+    },
+    {
+      "name": "Leaf midrib.054",
+      "group": "console greenery",
+      "min": [
+        -1.214382,
+        0.712339,
+        4.06678
+      ],
+      "max": [
+        -1.147266,
+        0.758462,
+        4.210681
+      ]
+    },
+    {
+      "name": "Watering jug",
+      "group": "flower stand details",
+      "min": [
+        -5.183,
+        0.81,
+        1.767
+      ],
+      "max": [
+        -5.017,
+        1.0,
+        1.933
+      ]
+    },
+    {
+      "name": "Watering jug lip",
+      "group": "flower stand details",
+      "min": [
+        -5.16474,
+        0.995435,
+        1.78526
+      ],
+      "max": [
+        -5.03526,
+        1.004565,
+        1.91474
+      ]
+    },
+    {
+      "name": "Watering jug bottom",
+      "group": "flower stand details",
+      "min": [
+        -5.15644,
+        0.82235,
+        1.79356
+      ],
+      "max": [
+        -5.04356,
+        0.82805,
+        1.90644
+      ]
+    },
+    {
+      "name": "Jug handle",
+      "group": "flower stand details",
+      "min": [
+        -5.046364,
+        0.873636,
+        1.841
+      ],
+      "max": [
+        -4.96103,
+        1.007324,
+        1.859
+      ]
+    },
+    {
+      "name": "Guest wall sconce plate",
+      "group": "guest lamp",
+      "min": [
+        -6.4025,
+        3.09,
+        4.08
+      ],
+      "max": [
+        -6.3775,
+        3.31,
+        4.22
+      ]
+    },
+    {
+      "name": "Guest sconce arm",
+      "group": "guest lamp",
+      "min": [
+        -6.36,
+        3.105573,
+        4.136
+      ],
+      "max": [
+        -6.076718,
+        3.238137,
+        4.164
+      ]
+    },
+    {
+      "name": "Guest pleated sconce shade",
+      "group": "guest lamp",
+      "min": [
+        -6.3,
+        2.98,
+        3.94
+      ],
+      "max": [
+        -5.88,
+        3.29,
+        4.36
+      ]
+    },
+    {
+      "name": "Guest sconce diffuser",
+      "group": "guest lamp glow",
+      "min": [
+        -6.286,
+        2.975,
+        3.954
+      ],
+      "max": [
+        -5.894,
+        2.983,
+        4.346
+      ]
+    },
+    {
+      "name": "Overfilled floor seat cushion",
+      "group": "lounge",
+      "min": [
+        2.04,
+        0.225,
+        -0.24
+      ],
+      "max": [
+        3.96,
+        0.875,
+        1.4
+      ]
+    },
+    {
+      "name": "Reclining filled back cushion",
+      "group": "lounge",
+      "min": [
+        2.08,
+        0.710241,
+        1.322366
+      ],
+      "max": [
+        3.92,
+        1.929759,
+        2.117634
+      ]
+    },
+    {
+      "name": "Plump foot cushion",
+      "group": "lounge",
+      "min": [
+        2.285,
+        0.18,
+        -1.345
+      ],
+      "max": [
+        3.715,
+        0.54,
+        -0.495
+      ]
+    },
+    {
+      "name": "Floor chair curved back support",
+      "group": "lounge",
+      "min": [
+        2.185,
+        0.216618,
+        1.547659
+      ],
+      "max": [
+        2.255,
+        1.452133,
+        2.07283
+      ]
+    },
+    {
+      "name": "Floor chair curved back support.001",
+      "group": "lounge",
+      "min": [
+        3.745,
+        0.216618,
+        1.547659
+      ],
+      "max": [
+        3.815,
+        1.452133,
+        2.07283
+      ]
+    },
+    {
+      "name": "Floor chair back lower rail",
+      "group": "lounge",
+      "min": [
+        2.18,
+        0.635,
+        1.78
+      ],
+      "max": [
+        3.82,
+        0.705,
+        1.86
+      ]
+    },
+    {
+      "name": "Seat cushion stitched welt",
+      "group": "lounge",
+      "min": [
+        2.030885,
+        0.556,
+        -0.249099
+      ],
+      "max": [
+        3.969,
+        0.564,
+        1.409099
+      ]
+    },
+    {
+      "name": "Back cushion stitched welt",
+      "group": "lounge",
+      "min": [
+        2.070952,
+        0.735429,
+        1.435681
+      ],
+      "max": [
+        3.928999,
+        1.90462,
+        2.004368
+      ]
+    },
+    {
+      "name": "Plump moss pillow",
+      "group": "soft furnishings",
+      "min": [
+        2.92,
+        0.871821,
+        0.54
+      ],
+      "max": [
+        3.56,
+        1.095343,
+        1.02
+      ]
+    },
+    {
+      "name": "Draped golden woven blanket",
+      "group": "soft furnishings",
+      "min": [
+        2.3,
+        0.834657,
+        0.08
+      ],
+      "max": [
+        2.83,
+        0.909551,
+        0.92
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe",
+      "group": "soft furnishings",
+      "min": [
+        2.307734,
+        0.830028,
+        0.039373
+      ],
+      "max": [
+        2.319266,
+        0.843519,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.001",
+      "group": "soft furnishings",
+      "min": [
+        2.349734,
+        0.839523,
+        0.039373
+      ],
+      "max": [
+        2.361266,
+        0.853014,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.002",
+      "group": "soft furnishings",
+      "min": [
+        2.391734,
+        0.847064,
+        0.039373
+      ],
+      "max": [
+        2.403266,
+        0.860555,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.003",
+      "group": "soft furnishings",
+      "min": [
+        2.433734,
+        0.853088,
+        0.039373
+      ],
+      "max": [
+        2.445266,
+        0.866579,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.004",
+      "group": "soft furnishings",
+      "min": [
+        2.475734,
+        0.857903,
+        0.039373
+      ],
+      "max": [
+        2.487266,
+        0.871394,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.005",
+      "group": "soft furnishings",
+      "min": [
+        2.517734,
+        0.861733,
+        0.039373
+      ],
+      "max": [
+        2.529266,
+        0.875224,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.006",
+      "group": "soft furnishings",
+      "min": [
+        2.559734,
+        0.864753,
+        0.039373
+      ],
+      "max": [
+        2.571266,
+        0.878244,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.007",
+      "group": "soft furnishings",
+      "min": [
+        2.601734,
+        0.867101,
+        0.039373
+      ],
+      "max": [
+        2.613266,
+        0.880592,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.008",
+      "group": "soft furnishings",
+      "min": [
+        2.643734,
+        0.868891,
+        0.039373
+      ],
+      "max": [
+        2.655266,
+        0.882382,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.009",
+      "group": "soft furnishings",
+      "min": [
+        2.685734,
+        0.870222,
+        0.039373
+      ],
+      "max": [
+        2.697266,
+        0.883713,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.010",
+      "group": "soft furnishings",
+      "min": [
+        2.727734,
+        0.871176,
+        0.039373
+      ],
+      "max": [
+        2.739266,
+        0.884667,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.011",
+      "group": "soft furnishings",
+      "min": [
+        2.769734,
+        0.87183,
+        0.039373
+      ],
+      "max": [
+        2.781266,
+        0.885321,
+        0.080627
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe.012",
+      "group": "soft furnishings",
+      "min": [
+        2.811734,
+        0.872248,
+        0.039373
+      ],
+      "max": [
+        2.823266,
+        0.885739,
+        0.080627
+      ]
+    },
+    {
+      "name": "Media concealed light channel",
+      "group": "media shelf light",
+      "min": [
+        1.18,
+        1.3065,
+        -3.5125
+      ],
+      "max": [
+        5.22,
+        1.3205,
+        -3.4675
+      ]
+    },
+    {
+      "name": "Media warm LED diffuser",
+      "group": "media lamp glow",
+      "min": [
+        1.21,
+        1.2995,
+        -3.5025
+      ],
+      "max": [
+        5.19,
+        1.3055,
+        -3.4775
+      ]
     }
   ],
-  "sourceObjectCount": 1424,
+  "sourceObjectCount": 1664,
   "lights": {
     "desk": {
       "position": [
@@ -20357,6 +23774,42 @@
         -1.9,
         4.18,
         -3.4
+      ]
+    ],
+    "guest": {
+      "position": [
+        -6.09,
+        2.92,
+        4.15
+      ],
+      "target": [
+        -5.4,
+        1.35,
+        3.7
+      ]
+    },
+    "console": {
+      "position": [
+        -3.25,
+        1.61,
+        3.72
+      ],
+      "target": [
+        -2.7,
+        0.55,
+        3.6
+      ]
+    },
+    "media": [
+      [
+        2.15,
+        1.288,
+        -3.39
+      ],
+      [
+        4.25,
+        1.288,
+        -3.39
       ]
     ]
   },

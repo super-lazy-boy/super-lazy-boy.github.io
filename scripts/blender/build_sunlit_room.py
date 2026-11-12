@@ -392,6 +392,8 @@ for i in range(3):cylinder('Guest pencil',(-4.20+i*.02,.96,3.99),.005,.24,oak)
 sys.path.insert(0,str(Path(__file__).parent))
 from room_enrichment import enrich
 enrich(globals())
+from cozy_room import furnish
+furnish(globals())
 
 # Apply all modifiers once. Export meshes grouped by authored object collection,
 # not by tiny component, keeping browser draw calls bounded without losing detail.
@@ -418,7 +420,7 @@ for obj in bpy.context.scene.objects:
     corners=[obj.matrix_world@Vector(p) for p in obj.bound_box]
     corners=[(v.x,v.z,-v.y) for v in corners]
     components.append({'name':obj.name,'group':obj.get('asset_group',''),'min':[round(min(p[a] for p in corners),6) for a in range(3)],'max':[round(max(p[a] for p in corners),6) for a in range(3)]})
-manifest={'version':'sunlit-room-2','units':'existing room world units, Y up','assets':inventory,'obstacles':bounds,'components':components,'sourceObjectCount':len(bpy.context.scene.objects),'lights':light_anchors,'screen':{'position':[-3.713,2.70,-.60],'size':[2.16,1.23]},'artwork':artwork_anchor}
+manifest={'version':'sunlit-room-3','units':'existing room world units, Y up','assets':inventory,'obstacles':bounds,'components':components,'sourceObjectCount':len(bpy.context.scene.objects),'lights':light_anchors,'screen':{'position':[-3.713,2.70,-.60],'size':[2.16,1.23]},'artwork':artwork_anchor}
 (OUT/'layout.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
 
 # Preserve the editable individual components in the native source file.
@@ -431,18 +433,21 @@ nodes=world.node_tree.nodes;links=world.node_tree.links
 camera_white=nodes.new('ShaderNodeBackground');camera_white.inputs['Color'].default_value=(1,1,1,1);camera_white.inputs['Strength'].default_value=64
 path=nodes.new('ShaderNodeLightPath');mix=nodes.new('ShaderNodeMixShader')
 links.new(path.outputs['Is Camera Ray'],mix.inputs[0]);links.new(nodes['Background'].outputs[0],mix.inputs[1]);links.new(camera_white.outputs[0],mix.inputs[2]);links.new(mix.outputs[0],nodes['World Output'].inputs['Surface'])
-light=bpy.data.lights.new('Afternoon sun','SUN');light.energy=3;light.angle=.035
+light=bpy.data.lights.new('Afternoon sun','SUN');light.energy=2.75;light.angle=.035
 sun=bpy.data.objects.new('Afternoon sun',light);scene.collection.objects.link(sun)
 sun.rotation_euler=(Vector(xyz((0,0,0)))-Vector(xyz((-13,8,1.8)))).to_track_quat('-Z','Y').to_euler()
-light=bpy.data.lights.new('Soft open room fill','AREA');light.energy=700;light.shape='DISK';light.size=9
+light=bpy.data.lights.new('Soft open room fill','AREA');light.energy=470;light.shape='DISK';light.size=9
 fill=bpy.data.objects.new('Soft open room fill',light);scene.collection.objects.link(fill);fill.location=xyz((3,7,6));fill.rotation_euler=(Vector(xyz((0,1,0)))-fill.location).to_track_quat('-Z','Y').to_euler()
 # Lamp placements are exported as metadata; web and native QA share anchors.
-for key,power,color,size in [('desk',24,(1,.84,.63),.35),('floor',105,(1,.70,.43),.75),('picture',13,(1,.88,.71),.60)]:
+for key,power,color,size in [('desk',35,(1,.78,.51),.28),('floor',120,(1,.69,.40),.65),('picture',18,(1,.84,.61),.50),('guest',42,(1,.75,.47),.28),('console',24,(1,.72,.42),.34)]:
     anchor=light_anchors[key];data=bpy.data.lights.new('Night '+key,'AREA');data.energy=0;data['night_energy']=power;data.color=color;data.shape='DISK';data.size=size
     obj=bpy.data.objects.new('Night '+key,data);scene.collection.objects.link(obj);obj.location=xyz(anchor['position']);obj.rotation_euler=(Vector(xyz(anchor['target']))-obj.location).to_track_quat('-Z','Y').to_euler()
 for i,p in enumerate(light_anchors['shelves']):
     data=bpy.data.lights.new('Night shelf '+str(i),'AREA');data.energy=0;data['night_energy']=6;data.color=(1,.79,.55);data.shape='RECTANGLE';data.size=3.6;data.size_y=.10
     obj=bpy.data.objects.new(data.name,data);scene.collection.objects.link(obj);obj.location=xyz(p);obj.rotation_euler=(Vector(xyz([p[0],p[1]-.4,p[2]-.10]))-obj.location).to_track_quat('-Z','Y').to_euler()
+for i,p in enumerate(light_anchors['media']):
+    data=bpy.data.lights.new('Night media '+str(i),'AREA');data.energy=0;data['night_energy']=4;data.color=(1,.78,.50);data.shape='RECTANGLE';data.size=1.7;data.size_y=.08
+    obj=bpy.data.objects.new(data.name,data);scene.collection.objects.link(obj);obj.location=xyz(p);obj.rotation_euler=(Vector(xyz([p[0],.6,-3.75]))-obj.location).to_track_quat('-Z','Y').to_euler()
 camera=bpy.data.cameras.new('Room overview');cam=bpy.data.objects.new('Room overview',camera);scene.collection.objects.link(cam);cam.location=xyz((13,10,15));cam.rotation_euler=(Vector(xyz((-.3,1.6,.3)))-cam.location).to_track_quat('-Z','Y').to_euler();camera.type='ORTHO';camera.ortho_scale=20;scene.camera=cam
 scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=True
 scene.render.resolution_x=1500;scene.render.resolution_y=1100;scene.render.resolution_percentage=100

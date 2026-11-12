@@ -1,5 +1,5 @@
 """Additional offline visual QA of the actual native source, not browser captures."""
-import bpy
+import bpy,sys
 from pathlib import Path
 from mathutils import Vector
 root=Path(__file__).resolve().parents[2]
@@ -8,6 +8,10 @@ bpy.ops.wm.open_mainfile(filepath=str(root/'design/sunlit-room.blend'))
 for mode in ('day','night'):
     bpy.ops.wm.open_mainfile(filepath=str(root/'design/sunlit-room.blend'))
     scene=bpy.context.scene;scene.cycles.samples=24;scene.cycles.max_bounces=6
+    if '--records' in sys.argv:
+        sys.path.insert(0,str(root/'scripts/blender'))
+        from preview_records import add_records
+        add_records(root)
     scene.render.resolution_x=1280;scene.render.resolution_y=960
     if mode=='night':
         for obj in scene.objects:
@@ -25,4 +29,4 @@ for mode in ('day','night'):
         ('lounge',(6.9,4.1,-1.8),(3.1,.8,.75),5.6),
     ]:
         camera=scene.camera;camera.location=xyz(position);camera.rotation_euler=(xyz(target)-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.type='ORTHO';camera.data.ortho_scale=scale
-        scene.render.filepath=str(root/('work/qa/v2-'+mode+'-'+name+'.png'));bpy.ops.render.render(write_still=True)
+        scene.render.filepath=str(root/('work/qa/v3-'+mode+'-'+name+'.png'));bpy.ops.render.render(write_still=True)

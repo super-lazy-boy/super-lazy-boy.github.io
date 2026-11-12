@@ -4,6 +4,7 @@ import {useThree} from '@react-three/fiber';
 import {RoundedBox} from '@react-three/drei';
 import * as THREE from 'three';
 import {recordCover,type RoomRecord} from '@/lib/room-types';
+import {recordPrintMaterial} from '@/lib/record-print-material';
 
 const covers=new Map<string,Promise<THREE.Texture|null>>();
 function useCover(record:RoomRecord|undefined,enabled:boolean){
@@ -97,12 +98,14 @@ function useBookSpine(record:RoomRecord|undefined){
 }
 export default function BookObject({record,w,h,detail=false}:{record?:RoomRecord;w:number;h:number;detail?:boolean}){
  const spine=useBookSpine(record),cover=useCover(record,detail),color=record?.color||'#fafaf7';
+ const spineMaterial=useMemo(()=>recordPrintMaterial(spine),[spine]),coverMaterial=useMemo(()=>recordPrintMaterial(cover),[cover]);
+ useEffect(()=>()=>{spineMaterial.dispose();coverMaterial.dispose();},[spineMaterial,coverMaterial]);
  return <group>
   <mesh position={[0,h/2,-.012]} castShadow receiveShadow><boxGeometry args={[w-.022,h-.025,.40]}/><meshStandardMaterial color="#eeece4" roughness={.94}/></mesh>
   {[-1,1].map(side=><mesh key={side} position={[side*(w/2-.006),h/2,0]} castShadow><boxGeometry args={[.012,h,.46]}/><meshStandardMaterial color={color} roughness={.72}/></mesh>)}
   <RoundedBox position={[0,h/2,.218]} args={[w,h,.025]} radius={.009} smoothness={2} castShadow><meshStandardMaterial color={color} roughness={.65}/></RoundedBox>
-  {spine&&<mesh position={[0,h/2,.232]}><planeGeometry args={[w-.008,h-.01]}/><meshBasicMaterial map={spine} toneMapped={false}/></mesh>}
-  {cover&&[-1,1].map(side=><mesh key={side} position={[side*(w/2+.001),h/2,0]} rotation={[0,side*Math.PI/2,0]}><planeGeometry args={[.46,h]}/><meshBasicMaterial map={cover} toneMapped={false}/></mesh>)}
+  {spine&&<mesh position={[0,h/2,.232]} material={spineMaterial} receiveShadow><planeGeometry args={[w-.008,h-.01]}/></mesh>}
+  {cover&&[-1,1].map(side=><mesh key={side} position={[side*(w/2+.001),h/2,0]} rotation={[0,side*Math.PI/2,0]} material={coverMaterial} receiveShadow><planeGeometry args={[.46,h]}/></mesh>)}
   {detail&&Array.from({length:6},(_,i)=><mesh key={i} position={[-w*.36+i*w*.14,h/2,-.214]}><boxGeometry args={[.001,h-.04,.001]}/><meshStandardMaterial color="#d5d2c8"/></mesh>)}
  </group>;
 }

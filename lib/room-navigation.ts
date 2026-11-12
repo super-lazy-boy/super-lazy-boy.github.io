@@ -2,7 +2,7 @@ import * as THREE from "three";
 import type {Zone} from "./room-types";
 
 export type Vec3=[number,number,number];
-export const ROOM_HOVER_TIMING={enter:2400,leave:3000,cooldown:1500,grace:150} as const;
+export const ROOM_HOVER_TIMING={enter:5000,leave:5000,cooldown:450,grace:180} as const;
 export const ROOM_VIEWS:Record<Zone,{camera:Vec3;target:Vec3;distance:[number,number]}>= {
   overview:{camera:[13,9.2,14.8],target:[-.35,1.7,.5],distance:[16,25]},
   office:{camera:[1.25,4.65,3.35],target:[-3.48,1.85,-.55],distance:[5.3,8.4]},
@@ -13,7 +13,19 @@ export const ROOM_VIEWS:Record<Zone,{camera:Vec3;target:Vec3;distance:[number,nu
 /** Only an explicit screen click enters this second, stable camera view. */
 export const ROOM_FOCUS:{camera:Vec3;target:Vec3}={camera:[-1.05,2.76,-.60],target:[-3.73,2.70,-.60]};
 
-export const ASSET_ZONES:Record<string,Zone>={desk:'office','desk details':'office','desk flowers':'office',chair:'office','computer tower':'office','desk lamp':'office',bookshelf:'books','shelf greenery':'books','media cabinet':'cinema',player:'cinema','projection screen':'cinema',lounge:'cinema','soft furnishings':'cinema','side table':'cinema','game controller':'cinema',projector:'cinema','floor lamp':'cinema','guest corner':'guestbook','starry night':'office','picture light':'office','flower stand':'office','office botanicals':'office','cinema botanicals':'cinema','guest botanicals':'guestbook','flowers daisies':'office','flowers jasmine':'office','desk lamp glow':'office','floor lamp glow':'cinema','picture lamp glow':'office','shelf lamp glow':'books','shelf light':'books','storage basket':'cinema'};
+/** Bounded camera follow, shared with the actual-mesh clearance tests. */
+export function roomCameraPose(zone:Zone,x:number,y:number,enabled=true){
+  const view=ROOM_VIEWS[zone],camera=new THREE.Vector3(...view.camera),target=new THREE.Vector3(...view.target);
+  if(enabled){
+    const strength=zone==='overview'?.55:zone==='guestbook'?.035:zone==='books'?.075:.12;
+    const forward=camera.clone().sub(target),right=new THREE.Vector3(forward.z,0,-forward.x).normalize();
+    camera.addScaledVector(right,THREE.MathUtils.clamp(x,-1,1)*strength);camera.y+=THREE.MathUtils.clamp(y,-1,1)*strength*.4;
+    target.addScaledVector(right,THREE.MathUtils.clamp(x,-1,1)*strength*.12);
+  }
+  return {camera:camera.toArray() as Vec3,target:target.toArray() as Vec3};
+}
+
+export const ASSET_ZONES:Record<string,Zone>={desk:'office','desk details':'office','desk flowers':'office',chair:'office','computer tower':'office','desk lamp':'office',bookshelf:'books','shelf greenery':'books','media cabinet':'cinema','media shelf light':'cinema','media lamp glow':'cinema',player:'cinema','projection screen':'cinema',lounge:'cinema','soft furnishings':'cinema','side table':'cinema','game controller':'cinema',projector:'cinema','floor lamp':'cinema','guest corner':'guestbook','starry night':'office','picture light':'office','flower stand':'office','office botanicals':'office','cinema botanicals':'cinema','guest botanicals':'guestbook','flowers daisies':'office','flowers jasmine':'office','desk lamp glow':'office','floor lamp glow':'cinema','picture lamp glow':'office','shelf lamp glow':'books','shelf light':'books','storage basket':'cinema','record console':'cinema','turntable':'cinema',guitar:'cinema','coffee table':'cinema','shelf ceramics':'books','console greenery':'cinema','flower stand details':'office','guest lamp':'guestbook','guest lamp glow':'guestbook','console lamp':'cinema','console lamp glow':'cinema'};
 export function objectRoomZone(object:THREE.Object3D):Zone {
   for(let node:THREE.Object3D|null=object;node;node=node.parent){
     if(node.userData.roomZone)return node.userData.roomZone;
@@ -60,7 +72,6 @@ export class RoomHoverIntent {
   private blockedUntil=0;
   private gapSince:number|null=null;
   point(next:Zone|null,current:Zone,now:number){
-    if(now<this.blockedUntil){this.cancel();return;}
     if(next==='overview'&&this.candidate&&this.candidate!=='overview'){
       if(this.gapSince===null)this.gapSince=now;
       if(now-this.gapSince<ROOM_HOVER_TIMING.grace)return;
@@ -68,7 +79,7 @@ export class RoomHoverIntent {
     if(next===current)next=null;
     if(next===this.candidate&&this.gapSince!==null){this.since+=now-this.gapSince;this.gapSince=null;return;}
     this.gapSince=null;
-    if(next!==this.candidate){this.candidate=next;this.since=now;}
+    if(next!==this.candidate){this.candidate=next;this.since=Math.max(now,this.blockedUntil);}
   }
   reset(now=0,cooldown=0){this.candidate=null;this.since=now;this.blockedUntil=now+cooldown;this.gapSince=null;}
   cancel(){this.candidate=null;this.since=0;this.gapSince=null;}

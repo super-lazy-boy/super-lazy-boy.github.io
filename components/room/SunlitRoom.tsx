@@ -42,7 +42,7 @@ export default function SunlitRoom({zone='overview',night=false,playing=false,la
     if(part==='starry night')root.rotation.y=-Math.PI/2;
     return {root,materials:[...materials.values()],curtains};
   },[scene,part,gl]);
-  useEffect(()=>{invalidate();},[data,night,playing,lamps.desk,lamps.floor,invalidate]);
+  useEffect(()=>{gl.shadowMap.needsUpdate=true;invalidate();},[data,night,playing,lamps.desk,lamps.floor,gl,invalidate]);
   useEffect(()=>()=>data.materials.forEach(m=>m.dispose()),[data]);
   useFrame((_,dt)=>{
     const reduced=typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -54,11 +54,11 @@ export default function SunlitRoom({zone='overview',night=false,playing=false,la
       if(role==='projector')mat.emissiveIntensity=power.current*2.2;
       else if(role){const enabled=role==='desk'?lamps.desk:role==='floor'?lamps.floor:true;mat.emissiveIntensity=enabled?mix.current*(playing?.20:.65):0;}
     }
-    if(Math.abs(mix.current-target)>.001||Math.abs(power.current-lit)>.001)invalidate();
+    if(Math.abs(mix.current-target)>.001||Math.abs(power.current-lit)>.001){gl.shadowMap.needsUpdate=true;invalidate();}
   });
   const groupOf=(e:ThreeEvent<MouseEvent|PointerEvent>)=>String(e.object.userData.asset_group||'');
-  return <primitive object={data.root} onClick={(e:ThreeEvent<MouseEvent>)=>{if(zone==='office'&&groupOf(e)==='starry night'&&onInspectArt&&e.delta<4){e.stopPropagation();onInspectArt();}}}
-    onPointerOver={(e:ThreeEvent<PointerEvent>)=>{if(zone==='office'&&groupOf(e)==='starry night'&&onInspectArt)document.body.style.cursor='zoom-in';}}
+  return <primitive object={data.root} onClick={(e:ThreeEvent<MouseEvent>)=>{if(groupOf(e)==='starry night'&&onInspectArt&&e.delta<4){e.stopPropagation();onInspectArt();}}}
+    onPointerOver={(e:ThreeEvent<PointerEvent>)=>{if(groupOf(e)==='starry night'&&onInspectArt)document.body.style.cursor='zoom-in';}}
     onPointerOut={()=>{document.body.style.cursor='';}}/>;
 }
 if(typeof window!=='undefined')useGLTF.preload(URL);

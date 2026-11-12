@@ -1,7 +1,7 @@
 .room-model-loading{display:flex;align-items:center;gap:16px;white-space:nowrap;padding:15px 22px;background:#fffffff2;border:1px solid #e4e3db;border-radius:3px;box-shadow:0 5px 30px #55513a08;color:#6b7267;font-size:12px;letter-spacing:.04em}
 .room-model-loading small{color:#989d92;font-size:10px;font-variant-numeric:tabular-nums}
 .current-room-name{font-size:12px;color:#7b8577;letter-spacing:.03em}
-.touch-zone-select{display:none;border:1px solid #dddcd3;background:#fff;color:#5f6a58;border-radius:3px;padding:6px 9px;font-size:11px}
+.zone-select{display:block;min-width:124px;border:1px solid #d4cabc;background:#fffcf6;color:#5d6554;border-radius:4px;padding:7px 11px;font-size:12px;cursor:pointer}
 .light-mode-toggle{display:flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid #e3e4db;border-radius:4px;font-size:10px;color:#687460;background:#fbfcf8}
 .light-mode-toggle:hover{background:#eff2e9}.light-mode-toggle:focus-visible,.screen-entry:focus-visible{outline:2px solid #879a7a;outline-offset:4px}
 .monitor-content{position:relative}.screen-entry{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;cursor:zoom-in}
@@ -9,4 +9,4 @@
 .room-lamp-controls{display:flex;gap:6px;align-items:center}.room-lamp-controls button{border:1px solid #e0e1d6;border-radius:3px;padding:5px 8px;font-size:10px;color:#9b9f95;background:#fff}.room-lamp-controls button[aria-pressed=true]{background:#f5eedf;color:#8b7548;border-color:#dfd1ad}
 .artwork-credit{font-size:11px;color:#899080;text-align:center;line-height:1.8;margin:12px 15px}.artwork-credit a{text-decoration:underline;text-underline-offset:3px}
 .room-app[data-light-mode=night] .projection-content{box-shadow:0 0 22px #dbe6ed12,inset 0 0 35px #c4d0d222}
-@media(max-width:700px),(hover:none){.touch-zone-select{display:block}.current-room-name{display:none}.light-mode-toggle{padding:6px}.light-mode-toggle span{display:none}.room-lamp-controls{gap:3px}.room-lamp-controls button{font-size:9px;padding:4px}.view-toolbar{flex-wrap:wrap}.artwork-credit span{display:block}}
+@media(max-width:700px),(hover:none){.zone-select{min-width:98px;font-size:11px}.current-room-name{display:none}.light-mode-toggle{padding:6px}.light-mode-toggle span{display:none}.room-lamp-controls{gap:3px}.room-lamp-controls button{font-size:9px;padding:4px}.view-toolbar{flex-wrap:wrap}.artwork-credit span{display:block}}

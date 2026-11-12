@@ -7,10 +7,11 @@ import bpy,math
 from mathutils import Vector,Matrix
 
 def seat_top(r,a):
-    back=max(0,min(1,(math.cos(a)+.25)/1.1));rim=.46+1.02*back+.08*abs(math.sin(a))**3
-    t=max(0,min(1,(r-.38)/.62));t=t*t*(3-2*t)
-    crease=.006*math.sin(a*15+r*9)*t*math.sin(r*math.pi)
-    return (3+.96*math.sin(a)*r,.36+.07*r*r+(rim-.43)*t+crease,.85+1.10*math.cos(a)*r)
+    back=max(0,min(1,(math.cos(a)+.25)/1.1));rim=.72+.94*back+.13*abs(math.sin(a))**3
+    t=max(0,min(1,(r-.34)/.51));t=t*t*(3-2*t)
+    roll=max(0,min(1,(r-.85)/.15));roll=roll*roll*(3-2*roll)
+    crease=.013*math.sin(a*19+r*11)*math.sin(r*math.pi)**2*max(0,r-.40)
+    return (3+.96*math.sin(a)*r,.50+(rim-.50)*t-.17*roll+crease,.85+1.10*math.cos(a)*r)
 
 def lumbar_geometry():
     # Both faces follow the actual chair surface, including the rising sides.
@@ -20,9 +21,9 @@ def lumbar_geometry():
         for row in range(rows):
             v=row/(rows-1)
             for col in range(cols):
-                u=col/(cols-1);x=3+(u-.5)*.84*(.92+.08*math.sin(math.pi*v));z=1.37+v*.35
+                u=col/(cols-1);x=3.34+(u-.5)*.57*(.92+.08*math.sin(math.pi*v));z=.80+v*.40
                 r=math.hypot((x-3)/.96,(z-.85)/1.1);a=math.atan2((x-3)/.96,(z-.85)/1.1)
-                thickness=.035+.15*max(0,math.sin(math.pi*u)*math.sin(math.pi*v))**.65
+                thickness=.035+.20*max(0,math.sin(math.pi*u)*math.sin(math.pi*v))**.65
                 verts.append((x,seat_top(r,a)[1]+.027+layer*thickness,z));uv.append((u,v))
                 if row and col:
                     n=layer*rows*cols+row*cols+col;face=(n-cols-1,n-1,n,n-cols)
@@ -130,8 +131,9 @@ def enrich(g):
     for row in range(23):
         t=row/22
         for col in range(81):
-            a=col/80*math.tau;rim=top(1,a);s=1+.035*math.sin(t*math.pi)-.07*t
-            verts.append((3+(rim[0]-3)*s,rim[1]*(1-t)+.227*t,.85+(rim[2]-.85)*s));uv.append((col/80*2,t))
+            a=col/80*math.tau;rim=top(1,a);s=1+.055*math.sin(t*math.pi)-.10*t
+            eased=t*t*(3-2*t)
+            verts.append((3+(rim[0]-3)*s,rim[1]*(1-eased)+.227*eased,.85+(rim[2]-.85)*s));uv.append((col/80*2,t))
             if row and col:n=row*81+col;faces.append((n-82,n-1,n,n-81))
     mesh('Sculpted upholstery sidewall',verts,faces,linen,uv)
     tube('Continuous upholstery welt',[tuple(Vector(top(1,i/96*math.tau))+Vector((0,.006,0))) for i in range(97)],.008,edge)

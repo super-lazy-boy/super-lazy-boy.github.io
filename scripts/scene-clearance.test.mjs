@@ -8,7 +8,7 @@ import {MeshBVH} from 'three-mesh-bvh';
 import {mergeGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import {bookPose,tapePose} from '../lib/record-motion-paths.ts';
 import {CINEMA_LAYOUT} from '../lib/cinema-layout.ts';
-import {ROOM_VIEWS,ROOM_FOCUS} from '../lib/room-navigation.ts';
+import {ROOM_VIEWS,ROOM_FOCUS,roomCameraPose} from '../lib/room-navigation.ts';
 import {LIGHT_ANCHORS,lightProfile} from '../lib/room-lighting.ts';
 import {bookSize} from '../lib/book-library.ts';
 import {memoryDrawerPose,DRAWER_DURATION_MS} from '../lib/memory-drawer.ts';
@@ -188,13 +188,46 @@ test('night lighting, screening dimming and manual lamp switches restore predict
   }
   const night=lightProfile(true,false),film=lightProfile(true,true);
   assert.ok(film.desk<night.desk&&film.floor<night.floor&&film.picture<night.picture&&film.shelf<night.shelf);
-  for(const key of ['desk','floor','picture','shelves'])assert.deepEqual(ledger.lights[key],LIGHT_ANCHORS[key]);
+  for(const key of ['desk','floor','picture','shelves','guest','console','media'])assert.deepEqual(ledger.lights[key],LIGHT_ANCHORS[key]);
 });
 
 test('lumbar cushion, throw and floor pillow stay outside the sculpted seat',()=>{
   const seat=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='lounge')));
   const soft=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='soft furnishings'));
   assert.equal(seat.intersectsGeometry(soft,identity),false,'soft furnishings cut through the seat or rug');
+});
+
+test('new console, guitar, tea table and greenery do not cut through the other furniture',()=>{
+  const additions=['record console','guitar','coffee table','console greenery'];
+  const fixed=['desk','computer tower','chair','flower stand','guest corner','lounge','soft furnishings','floor lamp','projector','side table'];
+  for(const a of additions){
+    const parts=geometry.filter((_,i)=>geometryGroups[i]===a);assert.ok(parts.length,a+' is missing');
+    const item=new MeshBVH(mergeGeometries(parts));
+    for(const b of [...fixed,...additions.filter(x=>x>a)]){
+      const other=geometry.filter((_,i)=>geometryGroups[i]===b);if(!other.length)continue;
+      assert.equal(item.intersectsGeometry(mergeGeometries(other),identity),false,a+' intersects '+b);
+    }
+  }
+  const pc=ledger.components.filter(p=>p.group==='computer tower');
+  for(const prefix of ['Motherboard PCB','CPU cooler fin','Curved cooling impeller','Real perforated hexagonal front grille','Tower side glass window','USB-C port'])assert.ok(pc.some(p=>p.name.startsWith(prefix)),'PC detail missing: '+prefix);
+});
+
+test('all mouse-follow camera positions and their transition envelopes clear furniture',()=>{
+  const cube=new THREE.Box3(new THREE.Vector3(-.06,-.06,-.06),new THREE.Vector3(.06,.06,.06));
+  for(const zone of Object.keys(ROOM_VIEWS))for(let x=-1;x<=1.001;x+=.2)for(let y=-1;y<=1.001;y+=.2){
+    const p=roomCameraPose(zone,x,y);assert.equal(tree.intersectsBox(cube,new THREE.Matrix4().makeTranslation(...p.camera)),false,zone+' mouse-follow camera hits furniture');
+  }
+  // During a transition the code uses the destination's follow amplitude.
+  // Inflate that complete path by its maximum actual offset; screen focus is fixed.
+  for(const [a,from] of Object.entries(cameraViews))for(const [b,to] of Object.entries(cameraViews)){
+    if(a===b)continue;
+    const margin=b==='screen'?0:Math.max(...[-1,1].flatMap(x=>[-1,1].map(y=>new THREE.Vector3(...roomCameraPose(b,x,y).camera).distanceTo(new THREE.Vector3(...to.camera)))));
+    const swept=cube.clone().expandByScalar(margin+.004);
+    for(let i=0;i<=300;i++){
+      const point=new THREE.Vector3(...from.camera).lerp(new THREE.Vector3(...to.camera),i/300);
+      assert.equal(tree.intersectsBox(swept,new THREE.Matrix4().makeTranslation(...point.toArray())),false,'camera follow envelope '+a+' to '+b);
+    }
+  }
 });
 
 test('all 56 tape trajectories fit the player slot without changing shape',()=>{
