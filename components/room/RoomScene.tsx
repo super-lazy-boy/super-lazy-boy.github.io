@@ -261,7 +261,12 @@ export default function RoomScene(props:Props) {
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,0,0]} receiveShadow><planeGeometry args={[200,200]}/><Surface kind="lacquer" color="#fdfdfb"/></mesh>
     <Suspense fallback={null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank("book",slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <SoftShadows size={18} samples={12} focus={.3}/>
-{null}
+    <EffectComposer multisampling={0}>
+      <N8AO aoRadius={.62} intensity={2.3} distanceFalloff={1.1} color="#3b352c"/>
+      <Bloom intensity={.08} luminanceThreshold={2.0} mipmapBlur/>
+      <Vignette offset={.2} darkness={.26}/>
+      <Noise opacity={.015}/>
+    </EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}
     {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;
