@@ -91,9 +91,9 @@ function Desk({children,onClick}:{children?:ReactNode;onClick?:()=>void}) {
       <Cylinder r={.008} h={.012} position={[1.03,2.075,.052]} rotation={[Math.PI/2,0,0]} color="#e8ecef"/>
       {children}
     </group>
-    <Bevel size={[1.33,.055,.43]} position={[-.12,1.725,.39]} color="#3b3e42" radius={.025}/>
+    <Bevel size={[1.33,.055,.43]} position={[-.12,1.725,.39]} rotation={[0,.045,0]} color="#3b3e42" radius={.025}/>
     {Array.from({length:5},(_,row)=>Array.from({length:16},(_,col)=><Box key={row+":"+col} size={[.062,.016,.052]} position={[-.72+col*.079,1.759,.22+row*.073]} color="#666a6d"/>))}
-    <Bevel size={[.22,.085,.34]} position={[1.0,1.75,.40]} color="#4d5155" radius={.07}/>
+    <Bevel size={[.22,.085,.34]} position={[1.03,1.75,.35]} rotation={[0,-.22,0]} color="#4d5155" radius={.07}/>
     <Box size={[.008,.012,.09]} position={[1.0,1.795,.32]} color="#272a2e"/>
     <Bevel size={[.56,1.08,.87]} position={[1.08,.57,-.10]} color="#363a3e" radius={.025}/>
     <Box size={[.47,.93,.012]} position={[1.08,.59,.344]} color="#303438"/>
@@ -261,12 +261,7 @@ export default function RoomScene(props:Props) {
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,0,0]} receiveShadow><planeGeometry args={[200,200]}/><Surface kind="lacquer" color="#fdfdfb"/></mesh>
     <Suspense fallback={null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank("book",slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <SoftShadows size={18} samples={12} focus={.3}/>
-    <EffectComposer multisampling={0}>
-      <N8AO aoRadius={.62} intensity={2.3} distanceFalloff={1.1} color="#3b352c"/>
-      <Bloom intensity={.08} luminanceThreshold={2.0} mipmapBlur/>
-      <Vignette offset={.2} darkness={.26}/>
-      <Noise opacity={.015}/>
-    </EffectComposer>
+{null}
     {props.guestbookOpen&&<GuestbookCamera/>}
     {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;

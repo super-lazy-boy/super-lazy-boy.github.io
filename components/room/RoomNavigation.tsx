@@ -79,7 +79,7 @@ function MouseNavigation({zone,revision,locked,onZone,onHover,reduced}:Props&{re
     vectors.target.addScaledVector(vectors.right,p.x*amount*.40).addScaledVector(vectors.up,p.y*amount*.18);
     const alpha=reduced?1:1-Math.exp(-Math.min(delta,.20)*5.3);
     camera.position.lerp(vectors.position,alpha);focal.current.lerp(vectors.target,alpha);camera.lookAt(focal.current);
-    const desiredFov=zone==="office"?37:zone==="cinema"?35:zone==="books"?83:zone==="guestbook"?45:38;
+    const desiredFov=zone==="office"?37:zone==="cinema"?35:zone==="books"?83:zone==="guestbook"?38:38;
     let lensMoving=false;
     if(camera instanceof THREE.PerspectiveCamera){
       camera.fov=THREE.MathUtils.lerp(camera.fov,desiredFov,alpha);lensMoving=Math.abs(camera.fov-desiredFov)>.005;camera.updateProjectionMatrix();
@@ -95,7 +95,7 @@ function TouchNavigation({zone,revision,reduced}:{zone:Zone;revision:number;redu
   const controls=useRef<CameraControlsImpl>(null),{size,camera}=useThree(),view=ROOM_VIEWS[zone];
   useEffect(()=>{
     const c=controls.current;if(!c)return;
-    if(camera instanceof THREE.PerspectiveCamera){camera.fov=size.width<650?(zone==="books"?118:zone==="office"?76:zone==="cinema"?88:zone==="guestbook"?45:38):(zone==="office"?37:zone==="cinema"?35:zone==="books"?83:zone==="guestbook"?45:38);camera.updateProjectionMatrix();}
+    if(camera instanceof THREE.PerspectiveCamera){camera.fov=size.width<650?(zone==="books"?118:zone==="office"?76:zone==="cinema"?88:zone==="guestbook"?45:38):(zone==="office"?37:zone==="cinema"?35:zone==="books"?83:zone==="guestbook"?38:38);camera.updateProjectionMatrix();}
     c.minAzimuthAngle=-Infinity;c.maxAzimuthAngle=Infinity;
     const position=new THREE.Vector3(...view.camera),target=new THREE.Vector3(...view.target);
     if(size.width<650&&zone==="overview")position.sub(target).multiplyScalar(2.3).add(target);

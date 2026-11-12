@@ -1,33 +1,70 @@
 "use client";
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {Html,RoundedBox} from '@react-three/drei';
+const noRay=()=>null;
 import {useFrame,useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {NOTE_COLORS,type GuestNote,type GuestbookData} from '@/lib/guestbook';
 import {ROOM_VIEWS} from '@/lib/room-navigation';
 
-function Paper({note,index}:{note?:GuestNote;index:number}){
- const texture=useMemo(()=>{
-  const c=document.createElement('canvas');c.width=384;c.height=384;const ctx=c.getContext('2d')!;
-  const base=note?NOTE_COLORS[note.color]:['#f3e6ba','#dce3cf','#e9ddd5'][index%3];
-  ctx.fillStyle=base;ctx.fillRect(0,0,384,384);
-  ctx.globalAlpha=.22;ctx.fillStyle='#5d5a45';ctx.fillRect(0,0,384,384);ctx.globalAlpha=1;
-  // gentle paper shading keeps the note from reading as flat white
-  const shade=ctx.createLinearGradient(0,0,0,384);
-  shade.addColorStop(0,'rgba(0,0,0,.05)');shade.addColorStop(.45,'rgba(0,0,0,0)');shade.addColorStop(1,'rgba(0,0,0,.09)');
-  ctx.fillStyle=shade;ctx.fillRect(0,0,384,384);
-  ctx.fillStyle='#3a4036';ctx.font='24px Microsoft YaHei,sans-serif';
-  const chars=Array.from(note?.body|| (index===0?'来过，留一句。':''));
-  for(let row=0;row<5;row++)ctx.fillText(chars.slice(row*10,row*10+10).join(''),34,78+row*44,316);
-  if(note){ctx.font='17px sans-serif';ctx.fillStyle='#68705f';ctx.fillText(note.authorName,34,345,300);}
-  else if(index===0){ctx.font='16px sans-serif';ctx.fillText('NOTES LEFT HERE',34,335);}
-  const map=new THREE.CanvasTexture(c);map.colorSpace=THREE.SRGBColorSpace;return map;
- },[note?.body,note?.authorName,note?.color,index]);
- useEffect(()=>()=>texture.dispose(),[texture]);
- return <group position={[[-.30,.28,-.29,.29][index],[.20,.18,-.24,-.23][index],.047]} rotation={[0,0,[-.035,.045,.025,-.035][index]]}>
-  <mesh castShadow receiveShadow><planeGeometry args={[.45,.43]}/><meshStandardMaterial map={texture} roughness={.96} metalness={0} envMapIntensity={.12}/></mesh>
- </group>;
+function useBoardTexture(notes: GuestNote[]) {
+  const texture = useMemo(() => {
+    const W = 1024, H = 880;
+    const canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext("2d")!;
+    // cork backing
+    ctx.fillStyle = "#c9cabe"; ctx.fillRect(0, 0, W, H);
+    for (let i = 0; i < 2200; i++) {
+      const x = (i * 137.5) % W, y = (i * 71.3) % H;
+      ctx.fillStyle = i % 3 ? "rgba(0,0,0,.035)" : "rgba(255,255,255,.05)";
+      ctx.fillRect(x, y, 2, 2);
+    }
+    const slots = [
+      { x: .04, y: .05, r: -.03 }, { x: .53, y: .03, r: .04 },
+      { x: .06, y: .52, r: .025 }, { x: .54, y: .50, r: -.03 },
+    ];
+    const fallback = ["#f3e6ba", "#dce3cf", "#e9ddd5", "#e2dfed"];
+    slots.forEach((slot, index) => {
+      const note = notes[index];
+      const w = 400, h = 350;
+      const x = slot.x * W, y = slot.y * H;
+      ctx.save();
+      ctx.translate(x + w / 2, y + h / 2);
+      ctx.rotate(slot.r);
+      ctx.shadowColor = "rgba(60,56,40,.35)";
+      ctx.shadowBlur = 16; ctx.shadowOffsetY = 6;
+      ctx.fillStyle = note ? NOTE_COLORS[note.color] : fallback[index % 4];
+      ctx.fillRect(-w / 2, -h / 2, w, h);
+      ctx.shadowColor = "transparent";
+      const shade = ctx.createLinearGradient(0, -h / 2, 0, h / 2);
+      shade.addColorStop(0, "rgba(0,0,0,.06)"); shade.addColorStop(.45, "rgba(0,0,0,0)"); shade.addColorStop(1, "rgba(0,0,0,.10)");
+      ctx.fillStyle = shade; ctx.fillRect(-w / 2, -h / 2, w, h);
+      // washi tape
+      ctx.fillStyle = "rgba(196,186,160,.75)";
+      ctx.fillRect(-34, -h / 2 - 10, 68, 26);
+      ctx.fillStyle = "#3a4036";
+      ctx.font = "600 30px 'Microsoft YaHei', sans-serif";
+      ctx.textBaseline = "top";
+      const body = note?.body || (index === 0 ? "来过，留一句。" : "");
+      const chars = Array.from(body);
+      for (let row = 0; row < 5; row++) {
+        ctx.fillText(chars.slice(row * 11, row * 11 + 11).join(""), -w / 2 + 30, -h / 2 + 52 + row * 46, w - 60);
+      }
+      ctx.font = "400 20px sans-serif";
+      ctx.fillStyle = "#5c6355";
+      ctx.fillText(note ? note.authorName : index === 0 ? "NOTES LEFT HERE" : "", -w / 2 + 30, h / 2 - 46, w - 60);
+      ctx.restore();
+    });
+    const map = new THREE.CanvasTexture(canvas);
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = 8;
+    return map;
+  }, [notes.map((note) => note.id + note.body + note.color).join("|")]);
+  useEffect(() => () => texture.dispose(), [texture]);
+  return texture;
 }
+
 export function GuestbookCamera(){
  const {camera,invalidate}=useThree(),target=useRef(new THREE.Vector3(...ROOM_VIEWS.guestbook.target));
  const reduced=useMemo(()=>matchMedia('(prefers-reduced-motion: reduce)').matches,[]),end=useMemo(()=>new THREE.Vector3(...ROOM_VIEWS.guestbook.camera),[]),focal=useRef(new THREE.Vector3());
@@ -41,13 +78,11 @@ export function GuestbookCamera(){
  });return null;
 }
 export default function GuestbookBoard({data,onOpen}:{data:GuestbookData|null;onOpen:()=>void}){
- const [hover,setHover]=useState(false),notes=data?.notes.slice(0,4)||[];
+ const [hover,setHover]=useState(false),notes=data?.notes.slice(0,4)||[],board=useBoardTexture(notes);
  return <group position={[-5.5,2.45,3.65]} rotation={[0,Math.PI/2,0]} onClick={e=>{e.stopPropagation();if(e.delta<4)onOpen();}} onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer';}} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
-  <RoundedBox args={[1.23,1.05,.065]} radius={.025} smoothness={3} castShadow><meshStandardMaterial color={hover?'#a8875c':'#b39468'} roughness={.72} envMapIntensity={.35}/></RoundedBox>
-  <mesh position={[0,0,.036]} receiveShadow><planeGeometry args={[1.13,.95]}/><meshStandardMaterial color="#cfd0c5" roughness={1} envMapIntensity={.2}/></mesh>
-  {[0,1,2,3].map(index=><Paper key={notes[index]?.id||index} note={notes[index]} index={index}/>)}
+  <RoundedBox args={[1.23,1.05,.065]} radius={.025} smoothness={3} castShadow><meshStandardMaterial color={hover?'#a8875c':'#b39468'} roughness={.88} metalness={0} envMapIntensity={.18}/></RoundedBox>
+  <mesh position={[0,0,.052]}><planeGeometry args={[1.12,.94]}/><meshBasicMaterial map={board}/></mesh>
   {[-.49,.49].map(x=><mesh key={x} position={[x,-1.46,-.03]} castShadow><boxGeometry args={[.035,1.90,.035]}/><meshStandardMaterial color="#c3c8c0" roughness={.5} metalness={.3}/></mesh>)}
   {[-.49,.49].map(x=><mesh key={x} position={[x,-2.40,-.01]} castShadow><boxGeometry args={[.11,.05,.45]}/><meshStandardMaterial color="#b6bdb3" roughness={.55}/></mesh>)}
-  <Html transform position={[0,0,.08]} distanceFactor={1}><button className="guestbook-board-control" aria-label="打开留言角的便签板" onPointerEnter={()=>setHover(true)} onPointerLeave={()=>setHover(false)} onClick={e=>{e.stopPropagation();onOpen();}}/></Html>
  </group>;
 }
