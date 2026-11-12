@@ -17,6 +17,19 @@ function useCover(record:RoomRecord|undefined,enabled:boolean){
  },[url,invalidate]);
  return texture;
 }
+/** Curated spine palette: every book snaps to it, so a shelf reads as one colour story. */
+const SPINE_PALETTE = ["#8f3f37", "#2f3f52", "#c8b07a", "#5c6b52", "#7b5a63", "#d9cdb4", "#3f4a44", "#b98a5e", "#8fa3a8"];
+function paletteColour(hex: string) {
+  const target = new THREE.Color(hex);
+  let best = SPINE_PALETTE[0], bestDistance = Infinity;
+  for (const candidate of SPINE_PALETTE) {
+    const c = new THREE.Color(candidate);
+    const d = (c.r - target.r) ** 2 + (c.g - target.g) ** 2 + (c.b - target.b) ** 2;
+    if (d < bestDistance) { bestDistance = d; best = candidate; }
+  }
+  return best;
+}
+
 /** Three print layouts keep a full shelf from looking like one repeated label. */
 function spineLayout(record:RoomRecord){
  let hash=0;for(const char of record.id)hash=(hash*31+char.charCodeAt(0))%997;
@@ -38,7 +51,7 @@ function useBookSpine(record:RoomRecord|undefined){
  const texture=useMemo(()=>{
   if(!record)return null;
   const canvas=document.createElement('canvas');canvas.width=192;canvas.height=768;
-  const ctx=canvas.getContext('2d')!,color=record.color||'#e7e4dc';
+  const ctx=canvas.getContext('2d')!,color=paletteColour(record.color||'#e7e4dc');
   ctx.fillStyle=color;ctx.fillRect(0,0,192,768);
   const rgb=new THREE.Color(color),luminance=rgb.r*.2126+rgb.g*.7152+rgb.b*.0722;
   const ink=luminance>.45?'#2f3431':'#faf8ef';

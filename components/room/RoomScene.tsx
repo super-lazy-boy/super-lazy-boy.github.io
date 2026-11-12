@@ -257,10 +257,11 @@ export default function RoomScene(props:Props) {
     <directionalLight position={[-7,11,8]} intensity={2.45} color="#fff1dc" castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-11} shadow-camera-right={11} shadow-camera-top={11} shadow-camera-bottom={-11} shadow-normalBias={.04} shadow-bias={-.0001}/>
     <directionalLight position={[7.5,5.5,-6]} intensity={.52} color="#d6e5ff"/>
     <directionalLight position={[5,3.2,9]} intensity={.30} color="#ffffff"/>
+    <directionalLight position={[-9,4.2,2.5]} intensity={.32} color="#eef4ff"/>
     <ContactShadows position={[0,.004,0]} opacity={.32} scale={46} blur={2.6} far={5.5} resolution={1024} frames={1} color="#4a4238"/>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,0,0]} receiveShadow><planeGeometry args={[200,200]}/><Surface kind="lacquer" color="#fdfdfb"/></mesh>
     <Suspense fallback={null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank("book",slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
-    <SoftShadows size={18} samples={12} focus={.3}/>
+    <SoftShadows size={22} samples={14} focus={.32}/>
     <EffectComposer multisampling={0}>
       <N8AO aoRadius={.62} intensity={2.3} distanceFalloff={1.1} color="#3b352c"/>
       <Vignette offset={.2} darkness={.26}/>

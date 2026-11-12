@@ -125,6 +125,37 @@ export function CabinetClutter() {
   </group>;
 }
 
+/** Oversized print leaning against the shelf: a design anchor without a wall. */
+export function ArtPrint({ position = [-4.95, 0, -3.18] as Vec3 }: { position?: Vec3 }) {
+  return <group position={position} rotation={[0, .28, 0]}>
+    <group rotation={[-.16, 0, 0]}>
+      <mesh position={[0, .62, 0]} castShadow receiveShadow raycast={noRay}><boxGeometry args={[.92, 1.24, .035]}/><Surface kind="oak" color="#b08e63"/></mesh>
+      <mesh position={[0, .62, .021]} raycast={noRay}><planeGeometry args={[.82, 1.14]}/><Surface kind="paper" color="#efe7d6"/></mesh>
+      {/* printed composition: horizon, sun, two bands */}
+      <mesh position={[0, .48, .024]} raycast={noRay}><planeGeometry args={[.82, .30]}/><Surface kind="paper" color="#c9a882"/></mesh>
+      <mesh position={[.14, .78, .026]} raycast={noRay}><circleGeometry args={[.10, 32]}/><Surface kind="paper" color="#b5654a"/></mesh>
+      <mesh position={[0, .26, .024]} raycast={noRay}><planeGeometry args={[.82, .16]}/><Surface kind="paper" color="#6f7d6a"/></mesh>
+    </group>
+  </group>;
+}
+
+/** Tall plant in a stoneware pot, filling the corner beside the cinema cabinet. */
+export function TallPlant({ position = [5.62, 0, -2.52] as Vec3 }: { position?: Vec3 }) {
+  return <group position={position}>
+    <mesh position={[0, .22, 0]} castShadow receiveShadow raycast={noRay}><cylinderGeometry args={[.17, .13, .44, 28]}/><Surface kind="ceramic" color="#cfc7b6"/></mesh>
+    <mesh position={[0, .44, 0]} raycast={noRay}><cylinderGeometry args={[.16, .16, .02, 24]}/><Surface kind="paper" color="#4a4034"/></mesh>
+    <mesh position={[0, .78, 0]} castShadow raycast={noRay}><cylinderGeometry args={[.022, .028, .70, 10]}/><Surface kind="oak" color="#6d7a52"/></mesh>
+    {[0, 1, 2, 3, 4, 5, 6].map(i => {
+      const angle = i * 1.05, radius = .14 + (i % 3) * .07, height = .72 + (i % 4) * .16;
+      return <mesh key={i} position={[Math.cos(angle) * radius, height, Math.sin(angle) * radius]}
+        rotation={[.3 * Math.cos(angle), angle, .35 * Math.sin(angle)]} scale={[.16, .26, .02]} castShadow raycast={noRay}>
+        <sphereGeometry args={[1, 14, 10]}/>
+        <Surface kind="fabric" color={i % 2 ? "#5f7350" : "#71855c"}/>
+      </mesh>;
+    })}
+  </group>;
+}
+
 /** Slim floor lamp beside the lounge, with a warm practical glow. */
 export function FloorLamp({ position = [5.05, 0, 2.45] as Vec3 }: { position?: Vec3 }) {
   return <group position={position}>
@@ -160,5 +191,7 @@ export default function RoomProps() {
     <CabinetClutter/>
     <FloorClutter/>
     <FloorLamp/>
+    <ArtPrint/>
+    <TallPlant/>
   </group>;
 }
