@@ -83,7 +83,7 @@ function Desk({children,onClick}:{children?:ReactNode;onClick?:()=>void}) {
     <Bevel size={[3.8,.12,1.55]} position={[0,1.63,0]} radius={.018}/>
     {[-1.72,1.72].flatMap(x=>[-.58,.58].map(z=><Box key={x+":"+z} size={[.085,1.57,.085]} position={[x,.785,z]} color="#f3f4f3"/>))}
     <Box size={[3.35,.12,.07]} position={[0,1.40,-.56]} color="#f0f1ef"/>
-    <group position={[0,0,-.28]} onClick={e=>{e.stopPropagation();if(e.delta<4)onClick?.();}} onPointerOver={pointerOn} onPointerOut={pointerOff}>
+    <group position={[-1.15,0,-.28]} onClick={e=>{e.stopPropagation();if(e.delta<4)onClick?.();}} onPointerOver={pointerOn} onPointerOut={pointerOff}>
       <Bevel size={[2.28,1.38,.085]} position={[0,2.69,0]} color="#2b2f33" radius={.024} kind="plastic"/>
       <Box size={[2.16,1.23,.012]} position={[0,2.70,.05]} color="#fbfbfb"/>
       <Label title="研究 · 想法 · 很多知识" subtitle="SUPER-LAZY-BOY" position={[0,2.70,.058]} size={[2.14,1.20]}/>
@@ -248,20 +248,20 @@ export default function RoomScene(props:Props) {
   useEffect(()=>setReady(true),[]);
   if(!ready)return null;
   return <Canvas className="room-canvas" inert={props.guestbookOpen} shadows frameloop="demand" dpr={[1,1.7]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.1,far:100}}
-    gl={{antialias:true,alpha:false,powerPreference:"high-performance"}} onCreated={({gl})=>{gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=0.92;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
+    gl={{antialias:true,alpha:false,powerPreference:"high-performance"}} onCreated={({gl})=>{gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.02;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
     <color attach="background" args={["#ffffff"]}/>
     <fog attach="fog" args={["#ffffff",46,96]}/>
     <StudioLight/>
     {/* warm window key, cool sky fill, faint frontal bounce */}
-    <ambientLight intensity={.13}/>
-    <hemisphereLight args={["#e9f1ff","#f2e6cd",.36]}/>
-    <directionalLight position={[-7,11,8]} intensity={2.45} color="#fff1dc" castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-11} shadow-camera-right={11} shadow-camera-top={11} shadow-camera-bottom={-11} shadow-normalBias={.04} shadow-bias={-.0001}/>
+    <ambientLight intensity={.07}/>
+    <hemisphereLight args={["#e9f1ff","#f2e6cd",.20]}/>
+    <directionalLight position={[-7,11,8]} intensity={1.45} color="#fff1dc" castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-11} shadow-camera-right={11} shadow-camera-top={11} shadow-camera-bottom={-11} shadow-normalBias={.04} shadow-bias={-.0001}/>
     <directionalLight position={[7.5,5.5,-6]} intensity={.52} color="#d6e5ff"/>
     <directionalLight position={[5,3.2,9]} intensity={.30} color="#ffffff"/>
     <directionalLight position={[-9,4.2,2.5]} intensity={.32} color="#eef4ff"/>
     <directionalLight position={[1,5.5,7]} intensity={.55} color="#fff6ea"/>
+    <directionalLight position={[-13,5.2,1.2]} intensity={5.2} color="#ffd39a" castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-11} shadow-camera-right={11} shadow-camera-top={11} shadow-camera-bottom={-11} shadow-normalBias={.03} shadow-bias={-.0002}/>
     <ContactShadows position={[0,.004,0]} opacity={.32} scale={46} blur={2.6} far={5.5} resolution={1024} frames={1} color="#4a4238"/>
-    <mesh rotation={[-Math.PI/2,0,0]} position={[0,0,0]} receiveShadow><planeGeometry args={[200,200]}/><Surface kind="lacquer" color="#fbf8f2"/></mesh>
     <RoomShell/>
     <Suspense fallback={null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank("book",slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <SoftShadows size={22} samples={14} focus={.32}/>
