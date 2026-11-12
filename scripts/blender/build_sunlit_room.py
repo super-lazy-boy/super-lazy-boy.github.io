@@ -134,6 +134,7 @@ cylinder('Curtain rod',(-6.06,4.65,.6),.022,5.25,brass,direction=(0,0,1))
 for z in (-2.06,3.26):sphere('Curtain rod finial',(-6.06,4.65,z),(.045,.045,.045),brass)
 # Open, opaque linen curtains: carefully spaced folds do not cross the window frame.
 for side in (-1,1):
+    asset('curtain left' if side<0 else 'curtain right')
     zbase=.6+side*2.45
     verts=[];faces=[]
     for row in range(33):
@@ -160,21 +161,19 @@ for x in (-1.72,1.72):
         db('Tapered white desk leg',(x,.78,z),(.075,1.52,.075),white,.009)
         dc('Adjustable rubber foot',(x,.025,z),.045,.05,rubber)
 db('Desk cable tray',(0,1.40,-.55),(3.25,.12,.12),ivory,.018)
-db('Felt desk mat',(-.85,1.697,.3725),(1.85,.014,.575),sage,.02)
-# Screen assembly, fixed exact dimensions for the interactive HTML surface.
-db('Monitor aluminium enclosure',(-1.15,2.69,-.28),(2.28,1.38,.085),ivory,.035)
-db('Monitor black gasket',(-1.15,2.70,-.232),(2.19,1.26,.014),rubber,.015)
-db('Monitor active panel',(-1.15,2.70,-.222),(2.16,1.23,.005),ink,.004)
-db('Monitor stand upright',(-1.15,1.90,-.32),(.105,.40,.10),silver,.012)
-db('Monitor stand foot',(-1.15,1.715,-.25),(.65,.045,.42),silver,.02)
-dc('Monitor status lamp',(-.12,2.075,-.221),.007,.006,sage,direction=(1,0,0))
-# Keyboard moves into alignment with the monitor, keys and mouse remain on mat.
-db('Keyboard lower case',(-1.12,1.742,.31),(1.26,.07,.43),ivory,.035)
+db('Felt desk mat',(.20,1.697,.3725),(2.50,.014,.575),sage,.02)
+db('Monitor aluminium enclosure',(0,2.69,-.28),(2.28,1.38,.085),ivory,.035)
+db('Monitor black gasket',(0,2.70,-.232),(2.19,1.26,.014),rubber,.015)
+db('Monitor active panel',(0,2.70,-.222),(2.16,1.23,.005),ink,.004)
+db('Monitor stand upright',(0,1.90,-.32),(.105,.40,.10),silver,.012)
+db('Monitor stand foot',(0,1.715,-.25),(.65,.045,.42),silver,.02)
+dc('Monitor status lamp',(1.03,2.075,-.221),.007,.006,sage,direction=(1,0,0))
+db('Keyboard lower case',(-.15,1.742,.31),(1.26,.07,.43),ivory,.035)
 key_verts=[];key_faces=[];key_uv=[]
 for row in range(5):
     for col in range(15):
         if row==4 and 5<=col<=9:continue
-        kx=-1.68+col*.078;kz=.145+row*.075
+        kx=-.71+col*.078;kz=.145+row*.075
         db('Double shot keycap',(kx,1.786,kz),(.068,.027,.061),white,.009)
         a=len(key_verts)
         for dx,dz,u,v in [(-.022,-.019,0,0),(.022,-.019,1,0),(.022,.019,1,1),(-.022,.019,0,1)]:
@@ -183,21 +182,30 @@ for row in range(5):
 mesh=bpy.data.meshes.new('Keyboard printed glyphs');mesh.from_pydata(key_verts,[],key_faces);mesh.update();uv=mesh.uv_layers.new()
 for loop in mesh.loops:uv.data[loop.index].uv=key_uv[loop.vertex_index]
 o=bpy.data.objects.new('Keyboard printed legends',mesh);bpy.context.collection.objects.link(o);tag(o,o.name,legends)
-db('Keyboard spacebar',(-1.10,1.804,.445),(.39,.024,.055),white,.008)
-sphere('Mouse shell',dp((-.20,1.779,.30)),(.155,.073,.105),white)
-db('Mouse split seam',(-.20,1.824,.215),(.008,.004,.10),edge,.002)
-dc('Mouse wheel',(-.20,1.831,.205),.014,.047,rubber,direction=(0,0,1))
-# Main tower, under the right end; drawers on the opposite end.
-db('Computer case',(1.08,.59,-.1),(.56,1.10,.87),white,.03)
-db('Computer front inset',(1.08,.60,.342),(.46,.94,.014),ivory,.015)
-for i in range(13):db('Case front vent',(1.08,.36+i*.036,.354),(.35,.012,.01),edge,.004)
-dc('Case power button',(1.23,.94,.36),.026,.009,silver,direction=(1,0,0))
-for x in (.88,1.28):
-    for z in (-.40,.19):dc('Case foot',(x,.029,z),.036,.055,rubber)
-db('Pedestal carcass',(-1.42,.63,-.14),(.70,1.17,.95),white,.025)
+db('Keyboard spacebar',(-.164,1.786,.445),(.38,.027,.055),white,.008)
+sphere('Mouse shell',dp((.95,1.779,.30)),(.155,.073,.105),white)
+db('Mouse split seam',(.95,1.84,.215),(.008,.004,.10),edge,.002)
+dc('Mouse wheel',(.95,1.846,.205),.014,.047,rubber,direction=(0,0,1))
+asset('computer tower')
+db('Computer tower outer shell',(-1.34,.65,.08),(.60,1.18,.93),white,.035)
+db('Tower recessed front',(-1.34,.65,.553),(.50,1.03,.018),ink,.012)
+for y in (.39,.82):
+    # Real recessed fan hubs, blades and a separate grille.
+    dc('Tower fan rim',(-1.34,y,.569),.175,.016,silver,direction=(1,0,0))
+    dc('Tower fan dark cavity',(-1.34,y,.579),.16,.010,rubber,direction=(1,0,0))
+    dc('Tower fan hub',(-1.34,y,.588),.035,.008,silver,direction=(1,0,0))
+    for i in range(7):
+        a=i*math.tau/7
+        db('Tower fan blade',(-1.34+math.cos(a)*.086,y+math.sin(a)*.086,.589),(.09,.027,.004),edge,.008)
+    for i in range(7):db('Tower grille rail',(-1.34-.15+i*.05,y,.599),(.008,.34,.006),ivory,.002)
+dc('Tower power button',(-1.12,1.16,.571),.022,.008,silver,direction=(1,0,0))
+for x in (-1.48,-1.33):db('USB port',(x,1.16,.568),(.07,.025,.009),rubber,.003)
+db('Tower raised base',(-1.34,.041,.08),(.65,.08,.97),ivory,.02)
+asset('desk')
+db('Pedestal carcass',(1.45,.63,-.14),(.70,1.17,.95),white,.025)
 for y in (.29,.66,1.02):
-    db('Pedestal drawer front',(-1.42,y,.347),(.65,.32,.035),white,.012)
-    db('Pedestal recessed pull',(-1.42,y+.07,.37),(.26,.018,.022),silver,.006)
+    db('Pedestal drawer front',(1.45,y,.347),(.65,.32,.035),white,.012)
+    db('Pedestal recessed pull',(1.45,y+.07,.37),(.26,.018,.022),silver,.006)
 
 def speaker(p,scale=1):
     x,y,z=p
@@ -208,7 +216,7 @@ def speaker(p,scale=1):
         ring('Driver surround',(x,y+h*scale,z+.188*scale),r*.87*scale,.006*scale,ink,direction=(0,0,1))
         sphere('Driver dust cap',(x,y+h*scale,z+.196*scale),(r*.4*scale,r*.4*scale,.012*scale),ink)
 # desk speakers face the room (positive X), rotate the locally built objects.
-for local in [(-1.62,1.69,-.06),(.90,1.69,-.15)]:
+for local in [(-1.42,1.69,-.22),(1.42,1.69,-.22)]:
     start=set(bpy.data.objects);speaker((0,0,0),.75)
     for o in set(bpy.data.objects)-start:
         q=o.location.copy();o.location=Vector(xyz(dp((local[0]+q.x,local[1]+q.z,local[2]-q.y))));o.rotation_euler.z+=math.pi/2
@@ -254,24 +262,28 @@ def plant(p,size=1):
         leafmat=o.data.materials[0];leafmat.use_backface_culling=False
         tube('Leaf midrib',[tip,tuple(Vector(tip)+axis*.17*size+Vector((0,.075*size,0))),tuple(Vector(tip)+axis*.27*size)],.002*size,vein)
 
-asset('desk details')
-# Lamp on the unused back/right strip, clear of the speaker and monitor.
-lp=dp((1.55,1.69,-.48));x,y,z=lp
+asset('desk lamp')
+lp=dp((-1.64,1.69,-.575));x,y,z=lp
 cylinder('Task lamp foot',(x,y+.022,z),.19,.044,white)
 tube('Task lamp articulated arm',[(x,y+.04,z),(x,y+.37,z),(x+.05,y+.64,z),(x+.16,y+.78,z)],.018,silver)
 for h in (.37,.64):cylinder('Lamp hinge',(x,y+h,z),.035,.06,silver,direction=(0,0,1))
-cylinder('Lamp shade',(x+.16,y+.74,z),.18,.19,white,r2=.08)
-cylinder('Lamp diffuser',(x+.16,y+.64,z),.16,.008,paper)
-plant(dp((-1.62,1.69,-.64)),.38)
-mug(dp((1.52,1.70,.45)),.075)
-db('Closed research notebook',(.15,1.719,-.57),(.39,.05,.27),sage,.008)
-db('Notebook paper block',(.15,1.72,-.57),(.37,.034,.25),paper,.003)
-for i in range(3):db('Notebook page edge',(.15,1.711+i*.009,-.432),(.35,.001,.002),edge,0)
-dc('Desk pencil',(.34,1.755,-.55),.007,.30,oak,direction=(0,0,1))
-tube('Monitor cable',[dp((-1.15,2.2,-.34)),dp((-1.15,1.49,-.56)),dp((.7,1.38,-.56)),dp((1.08,.8,-.5))],.009,rubber)
+# Open, thin aluminium shade, its luminous diffuser is added separately.
+verts=[];faces=[]
+for row,(r,yy) in enumerate(((.17,y+.65),(.085,y+.83))):
+    for i in range(41):
+        a=i/40*math.tau;verts.append(xyz((x+.16+r*math.cos(a),yy,z+r*math.sin(a))))
+        if row and i:n=41+i;faces.append((n-42,n-41,n,n-1))
+mesh=bpy.data.meshes.new('Task lamp open shade');mesh.from_pydata(verts,[],faces);mesh.update();o=bpy.data.objects.new('Task lamp open shade',mesh);bpy.context.collection.objects.link(o);tag(o,o.name,white)
+asset('desk details')
+mug(dp((-1.55,1.70,.50)),.075)
+db('Notebook lower cover',(-1.45,1.712,.16),(.39,.026,.32),sage,.008)
+db('Notebook paper block',(-1.45,1.733,.16),(.37,.018,.30),paper,.003)
+db('Notebook upper cover',(-1.45,1.749,.16),(.39,.012,.32),sage,.006)
+dc('Desk pencil',(-1.55,1.765,.16),.007,.27,oak,direction=(1,0,0))
+tube('Monitor cable',[dp((0,2.2,-.34)),dp((0,1.49,-.56)),dp((-.8,1.38,-.56)),dp((-1.34,.8,-.40))],.009,rubber)
 
 asset('chair')
-cx,cz=-1.60,.55
+cx,cz=-1.60,-.60
 cylinder('Chair column',(cx,.59,cz),.052,.80,silver)
 cylinder('Gas lift cover',(cx,.26,cz),.078,.30,ivory)
 for i in range(5):
@@ -284,7 +296,7 @@ for side in (-1,1):
     tube('Armrest support',[(cx,1.08,cz+side*.49),(cx,1.37,cz+side*.49)],.021,silver)
     box('Soft armrest',(cx,1.43,cz+side*.49),(.53,.055,.10),ivory,.025)
 tube('Chair back stay',[(cx,.98,cz),(cx+.31,1.20,cz),(cx+.33,1.63,cz)],.026,silver)
-register('chair',[-2.20,0,-.10],[-.95,2.12,1.20])
+register('chair',[-2.20,0,-1.25],[-.95,2.12,.05])
 
 asset('bookshelf')
 for x in (-4.32,.52):box('Bookcase stile',(x,2.19,-3.75),(.10,4.38,.70),white,.012)
@@ -296,9 +308,9 @@ box('Bookcase divider',(-1.20,2.2,-3.75),(.065,4.12,.65),white,.009)
 box('Bookcase oak crown',(-1.9,4.34,-3.75),(4.94,.065,.73),oak,.012)
 plant((-3.77,4.38,-3.78),.42)
 for i in range(3):
-    box('Linen archive box',(-.53+i*.22,4.61,-3.75),(.19,.47,.39),ivory,.01)
-    box('Archive label',(-.53+i*.22,4.65,-3.549),(.11,.10,.004),paper,.003)
-    ring('Archive finger pull',(-.53+i*.22,4.46,-3.541),.022,.005,silver,direction=(0,0,1))
+    box('Linen archive box',(-1.05+i*.22,4.61,-3.75),(.19,.47,.39),ivory,.01)
+    box('Archive label',(-1.05+i*.22,4.65,-3.549),(.11,.10,.004),paper,.003)
+    ring('Archive finger pull',(-1.05+i*.22,4.46,-3.541),.022,.005,silver,direction=(0,0,1))
 register('bookcase divider',[-1.2325,.14,-4.075],[-1.1675,4.26,-3.425])
 for x in (-4.32,.52):register('bookcase side', [x-.05,0,-4.10],[x+.05,4.38,-3.40])
 
@@ -336,57 +348,36 @@ cylinder('Screen lower weight',(3.2,1.875,-3.91),.025,4.12,silver,direction=(1,0
 for x in (1.0,5.4):box('Projection case end cap',(x,4.27,-3.92),(.025,.17,.20),ivory,.008)
 register('screen bottom bar',[1.12,1.85,-3.94],[5.28,1.90,-3.88])
 
-asset('lounge')
-# Soft furniture consists of individual cushions with real separation and piping.
-box('Woven lounge rug',(3.0,.017,1.05),(3.75,.034,3.60),rugmat,.015)
-for x in (1.21,4.79):
-    for j in range(2):box('Rug woven border',(x+j*.028,.036,1.05),(.008,.002,3.43),ivory,0)
-for i in range(50):
-    x=1.18+i*.074
-    for z in (-.80,2.90):tube('Wool fringe',[(x,.015,z),(x+.01,.013,z+(.07 if z>0 else -.07))],.0035,rugmat)
-for x in (2.02,3.98):
-    for z in (.52,1.76):cylinder('Sofa oak foot',(x,.14,z),.045,.22,oak)
-box('Sofa upholstered plinth',(3.0,.35,1.12),(2.45,.25,1.52),linen,.10)
-for x in (1.90,4.10):box('Sofa padded arm',(x,.69,1.10),(.25,.62,1.51),linen,.11)
-for x in (2.47,3.53):
-    box('Sofa seat cushion',(x,.64,.98),(1.025,.28,1.13),linen,.095)
-    o=box('Sofa back cushion',(x,1.08,1.70),(1.02,.91,.25),linen,.10);o.rotation_euler.x=-.10
-    # Flat seam around the seat, entirely outside the cushion surface.
-    tube('Cushion welt',[(x-.45,.67,.44),(x+.45,.67,.44),(x+.49,.67,1.40),(x-.49,.67,1.40),(x-.45,.67,.44)],.006,edge)
-for x,mat,angle in ((2.25,sage,-.13),(3.70,ochre,.15)):
-    o=box('Linen throw pillow',(x,1.00,1.43),(.48,.47,.16),mat,.075);o.rotation_euler.y=angle
-register('sofa',[1.76,.04,.32],[4.24,1.60,1.92])
-
-asset('side table')
-cylinder('Side table oak top',(4.85,.79,1.10),.40,.055,oak)
-for i in range(3):
-    a=i*math.tau/3;tube('Side table splayed leg',[(4.85+math.sin(a)*.24,.76,1.10+math.cos(a)*.24),(4.85+math.sin(a)*.31,.04,1.10+math.cos(a)*.31)],.022,silver)
-cylinder('Cup coaster',(4.80,.825,1.07),.13,.008,ivory)
-mug((4.80,.83,1.07),.085)
-box('Remote control',(4.98,.84,1.30),(.11,.025,.26),white,.018,yaw=.15)
-for i in range(4):cylinder('Remote key',(4.98,.856,1.23+i*.035),.009,.003,edge)
-register('side table',[4.43,0,.68],[5.27,1.1,1.52])
-
 asset('projector')
-box('Projector console top',(4.40,1.0,3.12),(.92,.055,.68),oak,.018)
-for x in (4.02,4.78):
-    for z in (2.87,3.37):box('Projector console leg',(x,.49,z),(.035,.96,.035),white,.006)
-box('Projector lower shelf',(4.40,.17,3.12),(.85,.035,.61),ivory,.009)
-box('Projector chassis',(4.40,1.175,3.12),(.68,.29,.50),white,.045)
-box('Projector bottom reveal',(4.40,1.057,3.12),(.60,.035,.43),ivory,.012)
+projector_parts=set(bpy.data.objects)
+box('Projector console top',(5.0,2.35,3.12),(.92,.055,.68),oak,.018)
+for x in (4.56,5.44):box('Equipment cabinet stile',(x,1.17875,3.12),(.04,2.2875,.66),white,.008)
+box('Equipment cabinet back',(5.,1.17,3.435),(.84,2.27,.025),ivory,.006)
+for y in (.07,.78,1.52):box('Equipment cabinet shelf',(5.,y,3.12),(.85,.04,.64),white,.008)
+for i in range(5):box('Equipment manual',(4.75+i*.10,.32,3.12),(.085,.45,.38),paper if i%2 else sage,.006)
+box('Projector chassis',(5.0,2.525,3.12),(.68,.29,.50),white,.045)
+box('Projector bottom reveal',(5.0,2.407,3.12),(.60,.035,.43),ivory,.012)
 for r,depth,mat in ((.10,2.858,ink),(.079,2.847,silver),(.068,2.836,lens)):
-    cylinder('Projection lens',(4.23,1.18,depth),r,.018,mat,direction=(0,0,1))
-ring('Lens focus ring',(4.23,1.18,2.828),.075,.007,ink,direction=(0,0,1))
-for i in range(11):box('Projector cooling slot',(4.42+i*.021,1.18,2.863),(.009,.12,.006),edge,.002)
-cylinder('Projector power key',(4.56,1.324,3.11),.021,.004,silver)
-tube('Projector power lead',[(4.71,1.12,3.27),(4.8,.7,3.36),(4.8,.05,3.6),(5.3,.02,3.7)],.007,ivory)
-register('projector console',[3.94,0,2.78],[4.86,1.35,3.46])
+    cylinder('Projection lens',(4.83,2.53,depth),r,.018,mat,direction=(0,0,1))
+ring('Lens focus ring',(4.83,2.53,2.828),.075,.007,ink,direction=(0,0,1))
+for i in range(11):box('Projector cooling slot',(5.02+i*.021,2.53,2.863),(.009,.12,.006),edge,.002)
+cylinder('Projector power key',(5.16,2.674,3.11),.021,.004,silver)
+tube('Projector power lead',[(5.31,2.47,3.27),(5.39,1.4,3.36),(5.39,.05,3.6),(5.65,.02,3.7)],.007,ivory)
+asset('projector glow')
+projector_glow=material('Projector optical glow','#c8dbef',.22)
+projector_glow.node_tree.nodes.get('Principled BSDF').inputs['Emission Color'].default_value=(.7,.85,1,1)
+projector_glow.node_tree.nodes.get('Principled BSDF').inputs['Emission Strength'].default_value=0
+cylinder('Projector luminous aperture',(4.83,2.53,2.816),.063,.002,projector_glow,direction=(0,0,1))
+for obj in set(bpy.data.objects)-projector_parts:obj.location.x+=.75
+register('projector console',[5.29,0,2.78],[6.21,2.70,3.46])
 
-asset('botanicals')
+asset('office botanicals')
 plant((-5.14,0,-2.85),1.15)
+asset('cinema botanicals')
 plant((5.97,0,-3.57),.78)
+asset('guest botanicals')
 plant((-5.93,0,4.48),.75)
-plant((-6.18,1.40,2.64),.36)
+# The window curtain travel is kept free of pots and foliage.
 
 asset('guest corner')
 box('Guest corner rug',(-5.14,.015,3.88),(2.25,.03,1.8),rugmat,.012)
@@ -397,12 +388,10 @@ box('Guest notebook',(-4.39,.786,4.12),(.23,.035,.19),paper,.006)
 cylinder('Pen holder',(-4.18,.83,3.99),.05,.14,white)
 for i in range(3):cylinder('Guest pencil',(-4.20+i*.02,.96,3.99),.005,.24,oak)
 
-asset('wall art')
-for x,y,z,w,h in ((.78,3.12,-4.212,.48,.72),(-5.72,3.34,-4.212,.64,.88)):
-    box('Oak picture frame',(x,y,z),(w+.06,h+.06,.035),oak,.008)
-    box('Picture mat',(x,y,z+.023),(w,h,.006),paper,.001)
-    box('Abstract print',(x,y-.08,z+.028),(w*.71,h*.38,.002),sage,0)
-    cylinder('Print sun',(x-.10,y+.16,z+.030),w*.13,.002,ochre,direction=(0,0,1))
+# Additional authored assets share this builder's exact dimensions and materials.
+sys.path.insert(0,str(Path(__file__).parent))
+from room_enrichment import enrich
+enrich(globals())
 
 # Apply all modifiers once. Export meshes grouped by authored object collection,
 # not by tiny component, keeping browser draw calls bounded without losing detail.
@@ -422,7 +411,14 @@ for o in list(bpy.context.scene.objects):
                 co=o.data.vertices[o.data.loops[idx].vertex_index].co;uv.data[idx].uv=(co[a]*2,co[b]*2)
     o.select_set(False)
 
-manifest={'version':'sunlit-room-1','units':'existing room world units, Y up','assets':inventory,'obstacles':bounds,'sourceObjectCount':len(bpy.context.scene.objects)}
+components=[]
+bpy.context.view_layer.update()
+for obj in bpy.context.scene.objects:
+    if obj.type!='MESH':continue
+    corners=[obj.matrix_world@Vector(p) for p in obj.bound_box]
+    corners=[(v.x,v.z,-v.y) for v in corners]
+    components.append({'name':obj.name,'group':obj.get('asset_group',''),'min':[round(min(p[a] for p in corners),6) for a in range(3)],'max':[round(max(p[a] for p in corners),6) for a in range(3)]})
+manifest={'version':'sunlit-room-2','units':'existing room world units, Y up','assets':inventory,'obstacles':bounds,'components':components,'sourceObjectCount':len(bpy.context.scene.objects),'lights':light_anchors,'screen':{'position':[-3.713,2.70,-.60],'size':[2.16,1.23]},'artwork':artwork_anchor}
 (OUT/'layout.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
 
 # Preserve the editable individual components in the native source file.
@@ -440,6 +436,13 @@ sun=bpy.data.objects.new('Afternoon sun',light);scene.collection.objects.link(su
 sun.rotation_euler=(Vector(xyz((0,0,0)))-Vector(xyz((-13,8,1.8)))).to_track_quat('-Z','Y').to_euler()
 light=bpy.data.lights.new('Soft open room fill','AREA');light.energy=700;light.shape='DISK';light.size=9
 fill=bpy.data.objects.new('Soft open room fill',light);scene.collection.objects.link(fill);fill.location=xyz((3,7,6));fill.rotation_euler=(Vector(xyz((0,1,0)))-fill.location).to_track_quat('-Z','Y').to_euler()
+# Lamp placements are exported as metadata; web and native QA share anchors.
+for key,power,color,size in [('desk',24,(1,.84,.63),.35),('floor',105,(1,.70,.43),.75),('picture',13,(1,.88,.71),.60)]:
+    anchor=light_anchors[key];data=bpy.data.lights.new('Night '+key,'AREA');data.energy=0;data['night_energy']=power;data.color=color;data.shape='DISK';data.size=size
+    obj=bpy.data.objects.new('Night '+key,data);scene.collection.objects.link(obj);obj.location=xyz(anchor['position']);obj.rotation_euler=(Vector(xyz(anchor['target']))-obj.location).to_track_quat('-Z','Y').to_euler()
+for i,p in enumerate(light_anchors['shelves']):
+    data=bpy.data.lights.new('Night shelf '+str(i),'AREA');data.energy=0;data['night_energy']=6;data.color=(1,.79,.55);data.shape='RECTANGLE';data.size=3.6;data.size_y=.10
+    obj=bpy.data.objects.new(data.name,data);scene.collection.objects.link(obj);obj.location=xyz(p);obj.rotation_euler=(Vector(xyz([p[0],p[1]-.4,p[2]-.10]))-obj.location).to_track_quat('-Z','Y').to_euler()
 camera=bpy.data.cameras.new('Room overview');cam=bpy.data.objects.new('Room overview',camera);scene.collection.objects.link(cam);cam.location=xyz((13,10,15));cam.rotation_euler=(Vector(xyz((-.3,1.6,.3)))-cam.location).to_track_quat('-Z','Y').to_euler();camera.type='ORTHO';camera.ortho_scale=20;scene.camera=cam
 scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=True
 scene.render.resolution_x=1500;scene.render.resolution_y=1100;scene.render.resolution_percentage=100

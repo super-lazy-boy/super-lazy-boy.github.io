@@ -13,6 +13,8 @@ import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 import type {GuestbookData} from '@/lib/guestbook';
 import {StudioLight} from './RoomDecor';
 import SunlitRoom from './SunlitRoom';
+import RoomLighting from './RoomLighting';
+import ProjectionBeam from './ProjectionBeam';
 import RoomNavigation from './RoomNavigation';
 import {RecordMotionProvider,useRecordAnchor,useRecordMotion,type RecordRequest,type MotionStatus} from './RecordMotion';
 import {PLAYER_Y,PLAYER_INSIDE} from '@/lib/record-motion-paths';
@@ -30,57 +32,58 @@ type Vec3=[number,number,number];
 type Props={
   guestbookOpen:boolean;guestbookData:GuestbookData|null;onGuestbook:()=>void;
   zone:Zone;navigationLocked:boolean;language:'zh'|'en';viewRevision:number;records:RoomRecord[];owner:boolean;bookPage:number;filmPage:number;
+  night:boolean;lamps:{desk:boolean;floor:boolean};screenFocused:boolean;onScreenFocus:()=>void;
   onZone:(zone:Zone)=>void;onRecord:(record:RoomRecord)=>void;onBlank:(kind:'book'|'movie',slot:number)=>void;
   computer:ReactNode;projection:ReactNode;review?:string;
   recordRequest:RecordRequest;activeBookId:string|null;loadedTapeId:string|null;skipRevision:number;playbackBusy:boolean;
   onSelect:(record:RoomRecord)=>void;onMotionStatus:(status:MotionStatus)=>void;
   libraryOpen:boolean;onOpenLibrary:()=>void;bookArchiveOpen:boolean;bookLayer:number;onOpenBooks:()=>void;
-  drawerRequest:number;drawerOpening:boolean;onDrawerRequest:()=>void;onInspectCollectible:()=>void;
+  drawerRequest:number;drawerOpening:boolean;onDrawerRequest:()=>void;onInspectCollectible:(id?:'tardis'|'starry-night')=>void;
 };
 const pointerOff=()=>{document.body.style.cursor='';};
-function Book({record,w,h,position,onBlank}:{record?:RoomRecord;w:number;h:number;position:Vec3;onBlank:()=>void}){
+function Book({record,w,h,position,onBlank,active}:{record?:RoomRecord;w:number;h:number;position:Vec3;onBlank:()=>void;active:boolean}){
   const [hover,setHover]=useState(false),anchor=useRecordAnchor(record,w,h);
   return <group ref={anchor.ref} position={position} visible={!anchor.hidden}
-    onClick={e=>{e.stopPropagation();if(e.delta<4){pointerOff();record?anchor.select():onBlank();}}}
-    onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer';}} onPointerOut={()=>{setHover(false);pointerOff();}}>
-    <group position={[0,0,hover?.025:0]}><BookObject record={record} w={w} h={h}/></group>
+    onClick={e=>{e.stopPropagation();if(active&&e.delta<4){pointerOff();record?anchor.select():onBlank();}}}
+    onPointerOver={e=>{e.stopPropagation();if(active){setHover(true);document.body.style.cursor='pointer';}}} onPointerOut={()=>{setHover(false);pointerOff();}}>
+    <group><BookObject record={record} w={w} h={h}/></group>
   </group>;
 }
 function Books(props:Props){
   const books=props.records.filter(r=>r.kind==='book'),bySlot=new Map(books.map((r,i)=>[r.slot>=0?r.slot:i,r]));
   const widths=[.17,.22,.14,.20,.27,.16,.23,.18,.26,.15,.19,.21,.16,.24,.18,.22,.14,.27];
-  return <group position={[-1.9,0,-3.75]}>
+  return <group position={[-1.9,0,-3.75]} userData={{roomZone:'books'}}>
     {Array.from({length:90},(_,i)=>{
       const row=Math.floor(i/18),col=i%18,slot=props.bookPage*96+i,start=col<12?0:12;
       const x=(col<12?-2.28:.81)+widths.slice(start,col).reduce((sum,w)=>sum+w+.035,0)+widths[col]/2;
-      return <Book key={slot} record={bySlot.get(slot)} w={widths[col]} h={.55+(i*13%9)*.016} position={[x,.20+row*.82,.03]} onBlank={()=>props.owner&&props.onBlank('book',slot)}/>;
+      return <Book active={props.zone==='books'&&!props.navigationLocked} key={slot} record={bySlot.get(slot)} w={widths[col]} h={.55+(i*13%9)*.016} position={[x,.20+row*.82,.03]} onBlank={()=>props.owner&&props.onBlank('book',slot)}/>;
     })}
     <BookStack records={books} active={props.zone==='books'&&!props.navigationLocked} onOpen={props.onOpenBooks}/>
     {[{p:[1.90,.055,2.15],yaw:.17,w:.10},{p:[2.50,.047,3.15],yaw:-.15,w:.084},{p:[1.70,.056,4.15],yaw:-.13,w:.10}].map((item,i)=>{
       const slot=props.bookPage*96+93+i;
-      return <group key={slot} position={item.p as Vec3} rotation={[0,item.yaw,0]}><group rotation={[0,0,Math.PI/2]} scale={[1,1,1.65]}><Book record={bySlot.get(slot)} w={item.w} h={.64} position={[0,-.32,0]} onBlank={()=>props.owner&&props.onBlank('book',slot)}/></group></group>;
+      return <group key={slot} position={item.p as Vec3} rotation={[0,item.yaw,0]}><group rotation={[0,0,Math.PI/2]} scale={[1,1,1.65]}><Book active={props.zone==='books'&&!props.navigationLocked} record={bySlot.get(slot)} w={item.w} h={.64} position={[0,-.32,0]} onBlank={()=>props.owner&&props.onBlank('book',slot)}/></group></group>;
     })}
   </group>;
 }
-function Tape({record,position,slot,onBlank}:{record?:RoomRecord;position:Vec3;slot:number;onBlank:()=>void}){
+function Tape({record,position,slot,onBlank,active}:{record?:RoomRecord;position:Vec3;slot:number;onBlank:()=>void;active:boolean}){
   const anchor=useRecordAnchor(record,.125,.48),[hover,setHover]=useState(false);
   return <group ref={anchor.ref} position={[position[0],position[1]+.24,position[2]]} visible={!anchor.hidden}
-    onClick={e=>{e.stopPropagation();if(e.delta<4){pointerOff();record?anchor.select():onBlank();}}}
-    onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer';}} onPointerOut={()=>{setHover(false);pointerOff();}}>
-    <group position={[0,0,hover?.025:0]}><TapeCase record={record} slot={slot}/></group>
+    onClick={e=>{e.stopPropagation();if(active&&e.delta<4){pointerOff();record?anchor.select():onBlank();}}}
+    onPointerOver={e=>{e.stopPropagation();if(active){setHover(true);document.body.style.cursor='pointer';}}} onPointerOut={()=>{setHover(false);pointerOff();}}>
+    <group><TapeCase record={record} slot={slot}/></group>
     {hover&&record&&<Html center position={[0,.38,.2]} style={{pointerEvents:'none'}}><TapeTitle record={record} slot={slot}/></Html>}
   </group>;
 }
 function Tapes(props:Props){
   const entities=filmEntities(props.records),bySlot=new Map(entities.map(e=>[e.slot,e])),keepsakes=keepsakeFilms(entities),keptIds=new Set(keepsakes.map(e=>e.record.id));
-  return <group position={CINEMA_LAYOUT.origin}>
+  return <group position={CINEMA_LAYOUT.origin} userData={{roomZone:'cinema'}}>
     {Array.from({length:56},(_,i)=>{
       const slot=props.filmPage*56+i,record=bySlot.get(slot)?.record;
       if(record&&keptIds.has(record.id))return null;
-      return <Tape key={slot} slot={slot} record={record} position={[-1.98+(i%28)*.146,.15+Math.floor(i/28)*.62,.02]} onBlank={()=>props.owner&&props.onBlank('movie',slot)}/>;
+      return <Tape active={props.zone==='cinema'&&!props.navigationLocked} key={slot} slot={slot} record={record} position={[-1.98+(i%28)*.146,.15+Math.floor(i/28)*.62,.02]} onBlank={()=>props.owner&&props.onBlank('movie',slot)}/>;
     })}
-    <TardisOrnament onInspect={props.onInspectCollectible} disabled={props.navigationLocked}/>
-    {keepsakes.map((e,i)=><group key={e.record.id} position={CINEMA_LAYOUT.keepsakes[i]} rotation={[0,CINEMA_LAYOUT.keepsakeYaws[i],Math.PI/2]}><Tape record={e.record} slot={e.slot} position={[0,-.24,0]} onBlank={()=>{}}/></group>)}
+    <TardisOrnament onInspect={()=>props.onInspectCollectible('tardis')} disabled={props.navigationLocked||props.zone!=='cinema'}/>
+    {keepsakes.map((e,i)=><group key={e.record.id} position={CINEMA_LAYOUT.keepsakes[i]} rotation={[0,CINEMA_LAYOUT.keepsakeYaws[i],Math.PI/2]}><Tape active={props.zone==='cinema'&&!props.navigationLocked} record={e.record} slot={e.slot} position={[0,-.24,0]} onBlank={()=>{}}/></group>)}
     <MemoryDrawer active={props.zone==='cinema'} locked={props.navigationLocked} opening={props.drawerOpening} request={props.drawerRequest} onRequest={props.onDrawerRequest} onOpened={props.onOpenLibrary}/>
     {props.zone==='cinema'&&<Html transform position={[0,3.05,-.105]} distanceFactor={1} occlude><div className={'projection-content'+(props.playbackBusy?' projection-loading':'')} onClick={e=>e.stopPropagation()}>{props.projection}</div></Html>}
   </group>;
@@ -108,33 +111,15 @@ function RoomLoading({language}:{language:'zh'|'en'}){
 function Furniture({props}:{props:Props}){
   return <RecordMotionProvider request={props.recordRequest} records={props.records} activeBookId={props.activeBookId} loadedTapeId={props.loadedTapeId} zone={props.zone} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onComplete={props.onRecord} onStatus={props.onMotionStatus}
     renderBook={(record,w,h)=><BookObject record={record} w={w} h={h} detail/>} renderTape={record=><TapeCase record={record} slot={filmEntities(props.records).find(e=>e.record.id===record.id)?.slot||0}/> }>
-    <SunlitRoom onZone={zone=>{if(!props.navigationLocked)props.onZone(zone);}}/>
-    <group position={[-3.50,0,-.60]} rotation={[0,Math.PI/2,0]}><group position={[-1.15,0,-.28]}>
-      <Html transform position={[0,2.70,.067]} distanceFactor={1} occlude style={{pointerEvents:props.zone==='office'?'auto':'none'}}><div className="monitor-content" inert={props.zone!=='office'} onClick={e=>e.stopPropagation()} onPointerDown={e=>e.stopPropagation()} onWheel={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()}>{props.computer}</div></Html>
+    <SunlitRoom zone={props.zone} night={props.night} playing={!!props.loadedTapeId&&!props.playbackBusy} lamps={props.lamps} onInspectArt={props.zone==='office'&&!props.navigationLocked&&!props.screenFocused?()=>props.onInspectCollectible('starry-night'):undefined}/>
+    <group position={[-3.50,0,-.60]} rotation={[0,Math.PI/2,0]}><group position={[0,0,-.28]}>
+      <Html transform position={[0,2.70,.067]} distanceFactor={1} occlude style={{pointerEvents:props.zone==='office'?'auto':'none'}}><div className="monitor-content" inert={props.zone!=='office'} onClick={e=>e.stopPropagation()} onPointerDown={e=>e.stopPropagation()} onWheel={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key!=='Escape')e.stopPropagation();}}><div inert={!props.screenFocused} className="monitor-application">{props.computer}</div>{props.zone==='office'&&!props.screenFocused&&<button className="screen-entry" aria-label={props.language==='zh'?'点击使用电脑':'Click to use the computer'} onClick={e=>{e.stopPropagation();props.onScreenFocus();}}/>}</div></Html>
     </group></group>
-    <GuestbookBoard data={props.guestbookData} onOpen={props.onGuestbook}/>
+    <GuestbookBoard data={props.guestbookData} active={props.zone==='guestbook'&&!props.navigationLocked} onOpen={props.onGuestbook}/>
     <Books {...props}/><Tapes {...props}/><LoadedTape records={props.records}/>
     {props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><Suspense key={record.id} fallback={null}><SavedModel record={record}/></Suspense>)}
-    {props.zone==='overview'&&([
-      {zone:'office',p:[-3.5,3.6,.55],zh:'灵感角',en:'Studio'},
-      {zone:'books',p:[-1.9,4.98,-3.75],zh:'翻页角',en:'Reading'},
-      {zone:'cinema',p:[3.2,4.78,-3.75],zh:'放映角',en:'Screening'},
-      {zone:'guestbook',p:[-5.5,3.25,3.65],zh:'留言角',en:'Notes'}
-    ] as const).map((label,i)=><Html key={label.zone} position={[...label.p]} center zIndexRange={[4,0]}><button className="spatial-label" data-room-zone={label.zone} onClick={()=>props.onZone(label.zone)}><span>0{i+1}</span>{props.language==='zh'?label.zh:label.en}<span aria-hidden>↗</span></button></Html>)}
+    <ProjectionBeam active={!!props.loadedTapeId&&!props.playbackBusy} night={props.night}/>
   </RecordMotionProvider>;
-}
-function Daylight({playing=false}:{playing?:boolean}){
-  const {size}=useThree();
-  return <>
-    <StudioLight/>
-    <ambientLight intensity={.18}/>
-    <hemisphereLight args={['#eaf2ff','#e6ddc9',.85]}/>
-    <directionalLight position={[-13,8,1.8]} intensity={playing?2.1:3.4} color="#fff4df" castShadow
-      shadow-mapSize={[size.width<650?1024:2048,size.width<650?1024:2048]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={9} shadow-camera-bottom={-9}
-      shadow-camera-near={.5} shadow-camera-far={40} shadow-normalBias={.015} shadow-bias={-.00008}/>
-    <directionalLight position={[4,7,9]} intensity={.55} color="#f1f5ff"/>
-    <SoftShadows size={8} samples={8} focus={.5}/>
-  </>;
 }
 export default function RoomScene(props:Props){
   const [ready,setReady]=useState(false);useEffect(()=>setReady(true),[]);if(!ready)return null;
@@ -142,18 +127,18 @@ export default function RoomScene(props:Props){
     gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.10;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
     {/* Transparent pixels composite onto the page's exact white. Tone mapping
         affects the room, never the imagined world outside its finite shell. */}
-    <Daylight playing={!!props.loadedTapeId&&props.zone==='cinema'}/>
+    <RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={.65}/>}
     <Suspense fallback={<RoomLoading language={props.language}/>}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <EffectComposer multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/></EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}
-    {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
+    {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation screenFocused={props.screenFocused} zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;
 }
 export function ReviewScene({item}:{item:string}){
   const glasses=useMemo(()=>item==='glasses'?createAviators():null,[item]);
   const part=({sofa:'lounge',books:'bookshelf',cinema:'media cabinet'} as Record<string,string>)[item]||item;
   return <Canvas shadows frameloop="demand" dpr={[1,1.5]} camera={{position:item==='glasses'?[1.7,.9,2.5]:[5,4,6],fov:40}}>
-    <color attach="background" args={['#ffffff']}/><Daylight/>
+    <color attach="background" args={['#ffffff']}/><StudioLight/><ambientLight intensity={.5}/><directionalLight position={[-4,7,6]} intensity={2.5} castShadow/>
     <Suspense fallback={null}><Center>{glasses?<primitive object={glasses}/>:<SunlitRoom part={part}/>}</Center></Suspense>
     <CameraControls makeDefault minDistance={item==='glasses'?1.3:2} maxDistance={16} minPolarAngle={.3} maxPolarAngle={1.6}/>
   </Canvas>;

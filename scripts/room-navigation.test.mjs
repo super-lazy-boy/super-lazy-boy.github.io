@@ -1,60 +1,59 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import {RoomHoverIntent,ROOM_VIEWS,pickRoomZone} from '../lib/room-navigation.ts';
+import {RoomHoverIntent,ROOM_VIEWS,ROOM_FOCUS,ROOM_HOVER_TIMING,pickRoomZone,objectRoomZone} from '../lib/room-navigation.ts';
 
-test('passing over an area does not move the camera',()=>{
-  const hover=new RoomHoverIntent();
-  hover.point('office','overview',0);
-  assert.equal(hover.step('overview',200),null);
-  hover.point(null,'overview',250);
-  assert.equal(hover.step('overview',1000),null);
+test('passing over several areas never completes a dwell',()=>{
+  const h=new RoomHoverIntent();h.point('office','overview',0);
+  assert.equal(h.step('overview',2300),null);
+  h.point('books','overview',2300);h.point('cinema','overview',3000);h.point(null,'overview',3100);
+  assert.equal(h.step('overview',10000),null);
 });
-test('a settled hover enters once and camera motion alone cannot re-enter',()=>{
-  const hover=new RoomHoverIntent();hover.point('office','overview',0);
-  assert.equal(hover.step('overview',999),null);
-  assert.equal(hover.step('overview',1000),'office');
-  hover.cancel();
-  hover.point('overview','office',1100);
-  assert.equal(hover.step('office',2400),null);
-  hover.point('overview','office',2500);
-  assert.equal(hover.step('office',3799),null);
-  assert.equal(hover.step('office',3800),'overview');
-  assert.equal(hover.step('overview',6000),null);
+test('entry takes 2.4 seconds and empty-space return takes 3 seconds',()=>{
+  const h=new RoomHoverIntent();h.point('office','overview',0);
+  assert.equal(h.step('overview',2399),null);assert.equal(h.step('overview',2400),'office');
+  h.reset(4000,ROOM_HOVER_TIMING.cooldown);
+  h.point('overview','office',5499);assert.equal(h.candidate,null);
+  h.point('overview','office',5500);assert.equal(h.step('office',8499),null);
+  assert.equal(h.step('office',8500),'overview');assert.equal(h.step('overview',20000),null);
 });
-test('manual navigation or a dialog cancels the queued area change',()=>{
-  const hover=new RoomHoverIntent();hover.point('books','overview',0);hover.reset(150,1400);
-  assert.equal(hover.step('overview',1000),null);
-  hover.point('cinema','books',1600);
-  assert.equal(hover.step('books',2599),null);
-  assert.equal(hover.step('books',2600),'cinema');
+test('camera settlement cooldown requires a fresh pointer event afterwards',()=>{
+  const h=new RoomHoverIntent();h.point('books','overview',0);h.reset(5000,1500);
+  h.point('office','books',6200);assert.equal(h.candidate,null);assert.equal(h.step('books',15000),null);
+  h.point('office','books',15001);assert.equal(h.step('books',17400),null);assert.equal(h.step('books',17401),'office');
 });
-test('staying in the active area never starts a new camera transition',()=>{
-  const hover=new RoomHoverIntent();hover.point('books','books',0);
-  assert.equal(hover.candidate,null);assert.equal(hover.step('books',1000),null);
+test('a short boundary gap pauses rather than finishes the entry dwell',()=>{
+  const h=new RoomHoverIntent();h.point('books','overview',0);
+  h.point('overview','overview',2000);assert.equal(h.step('overview',2050),null);
+  h.point('books','overview',2100);assert.equal(h.step('overview',2499),null);assert.equal(h.step('overview',2500),'books');
 });
-test('focus camera centres hit their own furniture and empty sky exits',()=>{
+test('one move to empty space expires the grace without another event',()=>{
+  const h=new RoomHoverIntent();h.point('books','office',0);h.point('overview','office',1800);
+  assert.equal(h.step('office',1949),null);assert.equal(h.step('office',1950),null);
+  assert.equal(h.candidate,'overview');assert.equal(h.step('office',4949),null);assert.equal(h.step('office',4950),'overview');
+  h.reset();h.point('office','overview',0);h.point('overview','overview',2000);
+  assert.equal(h.step('overview',10000),null);assert.equal(h.candidate,null);
+});
+test('input locks and leaving the viewport discard a queued transition',()=>{
+  const h=new RoomHoverIntent();h.point('books','overview',0);h.cancel();assert.equal(h.step('overview',10000),null);
+  h.point('cinema','overview',10001);h.reset(12000,1500);assert.equal(h.step('overview',20000),null);
+});
+test('the active area never starts a second transition',()=>{
+  const h=new RoomHoverIntent();h.point('books','books',0);assert.equal(h.candidate,null);assert.equal(h.step('books',10000),null);
+});
+test('semantic furniture hits inherit their region; architecture is overview',()=>{
+  const root=new THREE.Group(),mesh=new THREE.Mesh();root.userData.roomZone='books';root.add(mesh);
+  assert.equal(objectRoomZone(mesh),'books');mesh.userData.roomZone='office';assert.equal(objectRoomZone(mesh),'office');
+  delete mesh.userData.roomZone;mesh.removeFromParent();mesh.userData.asset_group='starry night';assert.equal(objectRoomZone(mesh),'office');
+  mesh.userData.asset_group='cinema botanicals';assert.equal(objectRoomZone(mesh),'cinema');
+  mesh.userData.asset_group='architecture';assert.equal(objectRoomZone(mesh),'overview');
+});
+test('desk overview and screen focus have distinct stable cameras',()=>{
+  assert.ok(new THREE.Vector3(...ROOM_VIEWS.office.camera).distanceTo(new THREE.Vector3(...ROOM_FOCUS.camera))>3);
+  assert.deepEqual(ROOM_FOCUS.target,[-3.73,2.70,-.60]);
   for(const zone of ['office','books','cinema','guestbook']){
-    const view=ROOM_VIEWS[zone],origin=new THREE.Vector3(...view.camera);
-    const ray=new THREE.Ray(origin,new THREE.Vector3(...view.target).sub(origin).normalize());
-    assert.equal(pickRoomZone(ray,zone),zone);
+    const v=ROOM_VIEWS[zone],origin=new THREE.Vector3(...v.camera);
+    assert.equal(pickRoomZone(new THREE.Ray(origin,new THREE.Vector3(...v.target).sub(origin).normalize()),zone),zone);
     assert.equal(pickRoomZone(new THREE.Ray(origin,new THREE.Vector3(0,1,0)),zone),'overview');
   }
-});
-test('the guest corner has its own hover target and stays separate from the desk',()=>{
-  const origin=new THREE.Vector3(...ROOM_VIEWS.overview.camera);
-  const ray=new THREE.Ray(origin,new THREE.Vector3(...ROOM_VIEWS.guestbook.target).sub(origin).normalize());
-  assert.equal(pickRoomZone(ray,'overview'),'guestbook');
-  const hover=new RoomHoverIntent();hover.point('guestbook','overview',0);
-  assert.equal(hover.step('overview',999),null);assert.equal(hover.step('overview',1000),'guestbook');
-  assert.notDeepEqual(ROOM_VIEWS.guestbook.target,ROOM_VIEWS.office.target);
-});
-
-test('crossing several areas restarts the full dwell time for the final target',()=>{
-  const hover=new RoomHoverIntent();
-  hover.point('books','overview',0);
-  hover.point('cinema','overview',700);
-  hover.point('guestbook','overview',1200);
-  assert.equal(hover.step('overview',2199),null);
-  assert.equal(hover.step('overview',2200),'guestbook');
 });

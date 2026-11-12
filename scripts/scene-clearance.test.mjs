@@ -8,13 +8,14 @@ import {MeshBVH} from 'three-mesh-bvh';
 import {mergeGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import {bookPose,tapePose} from '../lib/record-motion-paths.ts';
 import {CINEMA_LAYOUT} from '../lib/cinema-layout.ts';
-import {ROOM_VIEWS} from '../lib/room-navigation.ts';
+import {ROOM_VIEWS,ROOM_FOCUS} from '../lib/room-navigation.ts';
+import {LIGHT_ANCHORS,lightProfile} from '../lib/room-lighting.ts';
 import {bookSize} from '../lib/book-library.ts';
 import {memoryDrawerPose,DRAWER_DURATION_MS} from '../lib/memory-drawer.ts';
 
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS);
 const doc=await io.read('public/models/sunlit-room/room.glb');
-const geometry=[],geometryNames=[];
+const geometry=[],geometryNames=[],geometryGroups=[];
 let triangles=0;
 doc.getRoot().listScenes()[0].traverse(node=>{
   const mesh=node.getMesh();if(!mesh)return;
@@ -27,11 +28,13 @@ doc.getRoot().listScenes()[0].traverse(node=>{
     triangles+=(g.index?.count||g.attributes.position.count)/3;
     geometry.push(g.toNonIndexed());
     geometryNames.push(node.getName());
+    geometryGroups.push(node.getExtras().asset_group||node.getName().split(' | ')[0]);
   }
 });
 const whole=mergeGeometries(geometry),tree=new MeshBVH(whole),identity=new THREE.Matrix4();
 const ledger=JSON.parse(await readFile('public/models/sunlit-room/layout.json','utf8'));
 const unit=new THREE.Vector3(1,1,1);
+const cameraViews={...ROOM_VIEWS,screen:ROOM_FOCUS};
 const pose=(p,quaternion=new THREE.Quaternion(),scale=unit)=>({position:new THREE.Vector3(...p),quaternion,scale});
 const quat=(yaw=0,roll=0)=>new THREE.Quaternion().setFromEuler(new THREE.Euler(0,yaw,roll));
 const matrix=(p)=>new THREE.Matrix4().compose(p.position,p.quaternion,p.scale||unit);
@@ -77,7 +80,7 @@ function checkPath(label,origin,localBox,path,steps=1800,other=[]){
 test('finite shell and camera views preserve a white outside world',()=>{
   whole.computeBoundingBox();const b=whole.boundingBox;
   assert.ok(b.min.x>=-6.7&&b.max.x<=6.7&&b.min.z>=-4.5&&b.max.z<=5.5,JSON.stringify(b));
-  for(const [name,view] of Object.entries(ROOM_VIEWS)){
+  for(const [name,view] of Object.entries(cameraViews)){
     const center=new THREE.Vector3(...view.camera),cameraBox=new THREE.Box3().setFromCenterAndSize(center,new THREE.Vector3(.12,.12,.12));
     assert.equal(tree.intersectsBox(cameraBox,identity),false,name+' camera is inside the room mesh');
   }
@@ -103,10 +106,95 @@ test('scattered books lift and turn without hitting the floor or furniture',()=>
 
 test('camera travel between every pair of room views clears the modeled room',()=>{
   const cube=new THREE.Box3(new THREE.Vector3(-.06,-.06,-.06),new THREE.Vector3(.06,.06,.06));
-  for(const [from,a] of Object.entries(ROOM_VIEWS))for(const [to,b] of Object.entries(ROOM_VIEWS)){
+  for(const [from,a] of Object.entries(cameraViews))for(const [to,b] of Object.entries(cameraViews)){
     if(from===to)continue;
     checkPath('camera '+from+' to '+to,pose(a.camera),cube,(_,t)=>pose(new THREE.Vector3(...a.camera).lerp(new THREE.Vector3(...b.camera),t).toArray()),900);
   }
+});
+
+test('the complete Starry Night canvas is unobstructed from overview and desk views',()=>{
+  const {position,size,normal}=ledger.artwork;
+  assert.deepEqual(normal,[1,0,0]);assert.ok(Math.abs(size[0]/size[1]-1920/1520)<.001);
+  const withoutArt=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]!=='starry night')));
+  for(const view of [ROOM_VIEWS.overview,ROOM_VIEWS.office])for(let y=0;y<=8;y++)for(let x=0;x<=10;x++){
+    const point=new THREE.Vector3(position[0]+.002,position[1]+(y/8-.5)*size[1]*.99,position[2]+(x/10-.5)*size[0]*.99);
+    const start=new THREE.Vector3(...view.camera),distance=start.distanceTo(point),ray=new THREE.Ray(start,point.sub(start).normalize());
+    assert.equal(withoutArt.raycastFirst(ray,THREE.DoubleSide,0,distance-.012),null,'another object hides the canvas at grid '+x+','+y);
+  }
+});
+
+test('projection rays from the real lens to the entire screen miss the furniture',()=>{
+  assert.deepEqual(ledger.lights.projector,LIGHT_ANCHORS.projector);
+  const start=new THREE.Vector3(...LIGHT_ANCHORS.projector.position);
+  for(let y=0;y<=12;y++)for(let x=0;x<=20;x++){
+    const end=new THREE.Vector3(1.19+x/20*4.02,1.915+y/12*2.27,-3.855),distance=start.distanceTo(end);
+    const hit=tree.raycastFirst(new THREE.Ray(start.clone(),end.sub(start).normalize()),THREE.DoubleSide,.004,distance-.02);
+    assert.equal(hit,null,'projection is obstructed at screen grid '+x+','+y+(hit?' distance '+hit.distance:''));
+  }
+});
+
+test('opening and closing curtains sweep no objects throughout the day/night transition',()=>{
+  const fixed=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>!geometryGroups[i].startsWith('curtain '))));
+  for(const side of ['curtain left','curtain right']){
+    const curtain=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]===side));assert.ok(curtain.attributes.position.count>1000);
+    curtain.computeBoundingBox();const pivot=side==='curtain left'?-2.125:3.325;
+    for(let i=0;i<=120;i++){
+      const s=1+3.7*i/120,m=new THREE.Matrix4().makeTranslation(0,0,pivot).multiply(new THREE.Matrix4().makeScale(1,1,s)).multiply(new THREE.Matrix4().makeTranslation(0,0,-pivot));
+      // Each intermediate curtain and the entire swept envelope are checked.
+      assert.equal(fixed.intersectsBox(curtain.boundingBox,m),false,side+' overlaps another item at scale '+s);
+    }
+    curtain.dispose();
+  }
+});
+
+test('desk essentials and under-desk furniture have separate, measured envelopes',()=>{
+  const parts=ledger.components;assert.ok(parts?.length>1400);
+  const partsBox=(match)=>{
+    const selected=parts.filter(match);assert.ok(selected.length,'missing source components');
+    const pieces=selected.map(p=>new THREE.Box3(new THREE.Vector3(...p.min),new THREE.Vector3(...p.max)));
+    const bounds=pieces.reduce((b,p)=>b.union(p),new THREE.Box3());bounds.pieces=pieces;return bounds;
+  };
+  const items={
+    monitor:partsBox(p=>p.name.startsWith('Monitor ')&&p.name!=='Monitor cable'),
+    keyboard:partsBox(p=>/^(Keyboard |Double shot keycap)/.test(p.name)),
+    mouse:partsBox(p=>p.name.startsWith('Mouse ')),
+    notebook:partsBox(p=>p.name.startsWith('Notebook ')),
+    mug:partsBox(p=>p.group==='desk details'&&/^(Glazed open mug|Mug handle|Coffee surface)/.test(p.name)),
+    lamp:partsBox(p=>p.group==='desk lamp'),
+    speakerLeft:partsBox(p=>p.name.startsWith('White speaker enclosure')&&p.min[2]>0),
+    speakerRight:partsBox(p=>p.name.startsWith('White speaker enclosure')&&p.max[2]<-1),
+    jasmine:partsBox(p=>p.group==='flowers jasmine'&&p.min[0]>-4.0)
+  };
+  for(const [a,boxA] of Object.entries(items))for(const [b,boxB] of Object.entries(items)){
+    if(a>=b)continue;
+    for(const partA of boxA.pieces)for(const partB of boxB.pieces)assert.equal(partA.clone().expandByScalar(-.002).intersectsBox(partB.clone().expandByScalar(-.002)),false,a+' overlaps '+b);
+  }
+  const center=items.monitor.getCenter(new THREE.Vector3());assert.ok(Math.abs(center.z+.60)<.03,'monitor is not centred on the desk');
+  const cableGeometry=geometry.filter((_,i)=>geometryGroups[i]==='desk details'&&geometryNames[i].includes('rubber'));
+  assert.ok(cableGeometry.length,'monitor cable geometry was not found');
+  const cableTree=new MeshBVH(mergeGeometries(cableGeometry));
+  for(const [name,bounds] of Object.entries(items))if(name!=='monitor')for(const part of bounds.pieces)assert.equal(cableTree.intersectsBox(part,identity),false,'monitor cable passes through '+name);
+  const tower=partsBox(p=>p.group==='computer tower'),drawer=partsBox(p=>p.name.startsWith('Pedestal ')),chair=partsBox(p=>p.group==='chair');
+  assert.equal(tower.intersectsBox(drawer),false);assert.equal(tower.intersectsBox(chair),false);assert.equal(drawer.intersectsBox(chair),false);
+  const keys=parts.filter(p=>/^(Double shot keycap|Keyboard spacebar)/.test(p.name));
+  for(let i=0;i<keys.length;i++)for(let j=i+1;j<keys.length;j++)assert.equal(new THREE.Box3(new THREE.Vector3(...keys[i].min),new THREE.Vector3(...keys[i].max)).intersectsBox(new THREE.Box3(new THREE.Vector3(...keys[j].min),new THREE.Vector3(...keys[j].max))),false,'keycaps overlap');
+});
+
+test('night lighting, screening dimming and manual lamp switches restore predictably',()=>{
+  for(const night of [false,true])for(const screening of [false,true])for(const desk of [false,true])for(const floor of [false,true]){
+    const p=lightProfile(night,screening,{desk,floor});assert.ok(Object.values(p).every(n=>Number.isFinite(n)&&n>=0));
+    assert.equal(p.sun===0,night);assert.equal(p.beam>0,screening);assert.equal(p.projector>0,screening);
+    if(!night||!desk)assert.equal(p.desk,0);if(!night||!floor)assert.equal(p.floor,0);
+  }
+  const night=lightProfile(true,false),film=lightProfile(true,true);
+  assert.ok(film.desk<night.desk&&film.floor<night.floor&&film.picture<night.picture&&film.shelf<night.shelf);
+  for(const key of ['desk','floor','picture','shelves'])assert.deepEqual(ledger.lights[key],LIGHT_ANCHORS[key]);
+});
+
+test('lumbar cushion, throw and floor pillow stay outside the sculpted seat',()=>{
+  const seat=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='lounge')));
+  const soft=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='soft furnishings'));
+  assert.equal(seat.intersectsGeometry(soft,identity),false,'soft furnishings cut through the seat or rug');
 });
 
 test('all 56 tape trajectories fit the player slot without changing shape',()=>{

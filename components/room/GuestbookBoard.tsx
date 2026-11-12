@@ -88,9 +88,9 @@ export function GuestbookCamera(){
   if(camera.position.distanceToSquared(end)>.000001||focal.current.distanceToSquared(target.current)>.000001)invalidate();
  });return null;
 }
-export default function GuestbookBoard({data,onOpen}:{data:GuestbookData|null;onOpen:()=>void}){
+export default function GuestbookBoard({data,onOpen,active=true}:{data:GuestbookData|null;onOpen:()=>void;active?:boolean}){
  const [hover,setHover]=useState(false),notes=data?.notes.slice(0,4)||[],board=useBoardTexture(notes);
- return <group position={[-5.5,2.45,3.65]} rotation={[0,Math.PI/2,0]} onClick={e=>{e.stopPropagation();if(e.delta<4)onOpen();}} onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer';}} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
+ return <group userData={{roomZone:'guestbook'}} position={[-5.5,2.45,3.65]} rotation={[0,Math.PI/2,0]} onClick={e=>{e.stopPropagation();if(active&&e.delta<4)onOpen();}} onPointerOver={e=>{e.stopPropagation();if(active){setHover(true);document.body.style.cursor='pointer';}}} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
   <mesh position={[0,0,.036]} castShadow><boxGeometry args={[1.23,1.05,.065]}/><meshStandardMaterial color={hover?'#96764e':'#a3855c'} roughness={.95} metalness={0} envMapIntensity={.05}/></mesh>
   <mesh position={[0,0,.075]}><planeGeometry args={[1.23,1.05]}/><meshBasicMaterial map={board}/></mesh>
   {[-1,1].map(side=><group key={'frame'+side}>
