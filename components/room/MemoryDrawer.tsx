@@ -41,10 +41,10 @@ export default function MemoryDrawer({active,locked,opening,request,onRequest,on
    <Part size={[.84,.015,.46]} position={[0,-.113,0]} color="#bda88b"/>
    {[-.412,.412].map(x=><Part key={x} size={[.018,.19,.46]} position={[x,-.013,0]} color="#c9b79b"/>)}
    <Part size={[.84,.18,.016]} position={[0,-.018,-.225]} color="#c9b79b"/>
-   <Part size={[.89,.24,.035]} position={[0,0,.247]} color={hover?'#e5dece':'#ede9df'}/>
-   <RoundedBox args={[.24,.028,.045]} position={[0,.025,.285]} radius={.009} smoothness={2} castShadow><meshStandardMaterial color={hover?'#77846e':'#8d9688'} roughness={.38} metalness={.35}/></RoundedBox>
-   <Html transform position={[0,0,.32]} distanceFactor={1} style={{pointerEvents:active&&!locked?'auto':'none'}}><button className="drawer-control" aria-label="拉开录像带抽屉" disabled={!active||locked} onPointerEnter={()=>setHover(true)} onPointerLeave={()=>setHover(false)} onClick={event=>{event.stopPropagation();onRequest();}}/></Html>
-   {Array.from({length:7},(_,index)=><group key={index} position={[0,-.065,-.17+index*.052]} rotation={[-.10+index*.012,0,0]}>
+   <Part size={[.89,.24,.035]} position={[0,0,.285]} color={hover?'#e5dece':'#ede9df'}/>
+   <RoundedBox args={[.24,.028,.045]} position={[0,.025,.323]} radius={.009} smoothness={2} castShadow><meshStandardMaterial color={hover?'#77846e':'#8d9688'} roughness={.38} metalness={.35}/></RoundedBox>
+   <Html transform position={[0,0,.36]} distanceFactor={1} style={{pointerEvents:active&&!locked?'auto':'none'}}><button className="drawer-control" aria-label="拉开录像带抽屉" disabled={!active||locked} onPointerEnter={()=>setHover(true)} onPointerLeave={()=>setHover(false)} onClick={event=>{event.stopPropagation();onRequest();}}/></Html>
+   {Array.from({length:7},(_,index)=><group key={index} position={[0,-.035,-.17+index*.052]} rotation={[-.10+index*.012,0,0]}>
     <Part size={[.70,.12,.009]} position={[0,0,0]} color={index%2?'#eeeadd':'#ddd9c9'}/>
     <Part size={[.11,.025,.009]} position={[-.25+index*.08,.067,0]} color={['#8d9f8d','#c6ad7d','#929caa','#c1a393'][index%4]}/>
    </group>)}

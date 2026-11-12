@@ -1,13 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
-import { bookPose, tapePose, BOOK_CLEAR, TAPE_CLEAR } from "../lib/record-motion-paths.ts";
+import { bookPose, tapePose, BOOK_CLEAR, TAPE_CLEAR, PLAYER_Y } from "../lib/record-motion-paths.ts";
 
 const SHELF_FRONT = -3.40;   // bookcase side panel front face
 const CABINET_FRONT = -3.425; // cinema cabinet side panel front face
 const CABINET_TOP = 1.45;
 const BOOK_DEPTH = .40;
-const TAPE_DEPTH = .43;
+const TAPE_DEPTH = .31;
 
 const angle = (a, b) => a.angleTo(b);
 
@@ -89,7 +89,7 @@ test("tape leaves the cabinet before it turns or lifts", () => {
   assert.ok(TAPE_CLEAR > TAPE_DEPTH, "clearance must exceed the tape depth");
 });
 
-test("tape descends into the player from above, not through its front wall", () => {
+test("tape lowers in clear air and then enters the hollow front slot", () => {
   const origin = {
     position: new THREE.Vector3(2.2, .39, -3.73),
     quaternion: new THREE.Quaternion(),
@@ -100,10 +100,10 @@ test("tape descends into the player from above, not through its front wall", () 
     const t = i / 100;
     const pose = tapePose(origin, t);
     highest = Math.max(highest, pose.position.y);
-    if (pose.position.z > CABINET_FRONT) { minY = Math.min(minY, pose.position.y); }
-    if (t > .78) {
+    if (t >= .55 && pose.position.z > CABINET_FRONT) { minY = Math.min(minY, pose.position.y); }
+    if (t > .80) {
       assert.ok(pose.position.z <= previousZ + 1e-6, "tape should move straight into the player");
-      assert.ok(Math.abs(pose.position.y - 1.525) < .02, "tape should stay at the player slot height while inserting");
+      assert.ok(Math.abs(pose.position.y - PLAYER_Y) < 1e-6, "tape should stay at the player slot height while inserting");
     }
     previousZ = pose.position.z;
   }

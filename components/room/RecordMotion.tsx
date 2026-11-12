@@ -3,7 +3,6 @@
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 import type { RoomRecord, Zone } from "@/lib/room-types";
 import { bookPose, smooth, tapePose, type Pose } from "@/lib/record-motion-paths";
 
@@ -19,10 +18,10 @@ export function useRecordAnchor(record:RoomRecord|undefined,width:number,height:
   useLayoutEffect(()=>{if(record&&ref.current)return motion.register(record.id,{node:ref.current,width,height});},[record?.id,width,height,motion.register]);
   return {ref,hidden:!!record&&(motion.hiddenId===record.id||motion.loadedId===record.id),select:()=>record&&motion.select(record)};
 }
-function Actor({motion,renderBook,renderTape,onFinish,onStage}:{motion:Motion;renderBook:(record:RoomRecord,w:number,h:number)=>ReactNode;renderTape:()=>ReactNode;onFinish:()=>void;onStage:(status:MotionStatus)=>void}){
+function Actor({motion,renderBook,renderTape,onFinish,onStage}:{motion:Motion;renderBook:(record:RoomRecord,w:number,h:number)=>ReactNode;renderTape:(record:RoomRecord)=>ReactNode;onFinish:()=>void;onStage:(status:MotionStatus)=>void}){
   const root=useRef<THREE.Group>(null),started=useRef(performance.now()),done=useRef(false),stage=useRef(-1);
   const {invalidate}=useThree();
-  const isBook=motion.record.kind==="book",duration=motion.phase==="return"?.64:isBook?1.05:2.15;
+  const isBook=motion.record.kind==="book",duration=isBook?(motion.phase==="return"?.95:1.30):2.65;
   const start=motion.origin;
   useEffect(()=>{started.current=performance.now();done.current=false;stage.current=-1;invalidate();},[motion.phase,motion.revision,invalidate]);
   useFrame(()=>{
@@ -33,26 +32,31 @@ function Actor({motion,renderBook,renderTape,onFinish,onStage}:{motion:Motion;re
       const pose=bookPose(start,t);
       node.position.copy(pose.position);node.quaternion.copy(pose.quaternion);node.scale.copy(start.scale);
     }else{
-      const pose=tapePose(start,p);
+      const pose=tapePose(start,motion.phase==='return'?1-p:p);
       node.position.copy(pose.position);node.quaternion.copy(pose.quaternion);node.scale.copy(pose.scale);
-      const next=p<.78?0:1;if(stage.current!==next){stage.current=next;onStage(next?"tape-insert":"tape-out");}
+      const next=p<.80?0:1;if(stage.current!==next){stage.current=next;onStage(motion.phase==='return'?'tape-out':next?"tape-insert":"tape-out");}
     }
     if(p===1&&motion.phase!=="hold"&&!done.current){done.current=true;onFinish();}
     if(motion.phase!=="hold"&&!done.current)invalidate();
   });
-  return <group ref={root}>{isBook?renderBook(motion.record,motion.width,motion.height):renderTape()}</group>;
+  return <group ref={root}>{isBook?renderBook(motion.record,motion.width,motion.height):renderTape(motion.record)}</group>;
 }
-export function RecordMotionProvider({children,request,records,activeBookId,loadedTapeId,zone,viewRevision,skipRevision,onSelect,onComplete,onStatus,renderBook,renderTape}:{children:ReactNode;request:RecordRequest;records:RoomRecord[];activeBookId:string|null;loadedTapeId:string|null;zone:Zone;viewRevision:number;skipRevision:number;onSelect:(record:RoomRecord)=>void;onComplete:(record:RoomRecord)=>void;onStatus:(status:MotionStatus)=>void;renderBook:(record:RoomRecord,w:number,h:number)=>ReactNode;renderTape:()=>ReactNode}){
+export function RecordMotionProvider({children,request,records,activeBookId,loadedTapeId,zone,viewRevision,skipRevision,onSelect,onComplete,onStatus,renderBook,renderTape}:{children:ReactNode;request:RecordRequest;records:RoomRecord[];activeBookId:string|null;loadedTapeId:string|null;zone:Zone;viewRevision:number;skipRevision:number;onSelect:(record:RoomRecord)=>void;onComplete:(record:RoomRecord)=>void;onStatus:(status:MotionStatus)=>void;renderBook:(record:RoomRecord,w:number,h:number)=>ReactNode;renderTape:(record:RoomRecord)=>ReactNode}){
   const anchors=useRef(new Map<string,Anchor>()),latestRequest=useRef(0),lastView=useRef(viewRevision),lastSkip=useRef(skipRevision);
   const [motion,setMotion]=useState<Motion|null>(null),[reduced,setReduced]=useState(false);
+  const pending=useRef<Motion|null>(null),[unloadedId,setUnloadedId]=useState<string|null>(null);
   const current=useRef(motion);current.current=motion;
   const callbacks=useRef({onComplete,onStatus});callbacks.current={onComplete,onStatus};
   const register=useCallback((id:string,anchor:Anchor)=>{anchors.current.set(id,anchor);return()=>{if(anchors.current.get(id)===anchor)anchors.current.delete(id);};},[]);
   useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)"),update=()=>setReduced(query.matches);update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update);},[]);
   const finish=useCallback(()=>{
     const value=current.current;if(!value)return;
-    if(value.phase==="return"){setMotion(null);callbacks.current.onStatus(null);return;}
-    if(value.record.kind==="book")setMotion({...value,phase:"hold"});else setMotion(null);
+    if(value.phase==="return"){
+      if(value.record.kind!=='book')setUnloadedId(value.record.id);
+      const next=pending.current;pending.current=null;setMotion(next);
+      callbacks.current.onStatus(next?(next.record.kind==='book'?'book-out':'tape-out'):null);return;
+    }
+    if(value.record.kind==="book")setMotion({...value,phase:"hold"});else{setUnloadedId(null);setMotion(null);}
     callbacks.current.onStatus(null);callbacks.current.onComplete(value.record);
   },[]);
   useEffect(()=>{
@@ -64,14 +68,22 @@ export function RecordMotionProvider({children,request,records,activeBookId,load
       if(reduced||!anchor||record.id===loadedTapeId){setMotion(null);callbacks.current.onStatus(null);callbacks.current.onComplete(record);return;}
       anchor.node.updateWorldMatrix(true,false);
       const origin={position:anchor.node.getWorldPosition(new THREE.Vector3()),quaternion:anchor.node.getWorldQuaternion(new THREE.Quaternion()),scale:anchor.node.getWorldScale(new THREE.Vector3())};
-      setMotion({record,origin,width:anchor.width,height:anchor.height,phase:"take",revision:request.revision});
+      const next:Motion={record,origin,width:anchor.width,height:anchor.height,phase:"take",revision:request.revision};
+      pending.current=null;
+      const previous=loadedTapeId&&loadedTapeId!==unloadedId&&loadedTapeId!==record.id?records.find(r=>r.id===loadedTapeId):null;
+      const oldAnchor=previous?anchors.current.get(previous.id):null;
+      if(record.kind!=='book'&&previous&&oldAnchor){
+        oldAnchor.node.updateWorldMatrix(true,false);
+        const oldOrigin={position:oldAnchor.node.getWorldPosition(new THREE.Vector3()),quaternion:oldAnchor.node.getWorldQuaternion(new THREE.Quaternion()),scale:oldAnchor.node.getWorldScale(new THREE.Vector3())};
+        pending.current=next;setMotion({record:previous,origin:oldOrigin,width:oldAnchor.width,height:oldAnchor.height,phase:'return',revision:-request.revision});
+      }else setMotion(next);
       callbacks.current.onStatus(record.kind==="book"?"book-out":"tape-out");return;
     }
-    if(viewRevision!==lastView.current){lastView.current=viewRevision;setMotion(null);callbacks.current.onStatus(null);}
-  },[request,zone,viewRevision,records,reduced,loadedTapeId]);
+    if(viewRevision!==lastView.current){lastView.current=viewRevision;pending.current=null;setMotion(null);callbacks.current.onStatus(null);}
+  },[request,zone,viewRevision,records,reduced,loadedTapeId,unloadedId]);
   useEffect(()=>{const value=current.current;if(value?.phase==="hold"&&activeBookId!==value.record.id){if(reduced){setMotion(null);return;}setMotion({...value,phase:"return"});callbacks.current.onStatus("book-return");}},[activeBookId,motion?.phase,reduced]);
   useEffect(()=>{if(skipRevision!==lastSkip.current){lastSkip.current=skipRevision;if(current.current?.phase!=="hold")finish();}},[skipRevision,finish]);
   useEffect(()=>{if(reduced&&current.current&&current.current.phase!=="hold")finish();},[reduced,finish]);
-  const value=useMemo(()=>({register,hiddenId:motion?.record.id||null,loadedId:loadedTapeId,select:onSelect,loadingTape:!!motion&&motion.record.kind!=="book"}),[register,motion,loadedTapeId,onSelect]);
+  const value=useMemo(()=>({register,hiddenId:motion?.record.id||null,loadedId:loadedTapeId===unloadedId?null:loadedTapeId,select:onSelect,loadingTape:!!motion&&motion.record.kind!=="book"}),[register,motion,loadedTapeId,unloadedId,onSelect]);
   return <Context.Provider value={value}>{children}{motion&&<Actor key={motion.revision} motion={motion} renderBook={renderBook} renderTape={renderTape} onFinish={finish} onStage={status=>callbacks.current.onStatus(status)}/>}</Context.Provider>;
 }

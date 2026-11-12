@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useMemo} from 'react';
 import {useThree} from '@react-three/fiber';
+import {RoundedBox} from '@react-three/drei';
 import * as THREE from 'three';
 import {filmStyle,filmAddress,type FilmStyle} from '@/lib/film-library';
 import type {RoomRecord} from '@/lib/room-types';
@@ -80,7 +81,16 @@ export function TapeLabel({record,slot}:{record?:RoomRecord;slot:number}){
  return <mesh position={[0,0,.158]}><planeGeometry args={[.114,.453]}/><meshBasicMaterial key={texture?'printed':'blank'} map={texture} color={record?'#ffffff':'#5a605d'} toneMapped={false}/></mesh>;
 }
 export function TapeCase({record,slot=0}:{record?:RoomRecord;slot?:number}){
- return <group><mesh castShadow receiveShadow><boxGeometry args={[.125,.48,.31]}/><meshStandardMaterial color="#303638" roughness={.58}/></mesh><TapeLabel record={record} slot={slot}/><mesh position={[0,.234,.161]}><boxGeometry args={[.121,.008,.003]}/><meshStandardMaterial color="#6b706b" roughness={.56}/></mesh></group>;
+ return <group>
+  <RoundedBox args={[.125,.48,.31]} radius={.006} smoothness={2} castShadow receiveShadow><meshStandardMaterial color={record?'#343a3b':'#e5e4dd'} roughness={.47}/></RoundedBox>
+  <TapeLabel record={record} slot={slot}/>
+  {[-1,1].map(side=><group key={side} position={[side*.063,0,0]} rotation={[0,side*Math.PI/2,0]}>
+    <mesh><planeGeometry args={[.245,.405]}/><meshStandardMaterial color="#474f4f" roughness={.65}/></mesh>
+    {[-.11,.11].map(y=><group key={y} position={[0,y,.0005]}><mesh><circleGeometry args={[.055,24]}/><meshStandardMaterial color="#687171" roughness={.32}/></mesh><mesh position={[0,0,.0005]}><ringGeometry args={[.014,.028,20]}/><meshStandardMaterial color="#bac1ba" roughness={.5}/></mesh></group>)}
+    <mesh position={[0,0,.001]}><planeGeometry args={[.22,.06]}/><meshStandardMaterial color="#e4e3d8" roughness={.94}/></mesh>
+  </group>)}
+  <mesh position={[0,.234,.161]}><boxGeometry args={[.121,.008,.003]}/><meshStandardMaterial color="#777d76" roughness={.56}/></mesh>
+ </group>;
 }
 export function TapeTitle({record,slot}:{record:RoomRecord;slot:number}){
  return <div className="tape-title"><span>{filmAddress(slot)}</span><strong>{record.title}</strong><small>{record.year}</small></div>;

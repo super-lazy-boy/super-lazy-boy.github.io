@@ -14,6 +14,7 @@
     "test:public": "node --test scripts/public-records.test.mjs",
     "typecheck": "tsc --noEmit",
     "test:interaction": "node --test scripts/room-navigation.test.mjs",
+    "test:clearance": "node --test scripts/scene-clearance.test.mjs scripts/motion-clearance.test.mjs scripts/memory-drawer.test.mjs",
     "test:permissions": "node --test scripts/room-permissions.test.mjs",
     "check:backend": "node scripts/check-backend.mjs",
     "test:e2e": "playwright test",

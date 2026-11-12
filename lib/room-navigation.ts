@@ -4,9 +4,9 @@ import type {Zone} from "./room-types";
 export type Vec3=[number,number,number];
 export const ROOM_HOVER_TIMING={enter:1000,leave:1300,cooldown:1400} as const;
 export const ROOM_VIEWS:Record<Zone,{camera:Vec3;target:Vec3;distance:[number,number]}>= {
-  overview:{camera:[10.6,7.0,12.6],target:[-1.05,1.5,.35],distance:[13,22]},
-  office:{camera:[2.60,4.60,2.00],target:[-3.78,2.45,.35],distance:[7.0,10.5]},
-  books:{camera:[-1.9,2.5,-.65],target:[-1.9,2.25,-3.4],distance:[2.5,4.2]},
+  overview:{camera:[13,9.2,14.8],target:[-.35,1.7,.5],distance:[16,25]},
+  office:{camera:[-1.10,2.78,.62],target:[-3.78,2.62,.55],distance:[2.65,4.6]},
+  books:{camera:[-1.9,2.6,1.4],target:[-1.9,2.35,-3.65],distance:[4.5,6.5]},
   cinema:{camera:[3.35,3.45,3.75],target:[3.40,2.35,-3.70],distance:[7.2,10.0]},
   guestbook:{camera:[-4.05,2.66,4.62],target:[-5.50,2.32,3.62],distance:[1.8,3.6]}
 };

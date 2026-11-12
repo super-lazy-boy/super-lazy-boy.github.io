@@ -93,6 +93,10 @@ export default function GuestbookBoard({data,onOpen}:{data:GuestbookData|null;on
  return <group position={[-5.5,2.45,3.65]} rotation={[0,Math.PI/2,0]} onClick={e=>{e.stopPropagation();if(e.delta<4)onOpen();}} onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer';}} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
   <mesh position={[0,0,.036]} castShadow><boxGeometry args={[1.23,1.05,.065]}/><meshStandardMaterial color={hover?'#96764e':'#a3855c'} roughness={.95} metalness={0} envMapIntensity={.05}/></mesh>
   <mesh position={[0,0,.075]}><planeGeometry args={[1.23,1.05]}/><meshBasicMaterial map={board}/></mesh>
+  {[-1,1].map(side=><group key={'frame'+side}>
+    <RoundedBox args={[1.27,.045,.055]} position={[0,side*.518,.080]} radius={.006} smoothness={2} castShadow receiveShadow><meshStandardMaterial color="#c4b193" roughness={.58}/></RoundedBox>
+    <RoundedBox args={[.045,.99,.055]} position={[side*.613,0,.080]} radius={.006} smoothness={2} castShadow receiveShadow><meshStandardMaterial color="#c4b193" roughness={.58}/></RoundedBox>
+  </group>)}
   {[-.49,.49].map(x=><mesh key={x} position={[x,-1.46,-.03]} castShadow><boxGeometry args={[.035,1.90,.035]}/><meshStandardMaterial color="#c3c8c0" roughness={.5} metalness={.3}/></mesh>)}
   {[-.49,.49].map(x=><mesh key={x} position={[x,-2.40,-.01]} castShadow><boxGeometry args={[.11,.05,.45]}/><meshStandardMaterial color="#b6bdb3" roughness={.55}/></mesh>)}
  </group>;

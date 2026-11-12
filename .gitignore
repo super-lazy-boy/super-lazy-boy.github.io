@@ -6,4 +6,7 @@ out/
 supabase/.temp/
 test-results/
 playwright-report/
+work/
+*.blend1
+*.blend2
 
