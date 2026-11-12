@@ -125,6 +125,20 @@ export function CabinetClutter() {
   </group>;
 }
 
+/** Slim floor lamp beside the lounge, with a warm practical glow. */
+export function FloorLamp({ position = [5.05, 0, 2.45] as Vec3 }: { position?: Vec3 }) {
+  return <group position={position}>
+    <mesh position={[0, .015, 0]} castShadow receiveShadow raycast={noRay}><cylinderGeometry args={[.17, .19, .03, 32]}/><Surface kind="metal" color="#6f6a61"/></mesh>
+    <mesh position={[0, .78, 0]} castShadow raycast={noRay}><cylinderGeometry args={[.018, .018, 1.5, 12]}/><Surface kind="metal" color="#6f6a61"/></mesh>
+    <mesh position={[0, 1.62, 0]} rotation={[0, 0, .06]} castShadow raycast={noRay}>
+      <coneGeometry args={[.24, .26, 32, 1, true]}/>
+      <Surface kind="fabric" color="#e7dcc4" side={THREE.DoubleSide}/>
+    </mesh>
+    <mesh position={[0, 1.55, 0]} raycast={noRay}><sphereGeometry args={[.07, 16, 12]}/><meshBasicMaterial color="#fff3d6"/></mesh>
+    <pointLight position={[0, 1.5, 0]} intensity={6} distance={4.5} decay={2} color="#ffd9a0"/>
+  </group>;
+}
+
 /** A paper bag on the floor beside the desk. */
 export function FloorClutter() {
   return <group>
@@ -145,5 +159,6 @@ export default function RoomProps() {
     <ShelfClutter/>
     <CabinetClutter/>
     <FloorClutter/>
+    <FloorLamp/>
   </group>;
 }

@@ -22,15 +22,59 @@ export function Cable({points,color=DARK,r=.009}:{points:V[];color?:string;r?:nu
 }
 export function useSurface(kind:"wood"|"fabric"|"screen") {
   const texture=useMemo(()=>{
-    const canvas=document.createElement("canvas");canvas.width=256;canvas.height=256;const c=canvas.getContext("2d")!;
-    c.fillStyle=kind==="wood"?"#c4ad8e":kind==="screen"?"#f9f9f7":"#a7a49a";c.fillRect(0,0,256,256);
-    let seed=27;const random=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
-    if(kind==="wood"){for(let i=0;i<400;i++){const x=random()*256;c.strokeStyle=`rgba(89,64,38,${random()*.1})`;c.lineWidth=random()*.8+.2;c.beginPath();c.moveTo(x,0);c.bezierCurveTo(x+random()*5,80,x-3,170,x+random()*5,256);c.stroke();}}
-    else {for(let i=0;i<256;i++){c.strokeStyle=i%2?"#ffffff13":"#20202012";c.lineWidth=.45;c.beginPath();c.moveTo(i,0);c.lineTo(i,256);c.moveTo(0,i);c.lineTo(256,i);c.stroke();}}
-    const map=new THREE.CanvasTexture(canvas);map.wrapS=map.wrapT=THREE.RepeatWrapping;map.repeat.set(kind==="wood"?2:6,kind==="wood"?1:6);map.colorSpace=THREE.SRGBColorSpace;return map;
+    const size=512;
+    const canvas=document.createElement("canvas");canvas.width=size;canvas.height=size;
+    const c=canvas.getContext("2d")!;
+    let seed=kind==="wood"?19:41;
+    const random=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+    if(kind==="wood"){
+      c.fillStyle="#c4ad8e";c.fillRect(0,0,size,size);
+      for(let i=0;i<260;i++){
+        const y=random()*size,amp=4+random()*14,shade=random();
+        c.strokeStyle=shade>.55?"rgba(96,68,40,"+(0.05+random()*0.12)+")":"rgba(232,214,182,"+(0.05+random()*0.10)+")";
+        c.lineWidth=0.6+random()*2.4;
+        c.beginPath();c.moveTo(0,y);
+        c.bezierCurveTo(size*0.3,y+amp,size*0.6,y-amp,size,y+amp*0.4);c.stroke();
+      }
+      for(let i=0;i<5;i++){
+        const x=random()*size,y=random()*size,r=3+random()*7;
+        const g=c.createRadialGradient(x,y,0,x,y,r*2.4);
+        g.addColorStop(0,"rgba(92,62,34,.28)");g.addColorStop(1,"rgba(92,62,34,0)");
+        c.fillStyle=g;c.beginPath();c.arc(x,y,r*2.4,0,Math.PI*2);c.fill();
+      }
+      const g=c.createLinearGradient(0,0,size,size);
+      g.addColorStop(0,"rgba(255,240,214,.20)");g.addColorStop(.5,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(70,48,26,.14)");
+      c.fillStyle=g;c.fillRect(0,0,size,size);
+    }else if(kind==="fabric"){
+      c.fillStyle="#b9b3a4";c.fillRect(0,0,size,size);
+      for(let i=0;i<size;i+=3){
+        c.strokeStyle=i%6?"rgba(255,255,255,.16)":"rgba(0,0,0,.10)";
+        c.lineWidth=1.4;c.beginPath();c.moveTo(i,0);c.lineTo(i,size);c.stroke();
+        c.strokeStyle=i%6?"rgba(0,0,0,.09)":"rgba(255,255,255,.13)";
+        c.beginPath();c.moveTo(0,i);c.lineTo(size,i);c.stroke();
+      }
+      for(let i=0;i<420;i++){
+        const x=random()*size,y=random()*size;
+        c.fillStyle=random()>.5?"rgba(255,255,255,.10)":"rgba(60,54,40,.08)";
+        c.fillRect(x,y,2+random()*5,1+random()*2);
+      }
+    }else{
+      c.fillStyle="#f7f7f4";c.fillRect(0,0,size,size);
+      for(let i=0;i<size;i+=2){
+        c.strokeStyle=i%4?"rgba(0,0,0,.018)":"rgba(255,255,255,.05)";
+        c.lineWidth=.6;c.beginPath();c.moveTo(i,0);c.lineTo(i,size);c.stroke();
+      }
+    }
+    const map=new THREE.CanvasTexture(canvas);
+    map.wrapS=map.wrapT=THREE.RepeatWrapping;
+    map.repeat.set(kind==="wood"?2:5,kind==="wood"?1:5);
+    map.colorSpace=THREE.SRGBColorSpace;
+    map.anisotropy=8;
+    return map;
   },[kind]);
   useEffect(()=>()=>texture.dispose(),[texture]);return texture;
 }
+
 export function StudioLight() {
   const {gl,scene,invalidate}=useThree();
   useEffect(()=>{const room=new RoomEnvironment(),generator=new THREE.PMREMGenerator(gl),target=generator.fromScene(room,.025);scene.environment=target.texture;scene.environmentIntensity=.45;room.dispose();generator.dispose();invalidate();return()=>{scene.environment=null;target.dispose();};},[gl,scene,invalidate]);
