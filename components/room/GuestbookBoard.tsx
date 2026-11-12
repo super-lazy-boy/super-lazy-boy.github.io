@@ -13,8 +13,14 @@ function useBoardTexture(notes: GuestNote[]) {
     const canvas = document.createElement("canvas");
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext("2d")!;
-    // cork backing
-    ctx.fillStyle = "#c9cabe"; ctx.fillRect(0, 0, W, H);
+    // painted wooden frame + cork backing (single quad, no 3D edge to catch light)
+    ctx.fillStyle = "#a3855c"; ctx.fillRect(0, 0, W, H);
+    const frameShade = ctx.createLinearGradient(0, 0, W, H);
+    frameShade.addColorStop(0, "rgba(255,240,215,.35)");
+    frameShade.addColorStop(.55, "rgba(0,0,0,0)");
+    frameShade.addColorStop(1, "rgba(60,40,20,.28)");
+    ctx.fillStyle = frameShade; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#c9cabe"; ctx.fillRect(44, 40, W - 88, H - 80);
     for (let i = 0; i < 2200; i++) {
       const x = (i * 137.5) % W, y = (i * 71.3) % H;
       ctx.fillStyle = i % 3 ? "rgba(0,0,0,.035)" : "rgba(255,255,255,.05)";
@@ -27,8 +33,8 @@ function useBoardTexture(notes: GuestNote[]) {
     const fallback = ["#f3e6ba", "#dce3cf", "#e9ddd5", "#e2dfed"];
     slots.forEach((slot, index) => {
       const note = notes[index];
-      const w = 400, h = 350;
-      const x = slot.x * W, y = slot.y * H;
+      const w = 380, h = 330;
+      const x = 44 + slot.x * (W - 88), y = 40 + slot.y * (H - 80);
       ctx.save();
       ctx.translate(x + w / 2, y + h / 2);
       ctx.rotate(slot.r);
@@ -56,6 +62,11 @@ function useBoardTexture(notes: GuestNote[]) {
       ctx.fillText(note ? note.authorName : index === 0 ? "NOTES LEFT HERE" : "", -w / 2 + 30, h / 2 - 46, w - 60);
       ctx.restore();
     });
+    const edge = ctx.createRadialGradient(W / 2, H / 2, H * .35, W / 2, H / 2, H * .78);
+    edge.addColorStop(0, "rgba(0,0,0,0)");
+    edge.addColorStop(1, "rgba(60,55,40,.22)");
+    ctx.fillStyle = edge;
+    ctx.fillRect(0, 0, W, H);
     const map = new THREE.CanvasTexture(canvas);
     map.colorSpace = THREE.SRGBColorSpace;
     map.anisotropy = 8;
@@ -80,8 +91,8 @@ export function GuestbookCamera(){
 export default function GuestbookBoard({data,onOpen}:{data:GuestbookData|null;onOpen:()=>void}){
  const [hover,setHover]=useState(false),notes=data?.notes.slice(0,4)||[],board=useBoardTexture(notes);
  return <group position={[-5.5,2.45,3.65]} rotation={[0,Math.PI/2,0]} onClick={e=>{e.stopPropagation();if(e.delta<4)onOpen();}} onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer';}} onPointerOut={()=>{setHover(false);document.body.style.cursor='';}}>
-  <RoundedBox args={[1.23,1.05,.065]} radius={.025} smoothness={3} castShadow><meshStandardMaterial color={hover?'#a8875c':'#b39468'} roughness={.88} metalness={0} envMapIntensity={.18}/></RoundedBox>
-  <mesh position={[0,0,.052]}><planeGeometry args={[1.12,.94]}/><meshBasicMaterial map={board}/></mesh>
+  <mesh position={[0,0,.036]} castShadow><boxGeometry args={[1.23,1.05,.065]}/><meshStandardMaterial color={hover?'#96764e':'#a3855c'} roughness={.95} metalness={0} envMapIntensity={.05}/></mesh>
+  <mesh position={[0,0,.075]}><planeGeometry args={[1.23,1.05]}/><meshBasicMaterial map={board}/></mesh>
   {[-.49,.49].map(x=><mesh key={x} position={[x,-1.46,-.03]} castShadow><boxGeometry args={[.035,1.90,.035]}/><meshStandardMaterial color="#c3c8c0" roughness={.5} metalness={.3}/></mesh>)}
   {[-.49,.49].map(x=><mesh key={x} position={[x,-2.40,-.01]} castShadow><boxGeometry args={[.11,.05,.45]}/><meshStandardMaterial color="#b6bdb3" roughness={.55}/></mesh>)}
  </group>;

@@ -10,6 +10,9 @@ export const ROOM_VIEWS:Record<Zone,{camera:Vec3;target:Vec3;distance:[number,nu
   cinema:{camera:[3.35,3.45,3.75],target:[3.40,2.35,-3.70],distance:[7.2,10.0]},
   guestbook:{camera:[-4.05,2.66,4.62],target:[-5.50,2.32,3.62],distance:[1.8,3.6]}
 };
+/** Hovering the computer pushes the camera in to the screen. */
+export const ROOM_FOCUS:{camera:Vec3;target:Vec3}={camera:[-1.10,2.78,.62],target:[-3.78,2.62,.55]};
+
 type Bounds=[Vec3,Vec3];
 const box=([min,max]:Bounds)=>new THREE.Box3(new THREE.Vector3(...min),new THREE.Vector3(...max));
 const overviewBounds:Record<Exclude<Zone,"overview">,THREE.Box3[]>={

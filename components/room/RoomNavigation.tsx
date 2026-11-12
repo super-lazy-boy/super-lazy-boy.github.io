@@ -4,7 +4,7 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {useFrame,useThree} from "@react-three/fiber";
 import {CameraControls,CameraControlsImpl} from "@react-three/drei";
 import * as THREE from "three";
-import {ROOM_VIEWS,ROOM_HOVER_TIMING,pickRoomZone,RoomHoverIntent,type Vec3} from "@/lib/room-navigation";
+import {ROOM_VIEWS,ROOM_FOCUS,ROOM_HOVER_TIMING,pickRoomZone,RoomHoverIntent,type Vec3} from "@/lib/room-navigation";
 import type {Zone} from "@/lib/room-types";
 
 type Props={zone:Zone;revision:number;locked:boolean;onZone:(zone:Zone)=>void;onHover?:(zone:Zone|null)=>void};
@@ -27,7 +27,7 @@ function MouseNavigation({zone,revision,locked,onZone,onHover,reduced}:Props&{re
   const {camera,gl,invalidate}=useThree();
   const live=useRef({zone,locked,onZone,onHover});live.current={zone,locked,onZone,onHover};
   const intent=useMemo(()=>new RoomHoverIntent(),[]);
-  const pointer=useRef({x:0,y:0,surface:false});
+  const pointer=useRef({x:0,y:0,surface:false,focus:false});
   const warmup=useRef(12);
   const focal=useRef(new THREE.Vector3(...ROOM_VIEWS[zone].target));
   const hover=useRef<Zone|null>(null);
@@ -49,6 +49,7 @@ function MouseNavigation({zone,revision,locked,onZone,onHover,reduced}:Props&{re
       const rect=stage.getBoundingClientRect(),inside=event.clientX>=rect.left&&event.clientX<=rect.right&&event.clientY>=rect.top&&event.clientY<=rect.bottom;
       const surface=el?.closest(".monitor-content,.projection-content");
       pointer.current.surface=!!surface;
+      pointer.current.focus=!!el?.closest(".monitor-content");
       if(inside&&!surface){pointer.current.x=THREE.MathUtils.clamp((event.clientX-rect.left)/rect.width*2-1,-1,1);pointer.current.y=THREE.MathUtils.clamp(1-(event.clientY-rect.top)/rect.height*2,-1,1);}
       else if(!inside){pointer.current.x=0;pointer.current.y=0;}
       if(nav&&["overview","office","books","cinema","guestbook"].includes(nav))intent.point(nav,current,Date.now());
@@ -61,7 +62,7 @@ function MouseNavigation({zone,revision,locked,onZone,onHover,reduced}:Props&{re
       }
       feedback();invalidate();
     };
-    const leave=()=>{cancel();pointer.current.x=0;pointer.current.y=0;invalidate();};
+    const leave=()=>{cancel();pointer.current.x=0;pointer.current.y=0;pointer.current.focus=false;invalidate();};
     window.addEventListener("pointermove",move,{passive:true});
     window.addEventListener("pointerdown",cancel,{passive:true});
     window.addEventListener("pointerup",move,{passive:true});
@@ -72,14 +73,16 @@ function MouseNavigation({zone,revision,locked,onZone,onHover,reduced}:Props&{re
     const next=locked?null:intent.step(zone,Date.now());
     if(next){feedback();onZone(next);}
     const view=ROOM_VIEWS[zone],p=pointer.current;
-    vectors.position.set(...view.camera);vectors.target.set(...view.target);
+    const focusing=zone==="office"&&p.focus&&!locked;
+    vectors.position.set(...(focusing?ROOM_FOCUS.camera:view.camera));
+    vectors.target.set(...(focusing?ROOM_FOCUS.target:view.target));
     vectors.forward.copy(vectors.target).sub(vectors.position).normalize();vectors.right.crossVectors(vectors.forward,vectors.up).normalize();
-    const amount=reduced||locked||p.surface?0:zone==="overview"?.74:zone==="office"?0:.14;
+    const amount=reduced||locked||p.surface||focusing?0:zone==="overview"?.74:zone==="office"?0:.14;
     vectors.position.addScaledVector(vectors.right,p.x*amount).addScaledVector(vectors.up,p.y*amount*.35);
     vectors.target.addScaledVector(vectors.right,p.x*amount*.40).addScaledVector(vectors.up,p.y*amount*.18);
     const alpha=reduced?1:1-Math.exp(-Math.min(delta,.20)*5.3);
     camera.position.lerp(vectors.position,alpha);focal.current.lerp(vectors.target,alpha);camera.lookAt(focal.current);
-    const desiredFov=zone==="office"?37:zone==="cinema"?35:zone==="books"?83:zone==="guestbook"?38:38;
+    const desiredFov=focusing?32:zone==="office"?37:zone==="cinema"?35:zone==="books"?83:zone==="guestbook"?38:38;
     let lensMoving=false;
     if(camera instanceof THREE.PerspectiveCamera){
       camera.fov=THREE.MathUtils.lerp(camera.fov,desiredFov,alpha);lensMoving=Math.abs(camera.fov-desiredFov)>.005;camera.updateProjectionMatrix();

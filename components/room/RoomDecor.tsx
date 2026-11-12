@@ -89,7 +89,7 @@ export function ShelfDetails() {
   </group>;
 }
 function Rug({position,size}:{position:V;size:[number,number]}) {
-  const map=useSurface("fabric");return <group position={position}><RoundedBox args={[size[0],.025,size[1]]} radius={.01} smoothness={2} receiveShadow><meshStandardMaterial color="#dbd5c6" map={map} roughness={1} bumpMap={map} bumpScale={.015}/></RoundedBox>{[-1,1].map(side=><group key={side} position={[side*(size[0]/2-.065),.015,0]}>{Array.from({length:3},(_,i)=><Block key={i} size={[.008,.003,size[1]-.08]} position={[side*i*.025,0,0]} color="#bdb6a7" radius={0}/>)}</group>)}</group>;
+  const map=useSurface("fabric");return <group position={position}><RoundedBox args={[size[0],.025,size[1]]} radius={.01} smoothness={2} receiveShadow><meshStandardMaterial color="#d9cfba" map={map} roughness={1} bumpMap={map} bumpScale={.015}/></RoundedBox>{[-1,1].map(side=><group key={side} position={[side*(size[0]/2-.065),.015,0]}>{Array.from({length:3},(_,i)=><Block key={i} size={[.008,.003,size[1]-.08]} position={[side*i*.025,0,0]} color="#bdb6a7" radius={0}/>)}</group>)}</group>;
 }
 export function LazySofa({standalone=false}:{standalone?:boolean}) {
   const map=useSurface("fabric"),shape=useMemo(createLounge,[]);
