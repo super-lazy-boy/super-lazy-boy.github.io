@@ -1,7 +1,7 @@
 {
   "monica-apartment": {
-    "sha256": "4a344f3d4dbda605adc389f6bbcf87bba0afa0ed833b480235448f2db85c6af5",
-    "bytes": 4571740,
+    "sha256": "b52fd3efe0e2bb6bdb67c1b903d45d13fabcd282f6b84ece0f4e0778e08d4544",
+    "bytes": 2990632,
     "dimensions": [
       0.310000017285347,
       0.14000001549720764,
@@ -10,8 +10,8 @@
     "sourceParts": 1484
   },
   "millennium-falcon": {
-    "sha256": "b23a7dc0ce6ec02970d2161d1525f51f662013bdadd3921040d3458677099e5e",
-    "bytes": 4132792,
+    "sha256": "f973432ea9dd3bb1436d8e5407f417b13344068fa05fc91694e3e0420bf815b7",
+    "bytes": 1638120,
     "dimensions": [
       0.5999999642372131,
       0.20999999390915036,
@@ -20,8 +20,8 @@
     "sourceParts": 2517
   },
   "wish-willow": {
-    "sha256": "ba68256000a31cbca0f839eb9990dfed1cd0255ae687e3a4bb44a43cadf604f6",
-    "bytes": 1232524,
+    "sha256": "2191f83c86e5881942a67a019b7f31b27e8d5553fa7f03cf45c9d4e056c8e6e2",
+    "bytes": 1156648,
     "dimensions": [
       0.26000000536441803,
       0.07000000029802322,

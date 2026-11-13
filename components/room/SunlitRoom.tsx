@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import type {Zone} from '@/lib/room-types';
 import {ASSET_ZONES} from '@/lib/room-navigation';
 import release from '@/public/room-version.json';
+import {accelerateRoomObject} from '@/lib/room-raycast';
 
 const URL='./models/sunlit-room/room.glb?v='+release.modelSha256.slice(0,12);
 type Props={zone?:Zone;night?:boolean;playing?:boolean;lamps?:{desk:boolean;floor:boolean};onInspectArt?:()=>void;part?:string};
@@ -42,6 +43,7 @@ export default function SunlitRoom({zone='overview',night=false,playing=false,la
     if(part==='starry night')root.rotation.y=-Math.PI/2;
     return {root,materials:[...materials.values()],curtains};
   },[scene,part,gl]);
+  useEffect(()=>accelerateRoomObject(data.root),[data.root]);
   useEffect(()=>{gl.shadowMap.needsUpdate=true;invalidate();},[data,night,playing,lamps.desk,lamps.floor,gl,invalidate]);
   useEffect(()=>()=>data.materials.forEach(m=>m.dispose()),[data]);
   useFrame((_,dt)=>{
@@ -57,8 +59,8 @@ export default function SunlitRoom({zone='overview',night=false,playing=false,la
     if(Math.abs(mix.current-target)>.001||Math.abs(power.current-lit)>.001){gl.shadowMap.needsUpdate=true;invalidate();}
   });
   const groupOf=(e:ThreeEvent<MouseEvent|PointerEvent>)=>String(e.object.userData.asset_group||'');
-  return <primitive object={data.root} onClick={(e:ThreeEvent<MouseEvent>)=>{if(groupOf(e)==='starry night'&&onInspectArt&&e.delta<4){e.stopPropagation();onInspectArt();}}}
-    onPointerOver={(e:ThreeEvent<PointerEvent>)=>{if(groupOf(e)==='starry night'&&onInspectArt)document.body.style.cursor='zoom-in';}}
-    onPointerOut={()=>{document.body.style.cursor='';}}/>;
+  return <primitive object={data.root} onClick={onInspectArt?(e:ThreeEvent<MouseEvent>)=>{if(groupOf(e)==='starry night'&&e.delta<4){e.stopPropagation();onInspectArt();}}:undefined}
+    onPointerOver={onInspectArt?(e:ThreeEvent<PointerEvent>)=>{if(groupOf(e)==='starry night')document.body.style.cursor='zoom-in';}:undefined}
+    onPointerOut={onInspectArt?()=>{document.body.style.cursor='';}:undefined}/>;
 }
 if(typeof window!=='undefined')useGLTF.preload(URL);

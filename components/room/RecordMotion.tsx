@@ -20,7 +20,7 @@ export function useRecordAnchor(record:RoomRecord|undefined,width:number,height:
 }
 function Actor({motion,renderBook,renderTape,onFinish,onStage}:{motion:Motion;renderBook:(record:RoomRecord,w:number,h:number)=>ReactNode;renderTape:(record:RoomRecord)=>ReactNode;onFinish:()=>void;onStage:(status:MotionStatus)=>void}){
   const root=useRef<THREE.Group>(null),started=useRef(performance.now()),done=useRef(false),stage=useRef(-1);
-  const {invalidate}=useThree();
+  const {gl,invalidate}=useThree();
   const isBook=motion.record.kind==="book",duration=isBook?(motion.phase==="return"?.95:1.30):2.65;
   const start=motion.origin;
   useEffect(()=>{started.current=performance.now();done.current=false;stage.current=-1;invalidate();},[motion.phase,motion.revision,invalidate]);
@@ -36,6 +36,7 @@ function Actor({motion,renderBook,renderTape,onFinish,onStage}:{motion:Motion;re
       node.position.copy(pose.position);node.quaternion.copy(pose.quaternion);node.scale.copy(pose.scale);
       const next=p<.80?0:1;if(stage.current!==next){stage.current=next;onStage(motion.phase==='return'?'tape-out':next?"tape-insert":"tape-out");}
     }
+    if(motion.phase!=="hold")gl.shadowMap.needsUpdate=true;
     if(p===1&&motion.phase!=="hold"&&!done.current){done.current=true;onFinish();}
     if(motion.phase!=="hold"&&!done.current)invalidate();
   });

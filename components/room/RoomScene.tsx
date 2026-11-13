@@ -29,11 +29,13 @@ import MemoryDrawer from './MemoryDrawer';
 import GuestbookBoard,{GuestbookCamera} from './GuestbookBoard';
 import TardisOrnament from './TardisOrnament';
 import {createAviators} from './models/aviators';
+import {roomPointerEvents} from './RoomPointerEvents';
+import SceneActivity from './SceneActivity';
 
 type Vec3=[number,number,number];
 type Props={
   guestbookOpen:boolean;guestbookData:GuestbookData|null;onGuestbook:()=>void;
-  zone:Zone;navigationLocked:boolean;language:'zh'|'en';viewRevision:number;records:RoomRecord[];owner:boolean;bookPage:number;filmPage:number;
+  zone:Zone;navigationLocked:boolean;paused:boolean;language:'zh'|'en';viewRevision:number;records:RoomRecord[];owner:boolean;bookPage:number;filmPage:number;
   night:boolean;lamps:{desk:boolean;floor:boolean};screenFocused:boolean;onScreenFocus:()=>void;
   onZone:(zone:Zone)=>void;onRecord:(record:RoomRecord)=>void;onBlank:(kind:'book'|'movie',slot:number)=>void;
   computer:ReactNode;projection:ReactNode;review?:string;
@@ -91,13 +93,14 @@ function Tapes(props:Props){
   </group>;
 }
 function SavedModel({record}:{record:RoomRecord}){
-  const {scene}=useGLTF(record.modelUrl||assetUrl(record.modelKey));
+  const {scene}=useGLTF(record.modelUrl||assetUrl(record.modelKey)),{gl,invalidate}=useThree();
   const clone=useMemo(()=>{
     const group=scene.clone(true),box=new THREE.Box3().setFromObject(group),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
     group.position.sub(center);group.position.y+=size.y/2;
     const root=new THREE.Group();root.add(group);root.scale.setScalar(Math.min(.35,record.modelScale)/Math.max(size.x,size.y,size.z));
     root.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=true;}});return root;
   },[scene,record.modelScale]);
+  useEffect(()=>{gl.shadowMap.needsUpdate=true;invalidate();},[clone,record.modelPlacement,record.modelRotation,gl,invalidate]);
   const positions:Record<string,Vec3>={'books-top':[-2.50,4.38,-3.75],'books-middle':[-2.50,4.38,-3.75],'cinema-left':[4.80,1.45,-3.75],'cinema-right':[5.10,1.45,-3.75]};
   return <group position={positions[record.modelPlacement]||positions['books-top']} rotation={[0,record.modelRotation*Math.PI/180,0]}><primitive object={clone}/></group>;
 }
@@ -125,10 +128,10 @@ function Furniture({props}:{props:Props}){
 }
 export default function RoomScene(props:Props){
   const [ready,setReady]=useState(false);useEffect(()=>setReady(true),[]);if(!ready)return null;
-  return <Canvas className="room-canvas" inert={props.guestbookOpen} shadows frameloop="demand" dpr={[1,1.65]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
+  return <Canvas className="room-canvas" inert={props.guestbookOpen||props.paused} events={roomPointerEvents} raycaster={{firstHitOnly:true}} shadows frameloop={props.paused?'never':'demand'} dpr={[1,1.65]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
     gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
     {/* Transparent pixels take the page's day/night background independently of room lighting. */}
-    <RoomLighting objectsMoving={props.navigationLocked||props.drawerOpening} night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
+    <SceneActivity active={!props.paused}/><RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
     <Suspense fallback={<RoomLoading language={props.language}/>}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <EffectComposer multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/></EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}

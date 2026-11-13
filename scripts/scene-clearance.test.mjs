@@ -1,8 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
-import {NodeIO} from '@gltf-transform/core';
-import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
+import {createModelIO} from './model-io.mjs';
 import * as THREE from 'three';
 import {MeshBVH} from 'three-mesh-bvh';
 import {mergeGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -14,7 +13,7 @@ import {LIGHT_ANCHORS,lightProfile} from '../lib/room-lighting.ts';
 import {bookSize} from '../lib/book-library.ts';
 import {memoryDrawerPose,DRAWER_DURATION_MS} from '../lib/memory-drawer.ts';
 
-const io=new NodeIO().registerExtensions(ALL_EXTENSIONS);
+const io=createModelIO();
 const doc=await io.read('public/models/sunlit-room/room.glb');
 const geometry=[],geometryNames=[],geometryGroups=[];
 let triangles=0;

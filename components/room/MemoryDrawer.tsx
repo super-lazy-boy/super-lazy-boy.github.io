@@ -12,22 +12,23 @@ function Part({size,position,color='#eeeae1'}:{size:[number,number,number];posit
 export default function MemoryDrawer({active,locked,opening,request,onRequest,onOpened}:{active:boolean;locked:boolean;opening:boolean;request:number;onRequest:()=>void;onOpened:()=>void}){
  const tray=useRef<THREE.Group>(null),started=useRef<number|null>(null),lastRequest=useRef(request);
  const callback=useRef(onOpened);callback.current=onOpened;
- const reduced=useRef(false),[hover,setHover]=useState(false),{invalidate}=useThree();
+ const reduced=useRef(false),[hover,setHover]=useState(false),{gl,invalidate}=useThree();
  useEffect(()=>{
   const query=matchMedia('(prefers-reduced-motion: reduce)');
   const update=()=>{reduced.current=query.matches;invalidate();};update();
   query.addEventListener('change',update);return()=>query.removeEventListener('change',update);
  },[invalidate]);
  useEffect(()=>{
-  if(!active||!opening){started.current=null;setHover(false);if(tray.current)tray.current.position.z=0;return;}
+  if(!active||!opening){started.current=null;setHover(false);if(tray.current&&tray.current.position.z!==0){tray.current.position.z=0;gl.shadowMap.needsUpdate=true;invalidate();}return;}
   if(request!==lastRequest.current){lastRequest.current=request;started.current=performance.now();invalidate();}
- },[request,active,opening,invalidate]);
+ },[request,active,opening,gl,invalidate]);
  useEffect(()=>{invalidate();},[hover,invalidate]);
  useFrame((_,delta)=>{
   if(!tray.current)return;
-  if(started.current===null){const end=hover&&active&&!locked?.04:0;tray.current.position.z=THREE.MathUtils.damp(tray.current.position.z,end,12,reduced.current?1:delta);if(Math.abs(tray.current.position.z-end)>.0001)invalidate();return;}
+  if(started.current===null){const end=hover&&active&&!locked?.04:0,previous=tray.current.position.z;tray.current.position.z=THREE.MathUtils.damp(previous,end,12,reduced.current?1:delta);if(tray.current.position.z!==previous)gl.shadowMap.needsUpdate=true;if(Math.abs(tray.current.position.z-end)>.0001)invalidate();return;}
   const pose=memoryDrawerPose(performance.now()-started.current,reduced.current);
   tray.current.position.z=pose.extension;
+  gl.shadowMap.needsUpdate=true;
   if(pose.complete){started.current=null;document.body.style.cursor='';callback.current();}
   else invalidate();
  });

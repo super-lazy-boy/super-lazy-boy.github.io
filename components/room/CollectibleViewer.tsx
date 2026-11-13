@@ -11,38 +11,40 @@ import {useT} from './i18n';
 import {COLLECTIBLE_NAMES,type CollectibleId} from '@/lib/collectibles';
 import {InspectCollectible} from './CollectibleModels';
 import versions from '@/public/collectibles-version.json';
+import SceneActivity from './SceneActivity';
 
-function InspectionCamera({revision,item,top}:{revision:number;item:CollectibleId;top:boolean}){
+function InspectionCamera({revision,item,top,active}:{revision:number;item:CollectibleId;top:boolean;active:boolean}){
  const controls=useRef<CameraControlsImpl>(null),{size,invalidate}=useThree();
  useEffect(()=>{
+  if(!active||size.width<=0||size.height<=0)return;
   const distance=5.5*Math.max(1,size.height/size.width*.85),angle=item==='monica-apartment'?.32:item==='millennium-falcon'?.42:.34;
   const elevation=item==='monica-apartment'?.84:item==='millennium-falcon'?.58:item==='wish-willow'?.34:.19;
   // Flat dioramas need an elevated first view so their interiors are visible.
   if(top)void controls.current?.setLookAt(0,distance,.012,0,0,0,false);
   else void controls.current?.setLookAt(Math.sin(angle)*distance,Math.sin(elevation)*distance,Math.cos(angle)*distance,0,0,0,false);
   invalidate();
- },[revision,item,top,size.width,size.height,invalidate]);
- return <CameraControls ref={controls} makeDefault minDistance={2.6} maxDistance={12} minPolarAngle={top?.002:.22} maxPolarAngle={Math.PI-.22}
+ },[revision,item,top,active,size.width,size.height,invalidate]);
+ return <CameraControls ref={controls} makeDefault enabled={active} minDistance={2.6} maxDistance={12} minPolarAngle={top?.002:.22} maxPolarAngle={Math.PI-.22}
   smoothTime={.15} draggingSmoothTime={.1} dollySpeed={.6}
   mouseButtons={{left:CameraControlsImpl.ACTION.ROTATE,middle:CameraControlsImpl.ACTION.NONE,right:CameraControlsImpl.ACTION.NONE,wheel:CameraControlsImpl.ACTION.DOLLY}}
   touches={{one:CameraControlsImpl.ACTION.TOUCH_ROTATE,two:CameraControlsImpl.ACTION.TOUCH_DOLLY,three:CameraControlsImpl.ACTION.NONE}}/>;
 }
 
-export default function CollectibleViewer({item='tardis',night=false}:{item?:CollectibleId;night?:boolean}){
+export default function CollectibleViewer({item='tardis',night=false,active=true}:{item?:CollectibleId;night?:boolean;active?:boolean}){
  const t=useT(),[revision,setRevision]=useState(0),[top,setTop]=useState(false);
- useEffect(()=>setTop(false),[item]);
+ useEffect(()=>{if(active){setTop(false);setRevision(value=>value+1);}},[item,active]);
  const floorY=item==='tardis'?-1.505:item==='starry-night'?-1.18:-1.5*versions[item].dimensions[1]/Math.max(...versions[item].dimensions)-.005;
  return <div className="collectible-inspection">
   <div className="collectible-viewport" aria-label={t(...COLLECTIBLE_NAMES[item])+t('，可拖动旋转、缩放查看','. Drag to rotate and zoom.')}>
-   <Canvas shadows frameloop="demand" dpr={[1,1.7]} camera={{position:[1.9,1.05,5.2],fov:38,near:.05,far:50}}
+   <Canvas shadows frameloop={active?'demand':'never'} dpr={[1,1.7]} camera={{position:[1.9,1.05,5.2],fov:38,near:.05,far:50}}
     gl={{antialias:true,alpha:false}} onCreated={({gl})=>{gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1;}}>
-    <color attach="background" args={[night?'#080a0b':'#fafbf9']}/>
+    <SceneActivity active={active} cacheShadows/><color attach="background" args={[night?'#080a0b':'#fafbf9']}/>
     <ambientLight intensity={.65}/><hemisphereLight args={['#ffffff','#d4d8d1',.8]}/>
     <directionalLight position={[-3,6,5]} intensity={2.2} castShadow shadow-mapSize={[1024,1024]} shadow-normalBias={.02}/>
     <directionalLight position={[4,2,-3]} intensity={.55}/>
     <Suspense fallback={null}><StudioLight/>{item==='tardis'?<group position={[0,-1.5,0]}><TardisModel height={3}/></group>:item==='starry-night'?<group scale={1.8}><Center><SunlitRoom part="starry night"/></Center></group>:<Center><InspectCollectible id={item}/></Center>}</Suspense>
     <mesh position={[0,floorY,0]} rotation={[-Math.PI/2,0,0]} receiveShadow><planeGeometry args={[30,30]}/><shadowMaterial transparent opacity={.17}/></mesh>
-    <InspectionCamera revision={revision} item={item} top={top}/>
+    <InspectionCamera revision={revision} item={item} top={top} active={active}/>
    </Canvas>
   </div>
   {item==='starry-night'&&<p className="artwork-credit">Vincent van Gogh · 1889 · <a href="https://www.moma.org/collection/works/79802" target="_blank" rel="noopener noreferrer">The Starry Night</a><span> · Google Art Project / Wikimedia Commons</span></p>}

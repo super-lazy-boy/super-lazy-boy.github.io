@@ -16,13 +16,17 @@ export const ROOM_FOCUS:{camera:Vec3;target:Vec3}={camera:[-1.05,2.76,-.60],targ
 /** Bounded camera follow, shared with the actual-mesh clearance tests. */
 export function roomCameraPose(zone:Zone,x:number,y:number,enabled=true){
   const view=ROOM_VIEWS[zone],camera=new THREE.Vector3(...view.camera),target=new THREE.Vector3(...view.target);
-  if(enabled){
-    const strength=zone==='overview'?.55:zone==='guestbook'?.035:zone==='books'?.075:.12;
-    const forward=camera.clone().sub(target),right=new THREE.Vector3(forward.z,0,-forward.x).normalize();
-    camera.addScaledVector(right,THREE.MathUtils.clamp(x,-1,1)*strength);camera.y+=THREE.MathUtils.clamp(y,-1,1)*strength*.4;
-    target.addScaledVector(right,THREE.MathUtils.clamp(x,-1,1)*strength*.12);
-  }
+  const offset=new THREE.Vector3(),targetOffset=new THREE.Vector3();
+  roomCameraOffsets(zone,x,y,enabled,offset,targetOffset);camera.add(offset);target.add(targetOffset);
   return {camera:camera.toArray() as Vec3,target:target.toArray() as Vec3};
+}
+
+/** Reuse vector storage in the render loop without changing the approved camera envelope. */
+export function roomCameraOffsets(zone:Zone,x:number,y:number,enabled:boolean,offset:THREE.Vector3,targetOffset:THREE.Vector3){
+  offset.set(0,0,0);targetOffset.set(0,0,0);if(!enabled)return;
+  const view=ROOM_VIEWS[zone],strength=zone==='overview'?.55:zone==='guestbook'?.035:zone==='books'?.075:.12;
+  offset.set(view.camera[2]-view.target[2],0,view.target[0]-view.camera[0]).normalize().multiplyScalar(THREE.MathUtils.clamp(x,-1,1)*strength);
+  targetOffset.copy(offset).multiplyScalar(.12);offset.y=THREE.MathUtils.clamp(y,-1,1)*strength*.4;
 }
 
 export const ASSET_ZONES:Record<string,Zone>={desk:'office','desk details':'office','desk flowers':'office',chair:'office','computer tower':'office','desk lamp':'office',bookshelf:'books','shelf greenery':'books','media cabinet':'cinema','media shelf light':'cinema','media lamp glow':'cinema',player:'cinema','projection screen':'cinema',lounge:'cinema','soft furnishings':'cinema','side table':'cinema','game controller':'cinema',projector:'cinema','floor lamp':'cinema','guest corner':'guestbook','starry night':'office','picture light':'office','flower stand':'office','office botanicals':'office','cinema botanicals':'cinema','guest botanicals':'guestbook','flowers daisies':'office','flowers jasmine':'office','desk lamp glow':'office','floor lamp glow':'cinema','picture lamp glow':'office','shelf lamp glow':'books','shelf light':'books','storage basket':'cinema','collector display':'cinema','record console':'cinema','turntable':'cinema',guitar:'cinema','coffee table':'cinema','shelf ceramics':'books','console greenery':'cinema','flower stand details':'office','guest lamp':'guestbook','guest lamp glow':'guestbook','console lamp':'cinema','console lamp glow':'cinema'};
@@ -83,6 +87,10 @@ export class RoomHoverIntent {
   }
   reset(now=0,cooldown=0){this.candidate=null;this.since=now;this.blockedUntil=now+cooldown;this.gapSince=null;}
   cancel(){this.candidate=null;this.since=0;this.gapSince=null;}
+  nextWakeAt(current:Zone):number|null {
+    if(this.candidate===null||this.candidate===current)return null;
+    return this.gapSince!==null?this.gapSince+ROOM_HOVER_TIMING.grace:this.since+(this.candidate==='overview'?ROOM_HOVER_TIMING.leave:ROOM_HOVER_TIMING.enter);
+  }
   step(current:Zone,now:number):Zone|null {
     if(this.gapSince!==null&&now-this.gapSince>=ROOM_HOVER_TIMING.grace){
       this.since=this.gapSince+ROOM_HOVER_TIMING.grace;this.gapSince=null;this.candidate=current==='overview'?null:'overview';
@@ -90,5 +98,29 @@ export class RoomHoverIntent {
     if(this.candidate===null||this.candidate===current||this.gapSince!==null)return null;
     if(now-this.since<(this.candidate==="overview"?ROOM_HOVER_TIMING.leave:ROOM_HOVER_TIMING.enter))return null;
     const next=this.candidate;this.reset(now,ROOM_HOVER_TIMING.cooldown);return next;
+  }
+}
+
+type HoverClock={now:()=>number;set:(callback:()=>void,delay:number)=>unknown;clear:(handle:unknown)=>void};
+const browserClock:HoverClock={now:()=>performance.now(),set:(callback,delay)=>setTimeout(callback,delay),clear:handle=>clearTimeout(handle as ReturnType<typeof setTimeout>)};
+
+/** Dwell deadlines run independently of GPU frames, including boundary grace and cooldown. */
+export class RoomHoverTimer {
+  readonly intent=new RoomHoverIntent();
+  private timer:unknown=null;
+  private current:()=>Zone;private enabled:()=>boolean;private onZone:(zone:Zone)=>void;private clock:HoverClock;
+  constructor(current:()=>Zone,enabled:()=>boolean,onZone:(zone:Zone)=>void,clock:HoverClock=browserClock){this.current=current;this.enabled=enabled;this.onZone=onZone;this.clock=clock;}
+  point(next:Zone|null){this.intent.point(next,this.current(),this.clock.now());this.arm();}
+  defer(){this.clear();}
+  reset(cooldown=0){this.clear();this.intent.reset(this.clock.now(),cooldown);}
+  cancel(){this.clear();this.intent.cancel();}
+  private clear(){if(this.timer!==null){this.clock.clear(this.timer);this.timer=null;}}
+  private arm(){
+    this.clear();const deadline=this.intent.nextWakeAt(this.current());if(deadline===null)return;
+    this.timer=this.clock.set(()=>{
+      this.timer=null;if(!this.enabled()){this.intent.cancel();return;}
+      const next=this.intent.step(this.current(),this.clock.now());
+      if(next)this.onZone(next);else this.arm();
+    },Math.max(0,deadline-this.clock.now()));
   }
 }

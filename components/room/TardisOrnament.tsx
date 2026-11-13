@@ -6,7 +6,7 @@ import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 import {createTardis,disposeTardis} from './models/tardis/createTardis';
 
 export function TardisModel({height}:{height:number}){
- const {invalidate}=useThree();
+ const {gl,invalidate}=useThree();
  const model=useMemo(()=>{
   const object=createTardis({onTextureReady:invalidate}),bounds=new THREE.Box3().setFromObject(object),objectHeight=bounds.getSize(new THREE.Vector3()).y;
   object.scale.setScalar(height/objectHeight);
@@ -15,8 +15,8 @@ export function TardisModel({height}:{height:number}){
  useLayoutEffect(()=>{
   model.updateWorldMatrix(true,true);
   // Preserve the approved wood grain/wear frequency when the miniature moves or scales.
-  model.userData.wearFrameInverse.copy(model.matrixWorld).invert();model.userData.sculptRuntime.syncInstances?.();invalidate();
- },[model,invalidate]);
+  model.userData.wearFrameInverse.copy(model.matrixWorld).invert();model.userData.sculptRuntime.syncInstances?.();gl.shadowMap.needsUpdate=true;invalidate();
+ },[model,gl,invalidate]);
  useEffect(()=>()=>disposeTardis(model),[model]);
  return <primitive object={model} dispose={null}/>;
 }

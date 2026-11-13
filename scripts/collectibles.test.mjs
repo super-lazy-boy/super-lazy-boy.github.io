@@ -2,8 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {NodeIO} from '@gltf-transform/core';
-import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
+import {createModelIO} from './model-io.mjs';
 import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {MeshBVH} from 'three-mesh-bvh';
@@ -20,7 +19,7 @@ test('one collapsed collection contains all five named, valid items',()=>{
   for(const id of COLLECTIBLE_IDS){assert.equal(isCollectibleId(id),true);assert.ok(COLLECTIBLE_NAMES[id].every(n=>n.length>2));}
   assert.equal(isCollectibleId(''),false);assert.equal(isCollectibleId('cat'),false);
 });
-const io=new NodeIO().registerExtensions(ALL_EXTENSIONS),versions=JSON.parse(await readFile('public/collectibles-version.json','utf8'));
+const io=createModelIO(),versions=JSON.parse(await readFile('public/collectibles-version.json','utf8'));
 for(const id of NEW_COLLECTIBLE_IDS)test(id+' has finite, correctly sized and versioned original geometry',async()=>{
   const file='public/models/collectibles/'+id+'.glb',bytes=await readFile(file),version=versions[id];
   assert.equal(createHash('sha256').update(bytes).digest('hex'),version.sha256);assert.equal(bytes.length,version.bytes);assert.ok(bytes.length<8*1024*1024);

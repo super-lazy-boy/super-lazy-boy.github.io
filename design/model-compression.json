@@ -1,0 +1,53 @@
+{
+  "method": "EXT_meshopt_compression with no lossy transforms; decoded vertex attributes, oriented faces, textures, materials and scene transforms verified",
+  "models": [
+    {
+      "file": "public/models/sunlit-room/room.glb",
+      "beforeBytes": 16506964,
+      "afterBytes": 11323476,
+      "beforeSha256": "976ecdec9ce253b8e6bec2d4ac0238c39c2f13ea2a75ee0ed6cf420d26a52f5b",
+      "afterSha256": "7dc6f4b753b29c9e78bc16bee49e8e9d8250565af9eabdda49ad071ece68dce0",
+      "geometrySha256": "be1907f929dcc2f8fdc7a9f02a57aff13775e4457f03fa2051074f3b7632823b",
+      "appearanceSha256": "a27575c4af9dbdd3193f113c857d8e82e410a3557502bdb7a74cb1cfa5a57980",
+      "triangles": 497405,
+      "primitives": 207,
+      "images": 18
+    },
+    {
+      "file": "public/models/collectibles/monica-apartment.glb",
+      "beforeBytes": 4571740,
+      "afterBytes": 2990632,
+      "beforeSha256": "4a344f3d4dbda605adc389f6bbcf87bba0afa0ed833b480235448f2db85c6af5",
+      "afterSha256": "b52fd3efe0e2bb6bdb67c1b903d45d13fabcd282f6b84ece0f4e0778e08d4544",
+      "geometrySha256": "6c2378b5a84b9c6cadd84748266579b5e98c8cc3a0551309644113e780f3a60a",
+      "appearanceSha256": "75c663edb64b6fac6dfff5655c37d36894abefa456eabef5f63fe0bcba038af9",
+      "triangles": 135802,
+      "primitives": 27,
+      "images": 7
+    },
+    {
+      "file": "public/models/collectibles/millennium-falcon.glb",
+      "beforeBytes": 4132792,
+      "afterBytes": 1638120,
+      "beforeSha256": "b23a7dc0ce6ec02970d2161d1525f51f662013bdadd3921040d3458677099e5e",
+      "afterSha256": "f973432ea9dd3bb1436d8e5407f417b13344068fa05fc91694e3e0420bf815b7",
+      "geometrySha256": "bbd4efa55da317c5c1e139457d74ac6bc8e22f2fc6b38dd39bcd0a28e7ca01ef",
+      "appearanceSha256": "1ac3b75fd4cea1260e449da98794dd6a54d4ae9fba79c1fe7d00f9f9bc2af96f",
+      "triangles": 178646,
+      "primitives": 11,
+      "images": 1
+    },
+    {
+      "file": "public/models/collectibles/wish-willow.glb",
+      "beforeBytes": 1232524,
+      "afterBytes": 1156648,
+      "beforeSha256": "ba68256000a31cbca0f839eb9990dfed1cd0255ae687e3a4bb44a43cadf604f6",
+      "afterSha256": "2191f83c86e5881942a67a019b7f31b27e8d5553fa7f03cf45c9d4e056c8e6e2",
+      "geometrySha256": "91df3bf838449f58d3475ae105fc919e6aa390aaac9b2736d6267fc336d9b2ac",
+      "appearanceSha256": "129bcfcaff01c233e9274af6c501ee16c0f90d9bb47e69c2ea02a81aeda5e07b",
+      "triangles": 9726,
+      "primitives": 8,
+      "images": 1
+    }
+  ]
+}

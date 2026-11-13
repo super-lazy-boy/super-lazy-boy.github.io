@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import {LIGHT_ANCHORS,lightProfile} from '@/lib/room-lighting';
 import {StudioLight} from './RoomDecor';
 
-export default function RoomLighting({night,screening,lamps,beamActive,objectsMoving=false}:{night:boolean;screening:boolean;lamps:{desk:boolean;floor:boolean};beamActive:boolean;objectsMoving?:boolean}){
+export default function RoomLighting({night,screening,lamps,beamActive}:{night:boolean;screening:boolean;lamps:{desk:boolean;floor:boolean};beamActive:boolean}){
   const {scene,size,gl,invalidate}=useThree();
   const sun=useRef<THREE.DirectionalLight>(null),fill=useRef<THREE.DirectionalLight>(null),ambient=useRef<THREE.AmbientLight>(null),sky=useRef<THREE.HemisphereLight>(null);
   const fixtures=useMemo(()=>{
@@ -31,7 +31,7 @@ export default function RoomLighting({night,screening,lamps,beamActive,objectsMo
     for(let i=0;i<3;i++)for(let j=0;j<2;j++)apply(fixtures.lights['shelf'+i+'-'+j],p.shelf);
     for(let i=0;i<2;i++)apply(fixtures.lights['media'+i],p.media);
     scene.environmentIntensity=THREE.MathUtils.lerp(scene.environmentIntensity,p.environment,a);if(Math.abs(scene.environmentIntensity-p.environment)>.001)moving=true;
-    if(moving||objectsMoving)gl.shadowMap.needsUpdate=true;
+    if(moving)gl.shadowMap.needsUpdate=true;
     if(moving)invalidate();
   },-1);
   return <>
