@@ -1,0 +1,32 @@
+{
+  "monica-apartment": {
+    "sha256": "2ef81e81b7a1c0225f781c13f417638d830d1a69aead78b5bd4b01364efea7bb",
+    "bytes": 604880,
+    "dimensions": [
+      0.44999998807907104,
+      0.12800000654533505,
+      0.2800000011920929
+    ],
+    "sourceParts": 289
+  },
+  "millennium-falcon": {
+    "sha256": "af6f833741b84c920fc46ba57a269f3841fb92e0fdab1411e21dfdd04bd5f857",
+    "bytes": 3099348,
+    "dimensions": [
+      0.5999999940395355,
+      0.2099999925121665,
+      0.8399999737739563
+    ],
+    "sourceParts": 1640
+  },
+  "wish-willow": {
+    "sha256": "67ab3a070e73d869301b497666e4092681c1588f523030cc4ab84cb0d196d5e1",
+    "bytes": 40588,
+    "dimensions": [
+      0.25999999046325684,
+      0.12000000476837158,
+      0.14000000804662704
+    ],
+    "sourceParts": 18
+  }
+}

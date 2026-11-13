@@ -9,6 +9,7 @@ import {mergeGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import {bookPose,tapePose} from '../lib/record-motion-paths.ts';
 import {CINEMA_LAYOUT} from '../lib/cinema-layout.ts';
 import {ROOM_VIEWS,ROOM_FOCUS,roomCameraPose} from '../lib/room-navigation.ts';
+import {COLLECTIBLE_PLACEMENTS,NEW_COLLECTIBLE_IDS} from '../lib/collectibles.ts';
 import {LIGHT_ANCHORS,lightProfile} from '../lib/room-lighting.ts';
 import {bookSize} from '../lib/book-library.ts';
 import {memoryDrawerPose,DRAWER_DURATION_MS} from '../lib/memory-drawer.ts';
@@ -17,7 +18,8 @@ const io=new NodeIO().registerExtensions(ALL_EXTENSIONS);
 const doc=await io.read('public/models/sunlit-room/room.glb');
 const geometry=[],geometryNames=[],geometryGroups=[];
 let triangles=0;
-doc.getRoot().listScenes()[0].traverse(node=>{
+function appendGeometry(document,placement=null,id=null){
+document.getRoot().listScenes()[0].traverse(node=>{
   const mesh=node.getMesh();if(!mesh)return;
   for(const primitive of mesh.listPrimitives()){
     const positions=primitive.getAttribute('POSITION'),values=new Float32Array(positions.getCount()*3),element=[];
@@ -25,12 +27,19 @@ doc.getRoot().listScenes()[0].traverse(node=>{
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(values,3));
     const index=primitive.getIndices();if(index)g.setIndex(new THREE.BufferAttribute(new Uint32Array(index.getArray()),1));
     g.applyMatrix4(new THREE.Matrix4().fromArray(node.getWorldMatrix()));
+    if(placement)g.applyMatrix4(placement);
     triangles+=(g.index?.count||g.attributes.position.count)/3;
     geometry.push(g.toNonIndexed());
     geometryNames.push(node.getName());
-    geometryGroups.push(node.getExtras().asset_group||node.getName().split(' | ')[0]);
+    geometryGroups.push(id||node.getExtras().asset_group||node.getName().split(' | ')[0]);
   }
 });
+}
+appendGeometry(doc);
+for(const id of NEW_COLLECTIBLE_IDS){
+  const p=COLLECTIBLE_PLACEMENTS[id],m=new THREE.Matrix4().compose(new THREE.Vector3(...p.position),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),p.yaw),new THREE.Vector3().setScalar(p.scale));
+  appendGeometry(await io.read('public/models/collectibles/'+id+'.glb'),m,id);
+}
 const whole=mergeGeometries(geometry),tree=new MeshBVH(whole),identity=new THREE.Matrix4();
 const ledger=JSON.parse(await readFile('public/models/sunlit-room/layout.json','utf8'));
 const unit=new THREE.Vector3(1,1,1);
@@ -38,7 +47,7 @@ const cameraViews={...ROOM_VIEWS,screen:ROOM_FOCUS};
 const pose=(p,quaternion=new THREE.Quaternion(),scale=unit)=>({position:new THREE.Vector3(...p),quaternion,scale});
 const quat=(yaw=0,roll=0)=>new THREE.Quaternion().setFromEuler(new THREE.Euler(0,yaw,roll));
 const matrix=(p)=>new THREE.Matrix4().compose(p.position,p.quaternion,p.scale||unit);
-const report={modelTriangles:triangles,sourceParts:ledger.sourceObjectCount,renderGroups:doc.getRoot().listMeshes().length,trajectories:0,poses:0};
+const report={modelTriangles:triangles,sourceParts:ledger.sourceObjectCount,renderGroups:geometry.length,trajectories:0,poses:0};
 const interactive=[];
 for(let i=0;i<56;i++)interactive.push({...pose([3.2-1.98+(i%28)*.146,.39+Math.floor(i/28)*.62,-3.73]),size:new THREE.Vector3(.128,.48,.321),name:'shelf tape '+i});
 for(let i=0;i<6;i++){const p=CINEMA_LAYOUT.keepsakes[i];interactive.push({...pose([3.2+p[0],p[1],-3.75+p[2]],quat(CINEMA_LAYOUT.keepsakeYaws[i],Math.PI/2)),size:new THREE.Vector3(.128,.48,.321),name:'keepsake '+i});}
@@ -77,7 +86,7 @@ function checkPath(label,origin,localBox,path,steps=1800,other=[]){
   report.trajectories++;
 }
 
-test('finite shell and camera views preserve a white outside world',()=>{
+test('finite shell and safe camera views preserve the day/night imagined world',()=>{
   whole.computeBoundingBox();const b=whole.boundingBox;
   assert.ok(b.min.x>=-6.7&&b.max.x<=6.7&&b.min.z>=-4.5&&b.max.z<=5.5,JSON.stringify(b));
   for(const [name,view] of Object.entries(cameraViews)){
@@ -199,7 +208,7 @@ test('lumbar cushion, throw and floor pillow stay outside the sculpted seat',()=
 
 test('new console, guitar, tea table and greenery do not cut through the other furniture',()=>{
   const additions=['record console','guitar','coffee table','console greenery'];
-  const fixed=['desk','computer tower','chair','flower stand','guest corner','lounge','soft furnishings','floor lamp','projector','side table'];
+  const fixed=['desk','computer tower','chair','flower stand','guest corner','lounge','soft furnishings','floor lamp','projector','side table','collector display',...NEW_COLLECTIBLE_IDS];
   for(const a of additions){
     const parts=geometry.filter((_,i)=>geometryGroups[i]===a);assert.ok(parts.length,a+' is missing');
     const item=new MeshBVH(mergeGeometries(parts));
@@ -210,6 +219,14 @@ test('new console, guitar, tea table and greenery do not cut through the other f
   }
   const pc=ledger.components.filter(p=>p.group==='computer tower');
   for(const prefix of ['Motherboard PCB','CPU cooler fin','Curved cooling impeller','Real perforated hexagonal front grille','Tower side glass window','USB-C port'])assert.ok(pc.some(p=>p.name.startsWith(prefix)),'PC detail missing: '+prefix);
+});
+
+test('all three collectibles fit their supports and avoid every other room object',()=>{
+  for(const id of NEW_COLLECTIBLE_IDS){
+    const item=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]===id));assert.ok(item.attributes.position.count>30);
+    const other=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]!==id)));
+    assert.equal(other.intersectsGeometry(item,identity),false,id+' intersects the room or another collectible');
+  }
 });
 
 test('all mouse-follow camera positions and their transition envelopes clear furniture',()=>{

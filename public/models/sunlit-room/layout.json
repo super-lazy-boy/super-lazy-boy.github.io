@@ -1,5 +1,5 @@
 {
-  "version": "sunlit-room-3",
+  "version": "sunlit-room-4",
   "units": "existing room world units, Y up",
   "assets": [
     "architecture",
@@ -56,7 +56,8 @@
     "lounge",
     "soft furnishings",
     "media shelf light",
-    "media lamp glow"
+    "media lamp glow",
+    "collector display"
   ],
   "obstacles": [
     {
@@ -408,6 +409,19 @@
         3.83,
         1.05,
         -1.63
+      ]
+    },
+    {
+      "name": "collector display",
+      "min": [
+        -0.78,
+        0.02,
+        2.825
+      ],
+      "max": [
+        1.28,
+        0.758,
+        4.335
       ]
     }
   ],
@@ -22606,12 +22620,12 @@
       "name": "Shelf studio pottery",
       "group": "shelf ceramics",
       "min": [
-        -3.02,
+        -2.07,
         4.38,
         -3.89
       ],
       "max": [
-        -2.78,
+        -1.83,
         4.66,
         -3.65
       ]
@@ -22620,12 +22634,12 @@
       "name": "Shelf studio pottery lip",
       "group": "shelf ceramics",
       "min": [
-        -2.9936,
+        -2.0436,
         4.6534,
         -3.8636
       ],
       "max": [
-        -2.8064,
+        -1.8564,
         4.6666,
         -3.6764
       ]
@@ -22634,12 +22648,12 @@
       "name": "Shelf studio pottery bottom",
       "group": "shelf ceramics",
       "min": [
-        -2.9816,
+        -2.0316,
         4.3982,
         -3.8516
       ],
       "max": [
-        -2.8184,
+        -1.8684,
         4.4066,
         -3.6884
       ]
@@ -22648,12 +22662,12 @@
       "name": "Shelf studio pottery.001",
       "group": "shelf ceramics",
       "min": [
-        -2.62,
+        -1.7,
         4.38,
         -3.87
       ],
       "max": [
-        -2.42,
+        -1.5,
         4.75,
         -3.67
       ]
@@ -22662,12 +22676,12 @@
       "name": "Shelf studio pottery lip.001",
       "group": "shelf ceramics",
       "min": [
-        -2.598,
+        -1.678,
         4.7445,
         -3.848
       ],
       "max": [
-        -2.442,
+        -1.522,
         4.7555,
         -3.692
       ]
@@ -22676,12 +22690,12 @@
       "name": "Shelf studio pottery bottom.001",
       "group": "shelf ceramics",
       "min": [
-        -2.588,
+        -1.668,
         4.40405,
         -3.838
       ],
       "max": [
-        -2.452,
+        -1.532,
         4.41515,
         -3.702
       ]
@@ -22690,12 +22704,12 @@
       "name": "Shelf studio pottery.002",
       "group": "shelf ceramics",
       "min": [
-        -2.29,
+        -1.44,
         4.38,
         -3.9
       ],
       "max": [
-        -2.03,
+        -1.18,
         4.6,
         -3.64
       ]
@@ -22704,12 +22718,12 @@
       "name": "Shelf studio pottery lip.002",
       "group": "shelf ceramics",
       "min": [
-        -2.2614,
+        -1.4114,
         4.59285,
         -3.8714
       ],
       "max": [
-        -2.0586,
+        -1.2086,
         4.60715,
         -3.6686
       ]
@@ -22718,12 +22732,12 @@
       "name": "Shelf studio pottery bottom.002",
       "group": "shelf ceramics",
       "min": [
-        -2.2484,
+        -1.3984,
         4.3943,
         -3.8584
       ],
       "max": [
-        -2.0716,
+        -1.2216,
         4.4009,
         -3.6816
       ]
@@ -23707,9 +23721,135 @@
         1.3055,
         -3.4775
       ]
+    },
+    {
+      "name": "Falcon display walnut top",
+      "group": "collector display",
+      "min": [
+        -0.78,
+        0.6825,
+        2.825
+      ],
+      "max": [
+        1.28,
+        0.7575,
+        4.315
+      ]
+    },
+    {
+      "name": "Display table tapered teal leg",
+      "group": "collector display",
+      "min": [
+        -0.675,
+        0.0275,
+        2.945
+      ],
+      "max": [
+        -0.625,
+        0.6825,
+        2.995
+      ]
+    },
+    {
+      "name": "Display table tapered teal leg.001",
+      "group": "collector display",
+      "min": [
+        -0.675,
+        0.0275,
+        4.145
+      ],
+      "max": [
+        -0.625,
+        0.6825,
+        4.195
+      ]
+    },
+    {
+      "name": "Display table tapered teal leg.002",
+      "group": "collector display",
+      "min": [
+        1.125,
+        0.0275,
+        2.945
+      ],
+      "max": [
+        1.175,
+        0.6825,
+        2.995
+      ]
+    },
+    {
+      "name": "Display table tapered teal leg.003",
+      "group": "collector display",
+      "min": [
+        1.125,
+        0.0275,
+        4.145
+      ],
+      "max": [
+        1.175,
+        0.6825,
+        4.195
+      ]
+    },
+    {
+      "name": "Display table side stretcher",
+      "group": "collector display",
+      "min": [
+        -0.664,
+        0.186,
+        2.97
+      ],
+      "max": [
+        -0.636,
+        0.214,
+        4.17
+      ]
+    },
+    {
+      "name": "Display table side stretcher.001",
+      "group": "collector display",
+      "min": [
+        1.136,
+        0.186,
+        2.97
+      ],
+      "max": [
+        1.164,
+        0.214,
+        4.17
+      ]
+    },
+    {
+      "name": "Display table long stretcher",
+      "group": "collector display",
+      "min": [
+        -0.65,
+        0.186,
+        3.556
+      ],
+      "max": [
+        1.15,
+        0.214,
+        3.584
+      ]
+    },
+    {
+      "name": "Small brass display plaque",
+      "group": "collector display",
+      "min": [
+        0.04,
+        0.635,
+        4.32
+      ],
+      "max": [
+        0.46,
+        0.715,
+        4.332
+      ]
     }
   ],
-  "sourceObjectCount": 1664,
+  "sourceObjectCount": 1673,
   "lights": {
     "desk": {
       "position": [
@@ -23839,5 +23979,9 @@
       0,
       0
     ]
+  },
+  "backgrounds": {
+    "day": "#ffffff",
+    "night": "#030405"
   }
 }

@@ -15,6 +15,8 @@ import {StudioLight} from './RoomDecor';
 import SunlitRoom from './SunlitRoom';
 import RoomLighting from './RoomLighting';
 import ProjectionBeam from './ProjectionBeam';
+import {RoomCollectibles} from './CollectibleModels';
+import type {CollectibleId} from '@/lib/collectibles';
 import RoomNavigation from './RoomNavigation';
 import {RecordMotionProvider,useRecordAnchor,useRecordMotion,type RecordRequest,type MotionStatus} from './RecordMotion';
 import {PLAYER_Y,PLAYER_INSIDE} from '@/lib/record-motion-paths';
@@ -38,7 +40,7 @@ type Props={
   recordRequest:RecordRequest;activeBookId:string|null;loadedTapeId:string|null;skipRevision:number;playbackBusy:boolean;
   onSelect:(record:RoomRecord)=>void;onMotionStatus:(status:MotionStatus)=>void;
   libraryOpen:boolean;onOpenLibrary:()=>void;bookArchiveOpen:boolean;bookLayer:number;onOpenBooks:()=>void;
-  drawerRequest:number;drawerOpening:boolean;onDrawerRequest:()=>void;onInspectCollectible:(id?:'tardis'|'starry-night')=>void;
+  drawerRequest:number;drawerOpening:boolean;onDrawerRequest:()=>void;onInspectCollectible:(id?:CollectibleId)=>void;
 };
 const pointerOff=()=>{document.body.style.cursor='';};
 function Book({record,w,h,position,onBlank,active}:{record?:RoomRecord;w:number;h:number;position:Vec3;onBlank:()=>void;active:boolean}){
@@ -116,7 +118,7 @@ function Furniture({props}:{props:Props}){
       <Html transform position={[0,2.70,.067]} distanceFactor={1} occlude style={{pointerEvents:props.zone==='office'?'auto':'none'}}><div className="monitor-content" inert={props.zone!=='office'} onClick={e=>e.stopPropagation()} onPointerDown={e=>e.stopPropagation()} onWheel={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key!=='Escape')e.stopPropagation();}}><div inert={!props.screenFocused} className="monitor-application">{props.computer}</div>{props.zone==='office'&&!props.screenFocused&&<button className="screen-entry" aria-label={props.language==='zh'?'点击使用电脑':'Click to use the computer'} onClick={e=>{e.stopPropagation();props.onScreenFocus();}}/>}</div></Html>
     </group></group>
     <GuestbookBoard data={props.guestbookData} active={props.zone==='guestbook'&&!props.navigationLocked} onOpen={props.onGuestbook}/>
-    <Books {...props}/><Tapes {...props}/><LoadedTape records={props.records}/>
+    <Books {...props}/><Tapes {...props}/><LoadedTape records={props.records}/><Suspense fallback={null}><RoomCollectibles locked={props.navigationLocked||props.screenFocused} onInspect={props.onInspectCollectible}/></Suspense>
     {props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><Suspense key={record.id} fallback={null}><SavedModel record={record}/></Suspense>)}
     <ProjectionBeam active={!!props.loadedTapeId&&!props.playbackBusy} night={props.night}/>
   </RecordMotionProvider>;
@@ -125,8 +127,7 @@ export default function RoomScene(props:Props){
   const [ready,setReady]=useState(false);useEffect(()=>setReady(true),[]);if(!ready)return null;
   return <Canvas className="room-canvas" inert={props.guestbookOpen} shadows frameloop="demand" dpr={[1,1.65]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
     gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
-    {/* Transparent pixels composite onto the page's exact white. Tone mapping
-        affects the room, never the imagined world outside its finite shell. */}
+    {/* Transparent pixels take the page's day/night background independently of room lighting. */}
     <RoomLighting objectsMoving={props.navigationLocked||props.drawerOpening} night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
     <Suspense fallback={<RoomLoading language={props.language}/>}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
     <EffectComposer multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/></EffectComposer>

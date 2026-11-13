@@ -8,6 +8,9 @@ bpy.ops.wm.open_mainfile(filepath=str(root/'design/sunlit-room.blend'))
 for mode in ('day','night'):
     bpy.ops.wm.open_mainfile(filepath=str(root/'design/sunlit-room.blend'))
     scene=bpy.context.scene;scene.cycles.samples=24;scene.cycles.max_bounces=6
+    sys.path.insert(0,str(root/'scripts/blender'))
+    from preview_collectibles import add_models
+    add_models(root)
     if '--records' in sys.argv:
         sys.path.insert(0,str(root/'scripts/blender'))
         from preview_records import add_records
@@ -21,6 +24,8 @@ for mode in ('day','night'):
                 pivot=-2.125 if group=='curtain left' else 3.325
                 for v in obj.data.vertices:v.co.y=-(pivot+(-v.co.y-pivot)*4.7)
         scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.035
+        for node in scene.world.node_tree.nodes:
+            if node.type=='BACKGROUND' and node.name!='Background':node.inputs['Color'].default_value=(0,0,0,1)
         mat=bpy.data.materials.get('Warm lamp diffuser')
         if mat:mat.node_tree.nodes.get('Principled BSDF').inputs['Emission Strength'].default_value=.65
     for name,position,target,scale in [
@@ -29,4 +34,4 @@ for mode in ('day','night'):
         ('lounge',(6.9,4.1,-1.8),(3.1,.8,.75),5.6),
     ]:
         camera=scene.camera;camera.location=xyz(position);camera.rotation_euler=(xyz(target)-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.type='ORTHO';camera.data.ortho_scale=scale
-        scene.render.filepath=str(root/('work/qa/v3-'+mode+'-'+name+'.png'));bpy.ops.render.render(write_still=True)
+        scene.render.filepath=str(root/('work/qa/v4-'+mode+'-'+name+'.png'));bpy.ops.render.render(write_still=True)

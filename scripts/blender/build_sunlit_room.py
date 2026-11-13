@@ -394,13 +394,15 @@ from room_enrichment import enrich
 enrich(globals())
 from cozy_room import furnish
 furnish(globals())
+from room_collectible_display import install
+install(globals())
 
 # Apply all modifiers once. Export meshes grouped by authored object collection,
 # not by tiny component, keeping browser draw calls bounded without losing detail.
 bpy.ops.object.select_all(action='DESELECT')
 for o in list(bpy.context.scene.objects):
     bpy.context.view_layer.objects.active=o;o.select_set(True)
-    if o.type=='CURVE':bpy.ops.object.convert(target='MESH')
+    if o.type in ('CURVE','FONT'):bpy.ops.object.convert(target='MESH')
     elif o.type=='MESH':
         for mod in list(o.modifiers):
             try:bpy.ops.object.modifier_apply(modifier=mod.name)
@@ -420,7 +422,7 @@ for obj in bpy.context.scene.objects:
     corners=[obj.matrix_world@Vector(p) for p in obj.bound_box]
     corners=[(v.x,v.z,-v.y) for v in corners]
     components.append({'name':obj.name,'group':obj.get('asset_group',''),'min':[round(min(p[a] for p in corners),6) for a in range(3)],'max':[round(max(p[a] for p in corners),6) for a in range(3)]})
-manifest={'version':'sunlit-room-3','units':'existing room world units, Y up','assets':inventory,'obstacles':bounds,'components':components,'sourceObjectCount':len(bpy.context.scene.objects),'lights':light_anchors,'screen':{'position':[-3.713,2.70,-.60],'size':[2.16,1.23]},'artwork':artwork_anchor}
+manifest={'version':'sunlit-room-4','units':'existing room world units, Y up','assets':inventory,'obstacles':bounds,'components':components,'sourceObjectCount':len(bpy.context.scene.objects),'lights':light_anchors,'screen':{'position':[-3.713,2.70,-.60],'size':[2.16,1.23]},'artwork':artwork_anchor,'backgrounds':{'day':'#ffffff','night':'#030405'}}
 (OUT/'layout.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
 
 # Preserve the editable individual components in the native source file.
