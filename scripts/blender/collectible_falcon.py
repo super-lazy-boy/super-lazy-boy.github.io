@@ -11,7 +11,7 @@ from collectible_builder import Builder
 def build():
     b=Builder('millennium-falcon')
     gray=b.material('Light warm grey ABS','#b9bcb6',.40);pale=b.material('Ivory grey armor tiles','#d0d1c8',.43);mid=b.material('Medium stone grey plates','#929a97',.44);dark=b.material('Charcoal machinery recess','#303736',.57);black=b.material('Black grille interiors','#1f2728',.65);rust=b.material('Faded dark red plates','#8c4f43',.48);tan=b.material('Sand and ochre accents','#ac9774',.49);metal=b.material('Graphite pipe fittings','#77817e',.36,.24);blue=b.material('Rear ion engine lens','#86b9c8',.22,.1);glass=b.material('Cockpit smoked glazing','#30444b',.16,.13);radar=b.material('Printed dish engraving','#ffffff',.50,texture='public/models/collectibles/falcon-radar.png')
-    cx,cz=-.033,-.070;rx,rz=.271,.287;cut=.43
+    cx,cz=0,-.070;rx,rz=.270,.270;cut=.43
     wells=[(cx+s*x,z) for s in (-1,1) for x,z in ((.162,-.126),(.112,-.226),(.056,-.292))]
     def radius(x,z):return math.hypot((x-cx)/rx,(z-cz)/rz)
     def deck(x,z):return .164-.052*radius(x,z)
@@ -154,62 +154,26 @@ def build():
     b.tube('Continuous blue ion drive lens',pts,.0056,blue,segments=10)
     for k in range(42):
         a=2.08+k*(4.20-2.08)/41;x,z=polar(a,1.018);b.box('Engine grille vertical rib',(x,.095,z),(.0025,.018,.003),dark,.0004,rotation=(0,a,0))
-    # Forward mandibles have sloping, thin plates and open service strips.
-    for side in (-1,1):
-        def px(v):return cx+side*v
-        shape=[(px(.046),.049),(px(.198),.049),(px(.143),.431),(px(.047),.431)]
-        top=lambda x,z:.147-(z-.049)*.146
-        b.solid('Mandible lower framework',shape,.071,lambda x,z:top(x,z)-.024,dark)
-        for row in range(8):
-            z0=.053+row*.0464;z1=z0+.044;out0=.198-(z0-.049)*.144;out1=.198-(z1-.049)*.144
-            poly=[(px(.048),z0),(px(out0-.003),z0),(px(out1-.003),z1),(px(.048),z1)]
-            plate=b.solid('Sloped mandible armor segment',poly,lambda x,z:top(x,z)-.003,lambda x,z:top(x,z)+.002,[gray,pale,pale,gray][row%4])
-            for holez in (.184,.306):
-                if z0-.017<holez<z1+.017:b.cut_round(plate,'Mandible service aperture',px(.103),holez,.0148)
-            for xx in (.057,.073,out0-.012):
-                for dz in (.010,.029):
-                    z=z0+dz
-                    if all(math.hypot(xx-.103,z-v)>.020 for v in (.184,.306)):b.cylinder('Mandible armor stud',(px(xx),top(px(xx),z)+.0032,z),.0022,.0017,gray,segments=12)
-            # Unequal strips and recessed slots keep the nose from reading as a box.
-            x=px(.137 if row<4 else .126);z=(z0+z1)/2;b.box('Longitudinal fork rail plate',(x,top(x,z)+.006,z),(.013,.004,.039),mid,.0006,rotation=(.145,0,0))
-        for z in (.184,.306):
-            x=px(.103);y=top(x,z);b.cylinder('Mandible dark well floor',(x,y-.008,z),.0145,.0018,black,segments=32);b.lathe('Mandible recessed port liner',(x,y,z),[(-.009,.0145),(.003,.0145),(.004,.0176),(.006,.0176),(.006,.0147),(-.009,.0135)],mid,segments=40)
-            for j in range(-3,4):xx=j*.0031;length=2*math.sqrt(.012**2-xx**2);b.box('Mandible port grille',(x+xx,y-.001,z),(.001,.002,length),metal,.0001)
-        for xx in (.081,.146):
-            points=[]
-            for j in range(17):z=.067+j*.0218;x=px(xx-(z-.067)*(.035 if xx>.1 else 0));points.append((x,top(x,z)+.010,z))
-            b.tube('Paired mandible exposed pipe',points,.0019,metal,segments=8)
-            for z in (.10,.23,.39):x=px(xx-(z-.067)*(.035 if xx>.1 else 0));b.box('Fork pipe saddle',(x,top(x,z)+.009,z),(.008,.004,.004),pale,.0004)
-        # Long exposed black side courses, with distinct round Technic-like sockets.
-        for row in range(16):
-            z=.066+row*.0225;outer=.198-(z-.049)*.144
-            for xx in (.046,outer):
-                x=px(xx);y=top(x,z)-.013;n=(side if xx==outer else -side,0,0)
-                b.cylinder('Fork side recessed socket',(x,y,z),.0034,.003,black,direction=n,segments=12);b.ring('Fork socket rim',(x+n[0]*.0016,y,z),.0035,.0006,metal,normal=n,segments=12)
-        for j in range(5):
-            x=px(.056+j*.018);y=.078;b.cylinder('Nose end coupling',(x,y,.433),.0041,.0055,metal,direction=(0,0,1),segments=12);b.cylinder('Nose dark socket centre',(x,y,.436),.0024,.0008,black,direction=(0,0,1),segments=12)
-        b.box('Thin fork nose cap',(px(.096),.087,.433),(.102,.008,.011),pale,.001)
-    # Cargo notch bulkhead, inset hatch, struts and conduits between the forks.
-    b.solid('Central forward crew-access armor',[(cx-.053,cz-.010),(cx+.053,cz-.010),(cx+.049,.051),(cx-.049,.051)],.130,lambda x,z:.159-(z-cz)*.16,gray)
-    b.box('Central cargo port bulkhead',(cx,.117,.050),(.102,.051,.037),gray,.003);b.box('Cargo port inset hatch',(cx,.116,.070),(.073,.031,.004),dark,.002)
-    for xx in (-.035,.035):b.tube('Cargo port side conduit',[(cx+xx,.100,.074),(cx+xx,.139,.074)],.002,metal,segments=8)
+    # Reference-aligned triangular forebody and shallow nose slot.
+    from collectible_falcon_forebody import add_forebody
+    foretop=add_forebody(b,dict(gray=gray,pale=pale,mid=mid,dark=dark,black=black,metal=metal),cx,cz)
     # Side docking ports are concentric mechanical assemblies, not painted circles.
     for side in (-1,1):
-        x=cx+side*.271;z=cz+.018;n=(side,0,0)
+        x=cx+side*.248;z=cz+.018;n=(side,0,0)
         b.cylinder('Side docking tunnel',(x,.106,z),.031,.041,gray,direction=n,segments=48)
         for depth,r,thick,mat in ((.021,.032,.0028,mid),(.024,.026,.0020,pale),(.027,.020,.0017,metal)):
             b.ring('Concentric docking collar',(x+side*depth,.106,z),r,thick,mat,normal=n,segments=40)
         b.cylinder('Docking port recessed face',(x+side*.025,.106,z),.019,.003,dark,direction=n,segments=40)
         for j in range(8):a=j*math.tau/8;b.box('Docking hatch radial lug',(x+side*.029,.106+math.sin(a)*.014,z+math.cos(a)*.014),(.004,.005,.006),mid,.0005,rotation=(a,0,0))
     # Cockpit access trunk: an oblique root, cylindrical cabin, and faceted canopy.
-    a=Vector((cx+.185,.133,.002));c=Vector((.270,.132,.128));nose=Vector((.286,.129,.208));axis=(nose-c).normalized();neck=c-a
+    a=Vector((cx+.149,.133,.002));c=Vector((cx+.220,.132,.128));nose=Vector((cx+.236,.129,.208));axis=(nose-c).normalized();neck=c-a
     b.cylinder('Cockpit access passage',tuple((a+c)/2),.031,neck.length,gray,direction=tuple(neck),segments=48)
     for j in range(6):p=a+neck*(j+.5)/6;b.ring('Cockpit trunk armor band',tuple(p),.0315,.0013,pale if j%2 else mid,normal=tuple(neck),segments=40)
     for j in range(5):
         t=(j+.5)/5;p=a+neck*t
         for side in (-1,1):b.box('Cockpit passage access tile',(p.x+side*.015,p.y+.026,p.z),(.014,.003,.021),pale,.001,rotation=(0,.55,0))
     # Flat side armor transitions neatly into the hull at the cabin root.
-    b.solid('Cockpit root triangular armor',[(cx+.154,-.043),(.243,.049),(.232,.087),(cx+.148,.027)],.116,.145,gray)
+    b.solid('Cockpit root triangular armor',[(cx+.123,-.043),(cx+.207,.049),(cx+.196,.087),(cx+.117,.027)],.116,.145,gray)
     u=axis.cross(Vector((0,1,0))).normalized();v=u.cross(axis).normalized();N=10
     for j in range(N):
         a0=j*math.tau/N;a1=(j+1)*math.tau/N;vertices=[]
@@ -258,9 +222,10 @@ def build():
             xx=x+math.cos(a)*side*.009;zz=z-math.sin(a)*side*.009;b.box('Aft hinge upright ear',(xx,y+.018,zz),(.005,.022,.018),mid,.002,rotation=(0,a,0));b.cylinder('Hinge ear dark pin bore',(xx+math.cos(a)*.003,y+.023,zz-math.sin(a)*.003),.003,.0015,black,direction=(math.cos(a),0,-math.sin(a)),segments=12)
         b.cylinder('Aft hinge cross pin',(x,y+.023,z),.0024,.026,metal,direction=(math.cos(a),0,-math.sin(a)),segments=12)
     # Seven grounded gear assemblies, with joints, slanted pistons and treaded feet.
-    for x,z in [(cx,.058),(cx-.105,.279),(cx+.105,.279),(cx-.191,-.027),(cx+.191,-.027),(cx-.111,-.250),(cx+.111,-.250)]:
-        b.box('Landing gear support housing',(x,.068,z),(.037,.022,.031),dark,.003);b.cylinder('Landing gear upper hinge',(x,.063,z),.011,.034,mid,direction=(1,0,0),segments=20)
-        b.cylinder('Landing gear polished piston',(x,.036,z),.0045,.046,metal,segments=16);b.tube('Landing gear slanted brace',[(x,.020,z+.014),(x,.054,z-.009)],.0032,gray,segments=10)
+    for x,z in [(cx,.058),(cx-.077,.230),(cx+.077,.230),(cx-.191,-.027),(cx+.191,-.027),(cx-.111,-.250),(cx+.111,-.250)]:
+        mount=(foretop(x,z)-.023) if z>.18 else .073
+        b.box('Landing gear support housing',(x,mount-.003,z),(.037,.022,.031),dark,.003);b.cylinder('Landing gear upper hinge',(x,mount-.008,z),.011,.034,mid,direction=(1,0,0),segments=20)
+        b.cylinder('Landing gear polished piston',(x,(mount+.016)/2,z),.0045,mount-.016,metal,segments=16);b.tube('Landing gear slanted brace',[(x,.020,z+.014),(x,mount-.018,z-.009)],.0032,gray,segments=10)
         b.box('Landing gear pad',(x,.008,z),(.048,.014,.039),dark,.002)
         for j in range(4):b.box('Landing foot tread',(x,.016,z-.013+j*.008),(.046,.003,.0025),mid,.0004)
     # Underside panels and access hatches remain modeled for orbit inspection.

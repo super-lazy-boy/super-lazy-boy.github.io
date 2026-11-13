@@ -1,7 +1,8 @@
-"""Monica's public living space: an angled kitchen and raised rear window nook.
+"""Detailed furniture library for Monica's selected cutaway reference.
 
 Authored in architectural metres, then presented as a shelf-sized cutaway.
-All furniture, joinery, soft furnishings and small utensils remain editable.
+The final stepped plan is applied by collectible_monica_layout before export.
+Furniture, joinery, soft furnishings and small utensils remain editable.
 """
 import math
 from collectible_builder import Builder
@@ -283,4 +284,6 @@ def build():
             'round side table':('Living room round side table','Tripod side table leg')
         }.items():
             if obj.name.startswith(prefixes):obj['assembly']=group;break
-    b.finish((.45,.139,.310))
+    from collectible_monica_layout import apply_layout
+    apply_layout(b)
+    b.finish((.310,.140,.408))

@@ -135,7 +135,7 @@ class Builder:
         m=max(size)
         for name,p,power,diameter in [('Softbox',(-2,4,3),140,2.0),('Fill',(3,2,-2),65,2.5)]:
             data=bpy.data.lights.new(name,'AREA');data.energy=power*m*m;data.shape='DISK';data.size=diameter*m;o=bpy.data.objects.new(name,data);scene.collection.objects.link(o);o.location=xyz([v*m for v in p]);o.rotation_euler=(Vector(xyz((0,size[1]/2,0)))-o.location).to_track_quat('-Z','Y').to_euler()
-        camera=bpy.data.cameras.new('Inspection');cam=bpy.data.objects.new('Inspection',camera);scene.collection.objects.link(cam);cam.location=xyz((m*1.35,m*1.35,m*1.7));cam.rotation_euler=(Vector(xyz((0,size[1]*.4,0)))-cam.location).to_track_quat('-Z','Y').to_euler();camera.type='ORTHO';camera.ortho_scale=m*1.55;scene.camera=cam
+        camera=bpy.data.cameras.new('Inspection');cam=bpy.data.objects.new('Inspection',camera);scene.collection.objects.link(cam);cam.location=xyz([m*v for v in getattr(self,'camera_view',(1.35,1.35,1.7))]);cam.rotation_euler=(Vector(xyz((0,size[1]*.4,0)))-cam.location).to_track_quat('-Z','Y').to_euler();camera.type='ORTHO';camera.ortho_scale=m*1.55;scene.camera=cam
         scene.render.resolution_x=1200;scene.render.resolution_y=1000;scene.render.resolution_percentage=100
         bpy.ops.wm.save_as_mainfile(filepath=str(native/(self.name+'.blend')))
         groups={}
@@ -151,6 +151,7 @@ class Builder:
             if o.type=='MESH':o.select_set(True)
         bpy.ops.export_scene.gltf(filepath=str(out/(self.name+'.glb')),export_format='GLB',use_selection=True,export_yup=True,export_extras=True,export_cameras=False,export_lights=False)
         report={'dimensions':size,'min':lo,'max':hi,'sourceParts':len(self.objects),'groups':len(groups)}
+        if hasattr(self,'layout_details'):report['referenceLayout']=self.layout_details
         (out/(self.name+'-layout.json')).write_text(json.dumps(report,indent=2),encoding='utf-8')
         scene.render.filepath=str(ROOT/('work/qa/'+self.name+'.png'));bpy.ops.render.render(write_still=True)
         print('COLLECTIBLE_READY',self.name,json.dumps(report),flush=True)

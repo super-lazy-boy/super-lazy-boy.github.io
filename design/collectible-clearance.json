@@ -1,8 +1,8 @@
 {
   "scope": "Separate miniature furniture, lamps, crockery and plants; architectural walls; sofa drape and pillows; Falcon deck plumbing versus cooling fans. Structural joinery and attached kit parts excluded.",
-  "nativeSha256": "3e55e1307cb5d1f4ee25a4f62afa60f9a97f8c95ea451395ed7c52bec9f1188f",
-  "falconNativeSha256": "a601226e6b31f7ec8a6fed79c5832cb6bb02a16e5d2b1a0e8d090cd3992c4353",
-  "assemblies": 30,
-  "checkedPairs": 462,
+  "nativeSha256": "8feb10415365fe96d42aba1679143ada819b642b7ceaddc0aafd8a8b9be5a594",
+  "falconNativeSha256": "e9c8546ec2bb577311b85776b76f5179e155000472e58ce17ab096d6d793d08f",
+  "assemblies": 43,
+  "checkedPairs": 943,
   "failures": []
 }

@@ -5,7 +5,7 @@ from mathutils import Matrix
 def add_models(root):
     C=Matrix(((1,0,0,0),(0,0,-1,0),(0,1,0,0),(0,0,0,1)))
     placements={
-        'monica-apartment':((-2.75,4.38,-3.75),0),
+        'monica-apartment':((-2.75,4.38,-3.75),math.pi/2),
         'millennium-falcon':((.25,.761,3.57),math.pi/2),
         'wish-willow':((4.85,1.455,-3.75),-.10)
     }

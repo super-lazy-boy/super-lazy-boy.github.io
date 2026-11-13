@@ -6,11 +6,12 @@ ROOT=Path(__file__).resolve().parents[2]
 def xyz(p):return Vector((p[0],-p[2],p[1]))
 shots={
  'monica-apartment':[
-    ('kitchen',(.32,.32,.47),(-.113,.072,-.069),.305),
-    ('living',(.46,.29,.36),(.095,.040,.043),.30),
-    ('rear',(-.57,.46,-.65),(0,.052,0),.69)],
+    ('kitchen',(.35,.40,.56),(-.092,.063,.003),.32),
+    ('living',(.37,.35,.58),(.044,.041,.074),.32),
+    ('rear',(.38,.40,.40),(.053,.056,-.128),.29),
+    ('top',(0,1.25,.001),(0,.04,0),.62)],
  'millennium-falcon':[
-    ('top',(0,1.5,.001),(0,.08,0),1.08),
+    ('top',(0,1.5,.001),(0,.08,0),1.35),
     ('aft',(-.91,.73,-1.05),(0,.09,0),1.25),
     ('detail',(.70,.46,.86),(.075,.13,.10),.60),
     ('underside',(.8,-.85,1.05),(0,.07,0),1.19)],
@@ -22,4 +23,4 @@ for name,views in shots.items():
  bpy.ops.wm.open_mainfile(filepath=str(ROOT/'design/collectibles'/(name+'.blend')));scene=bpy.context.scene;scene.cycles.samples=32;scene.render.resolution_x=1440;scene.render.resolution_y=1080
  for title,p,target,scale in views:
     cam=scene.camera;cam.location=xyz(p);cam.rotation_euler=(xyz(target)-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale
-    scene.render.filepath=str(ROOT/('work/qa/v5-'+name+'-'+title+'.png'));bpy.ops.render.render(write_still=True)
+    scene.render.filepath=str(ROOT/('work/qa/v6-'+name+'-'+title+'.png'));bpy.ops.render.render(write_still=True)

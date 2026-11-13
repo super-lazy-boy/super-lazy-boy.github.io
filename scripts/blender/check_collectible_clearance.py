@@ -28,10 +28,10 @@ def check(a,ta,b,tb):
     hit=ta[0].overlap(tb[0])
     if hit:failures.append({'first':a,'second':b,'intersectingTrianglePairs':len(hit)})
 for a,b in itertools.combinations(trees,2):check(a,trees[a],b,trees[b])
-wallnames=('Lavender entrance wall','Angled brick kitchen wall','Brick range wall','Hall rear wall','Window low wall','Window head','Right window pier','Hall partition','Low front cut edge','Kitchen overhead oak beam','Kitchen beam post')
+wallnames=('Lavender entrance wall','Left kitchen brick wall','Brick range wall','Hall rear wall','Window low wall','Window head','Right window','Right living-room','Rear window lavender mullion post','Hall partition','Low front','Kitchen overhead oak beam','Kitchen right return beam','Kitchen beam post')
 walls=bvh([o for o in objects if o.name.startswith(wallnames)])
 for name,t in trees.items():
-    if name=='angled kitchen' or name.startswith('Open shelf cup'):continue
+    if name in ('left-wall sink','left blue shelving','entrance door','rear hall door','hall bedroom door','rear window and curtains','window wall artwork'):continue
     check(name,t,'architectural walls and beam',walls)
 cloth=bvh([o for o in objects if o.name.startswith(('Red plaid throw','Throw hand-knotted fringe'))]);cushions=bvh([o for o in objects if o.name.startswith(('Separate filled sofa seat','Lofted sofa back cushion','Sofa padded rear frame','Sofa back cushion welt','Sofa upholstered lower frame','Sofa soft rolled arm','Seat cushion sewn welt'))]);check('red sofa drape',cloth,'sofa seat, back, arms and piping',cushions)
 pillows=bvh([o for o in objects if o.name.startswith('Patchwork sofa pillow')]);check('loose sofa pillows',pillows,'sofa seat, back, arms and piping',cushions);check('loose sofa pillows',pillows,'red sofa drape',cloth)

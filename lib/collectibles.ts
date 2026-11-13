@@ -12,7 +12,7 @@ export const COLLECTIBLE_NAMES:Record<CollectibleId,[string,string]>={
 };
 /** Assets use metres. The established room has .45 m per scene unit. */
 export const COLLECTIBLE_PLACEMENTS:Record<NewCollectibleId,{position:Vec3;yaw:number;scale:number;zone:'books'|'cinema'}>={
-  'monica-apartment':{position:[-2.75,4.38,-3.75],yaw:0,scale:1/.45,zone:'books'},
+  'monica-apartment':{position:[-2.75,4.38,-3.75],yaw:Math.PI/2,scale:1/.45,zone:'books'},
   'millennium-falcon':{position:[.25,.761,3.57],yaw:Math.PI/2,scale:1/.45,zone:'cinema'},
   'wish-willow':{position:[4.85,1.455,-3.75],yaw:-.10,scale:1/.45,zone:'cinema'}
 };

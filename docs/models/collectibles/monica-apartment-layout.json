@@ -1,19 +1,60 @@
 {
   "dimensions": [
-    0.45000000298023224,
-    0.13899999856948853,
-    0.3100000023841858
+    0.310000017285347,
+    0.14000001549720764,
+    0.40799999237060547
   ],
   "min": [
-    -0.22500000894069672,
+    -0.1550000160932541,
     0.0,
-    -0.1550000011920929
+    -0.20399998128414154
   ],
   "max": [
-    0.22499999403953552,
-    0.13899999856948853,
-    0.1550000011920929
+    0.1550000011920929,
+    0.14000001549720764,
+    0.20400001108646393
   ],
-  "sourceParts": 1212,
-  "groups": 25
+  "sourceParts": 1484,
+  "groups": 27,
+  "referenceLayout": {
+    "reference": "User-selected purple-wall / blue-kitchen cutaway",
+    "footprintXZ": [
+      [
+        -3.65,
+        4.05
+      ],
+      [
+        -0.45,
+        4.05
+      ],
+      [
+        -0.45,
+        4.5
+      ],
+      [
+        3.65,
+        4.5
+      ],
+      [
+        3.65,
+        -5.11
+      ],
+      [
+        -0.2,
+        -5.11
+      ],
+      [
+        -0.2,
+        -1.7
+      ],
+      [
+        -3.65,
+        -1.7
+      ]
+    ],
+    "kitchen": "left wall and rear return",
+    "living": "longitudinal sofa facing right-hand television",
+    "rearBay": "raised hallway left, window bench and tree right",
+    "stageFloor": 0.42
+  }
 }
