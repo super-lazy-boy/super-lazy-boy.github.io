@@ -12,13 +12,15 @@ import {COLLECTIBLE_NAMES,type CollectibleId} from '@/lib/collectibles';
 import {InspectCollectible} from './CollectibleModels';
 import versions from '@/public/collectibles-version.json';
 
-function InspectionCamera({revision}:{revision:number}){
+function InspectionCamera({revision,item}:{revision:number;item:CollectibleId}){
  const controls=useRef<CameraControlsImpl>(null),{size,invalidate}=useThree();
  useEffect(()=>{
-  const distance=5.5*Math.max(1,size.height/size.width*.85),angle=.34;
-  void controls.current?.setLookAt(Math.sin(angle)*distance,1.05,Math.cos(angle)*distance,0,0,0,false);
+  const distance=5.5*Math.max(1,size.height/size.width*.85),angle=item==='monica-apartment'?.50:item==='millennium-falcon'?.42:.34;
+  const elevation=item==='monica-apartment'?.64:item==='millennium-falcon'?.58:item==='wish-willow'?.34:.19;
+  // Flat dioramas need an elevated first view so their interiors are visible.
+  void controls.current?.setLookAt(Math.sin(angle)*distance,Math.sin(elevation)*distance,Math.cos(angle)*distance,0,0,0,false);
   invalidate();
- },[revision,size.width,size.height,invalidate]);
+ },[revision,item,size.width,size.height,invalidate]);
  return <CameraControls ref={controls} makeDefault minDistance={2.6} maxDistance={12} minPolarAngle={.22} maxPolarAngle={Math.PI-.22}
   smoothTime={.15} draggingSmoothTime={.1} dollySpeed={.6}
   mouseButtons={{left:CameraControlsImpl.ACTION.ROTATE,middle:CameraControlsImpl.ACTION.NONE,right:CameraControlsImpl.ACTION.NONE,wheel:CameraControlsImpl.ACTION.DOLLY}}
@@ -38,12 +40,12 @@ export default function CollectibleViewer({item='tardis',night=false}:{item?:Col
     <directionalLight position={[4,2,-3]} intensity={.55}/>
     <Suspense fallback={null}><StudioLight/>{item==='tardis'?<group position={[0,-1.5,0]}><TardisModel height={3}/></group>:item==='starry-night'?<group scale={1.8}><Center><SunlitRoom part="starry night"/></Center></group>:<Center><InspectCollectible id={item}/></Center>}</Suspense>
     <mesh position={[0,floorY,0]} rotation={[-Math.PI/2,0,0]} receiveShadow><planeGeometry args={[30,30]}/><shadowMaterial transparent opacity={.17}/></mesh>
-    <InspectionCamera revision={revision}/>
+    <InspectionCamera revision={revision} item={item}/>
    </Canvas>
   </div>
   {item==='starry-night'&&<p className="artwork-credit">Vincent van Gogh · 1889 · <a href="https://www.moma.org/collection/works/79802" target="_blank" rel="noopener noreferrer">The Starry Night</a><span> · Google Art Project / Wikimedia Commons</span></p>}
   {item==='millennium-falcon'&&<p className="artwork-credit">{t('参照 LEGO UCS 75192 的外观与比例制作','Study based on the appearance and proportions of LEGO UCS 75192')} · <a href="https://www.lego.com/en-us/product/millennium-falcon-75192" target="_blank" rel="noopener noreferrer">LEGO</a></p>}
-  {item==='wish-willow'&&<p className="artwork-credit">Obsession · <a href="https://www.onewishwillow.com/" target="_blank" rel="noopener noreferrer">One Wish Willow</a></p>}
+  {item==='wish-willow'&&<p className="artwork-credit">Obsession · <a href="https://onewishwillow.app/zh/" target="_blank" rel="noopener noreferrer">One Wish Willow</a></p>}
   <div className="collectible-controls"><p>{t('拖动旋转 · 滚轮或双指缩放 · Esc 返回房间','Drag to rotate · Scroll or pinch to zoom · Esc to return')}</p><button className="button subtle" onClick={()=>setRevision(value=>value+1)}><RotateCcw size={14}/>{t('重置角度','Reset view')}</button></div>
  </div>;
 }

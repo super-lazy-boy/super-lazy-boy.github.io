@@ -28,6 +28,9 @@ for(const id of NEW_COLLECTIBLE_IDS)test(id+' has finite, correctly sized and ve
     for(const p of node.getMesh()?.listPrimitives()||[]){
       const positions=p.getAttribute('POSITION'),v=[];
       for(let i=0;i<positions.getCount();i++){positions.getElement(i,v);assert.ok(v.every(Number.isFinite));bounds.expandByPoint(new THREE.Vector3(...v).applyMatrix4(m));vertices++;}
+      for(const attribute of p.listAttributes()){
+        for(let i=0;i<attribute.getCount();i++){attribute.getElement(i,v);assert.ok(v.every(Number.isFinite),'finite exported shading and texture coordinates');}
+      }
       assert.notEqual(p.getMaterial()?.getExtension('KHR_materials_unlit')?.extensionName,'KHR_materials_unlit');
     }
   });
