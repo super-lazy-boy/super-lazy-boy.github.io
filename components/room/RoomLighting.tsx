@@ -5,9 +5,12 @@ import {SoftShadows} from '@react-three/drei';
 import * as THREE from 'three';
 import {LIGHT_ANCHORS,lightProfile} from '@/lib/room-lighting';
 import {StudioLight} from './RoomDecor';
+import {roomBackground} from '@/lib/room-theme';
 
 export default function RoomLighting({night,screening,lamps,beamActive}:{night:boolean;screening:boolean;lamps:{desk:boolean;floor:boolean};beamActive:boolean}){
   const {scene,size,gl,invalidate}=useThree();
+  // Match transparent edge pixels to the page matte before the final anti-aliasing pass.
+  useEffect(()=>{gl.setClearColor(roomBackground(night),0);invalidate();},[night,gl,invalidate]);
   const sun=useRef<THREE.DirectionalLight>(null),fill=useRef<THREE.DirectionalLight>(null),ambient=useRef<THREE.AmbientLight>(null),sky=useRef<THREE.HemisphereLight>(null);
   const fixtures=useMemo(()=>{
     const root=new THREE.Group(),lights:Record<string,THREE.Light>={};

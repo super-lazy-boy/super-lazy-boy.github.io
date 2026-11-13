@@ -31,6 +31,7 @@ import TardisOrnament from './TardisOrnament';
 import {createAviators} from './models/aviators';
 import {roomPointerEvents} from './RoomPointerEvents';
 import SceneActivity from './SceneActivity';
+import RoomAntialiasing from './RoomAntialiasing';
 
 type Vec3=[number,number,number];
 type Props={
@@ -128,12 +129,12 @@ function Furniture({props}:{props:Props}){
 }
 export default function RoomScene(props:Props){
   const [ready,setReady]=useState(false);useEffect(()=>setReady(true),[]);if(!ready)return null;
-  return <Canvas className="room-canvas" inert={props.guestbookOpen||props.paused} events={roomPointerEvents} raycaster={{firstHitOnly:true}} shadows frameloop={props.paused?'never':'demand'} dpr={[1,1.65]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
+  return <Canvas className="room-canvas" inert={props.guestbookOpen||props.paused} events={roomPointerEvents} raycaster={{firstHitOnly:true}} shadows frameloop={props.paused?'never':'demand'} dpr={[1.5,2]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
     gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
     {/* Transparent pixels take the page's day/night background independently of room lighting. */}
     <SceneActivity active={!props.paused}/><RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
     <Suspense fallback={<RoomLoading language={props.language}/>}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
-    <EffectComposer multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/></EffectComposer>
+    <EffectComposer multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/><RoomAntialiasing/></EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}
     {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation screenFocused={props.screenFocused} zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;
