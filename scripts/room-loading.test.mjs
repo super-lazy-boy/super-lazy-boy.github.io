@@ -3,11 +3,25 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import * as THREE from 'three';
-import {ModelResourceCache,downloadModel,roomLoadingPercent} from '../lib/model-resource-cache.ts';
+import {ModelResourceCache,downloadModel,roomLoadingPercent,roomBatchLoadingPercent} from '../lib/model-resource-cache.ts';
 import {applicationVersion} from './application-version.mjs';
 
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
 const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
+
+test('complete-room progress is monotonic across a fixed manifest and never declares completion before drawing',()=>{
+  const a={phase:'idle',loaded:0,total:1100,error:null},b={phase:'idle',loaded:0,total:1300,error:null};
+  const values=[roomBatchLoadingPercent([a,b])];
+  a.phase='downloading';a.loaded=1100;values.push(roomBatchLoadingPercent([a,b]));
+  a.phase='decoding';values.push(roomBatchLoadingPercent([a,b]));
+  a.phase='ready';values.push(roomBatchLoadingPercent([a,b]));
+  b.phase='downloading';b.loaded=650;values.push(roomBatchLoadingPercent([a,b]));
+  b.loaded=1300;values.push(roomBatchLoadingPercent([a,b]));
+  b.phase='decoding';values.push(roomBatchLoadingPercent([a,b]));
+  b.phase='ready';values.push(roomBatchLoadingPercent([a,b]));
+  assert.equal(values[0],0);assert.equal(values.at(-1),96);
+  assert.ok(values.every((value,index)=>value<100&&(!index||value>=values[index-1])));
+});
 
 test('published release identity includes the current application code as well as model bytes',async()=>{
   const room=JSON.parse(await readFile('public/room-version.json','utf8')),collectibles=JSON.parse(await readFile('public/collectibles-version.json','utf8'));
@@ -115,5 +129,13 @@ test('cached TARDIS pixels retain every approved texel while textures remain ind
     assert.equal(createHash('sha256').update(glass.normalMap.image.data).digest('hex'),'f5d56d50c1bc684c868d6e2d7805520580550d7a212468e298db2b41efcd48b5');
     assert.equal(createHash('sha256').update(glass.roughnessMap.image.data).digest('hex'),'5fd2598008b3d25836da348b5428ff781b7daadde5c48701491726c2601e0761');
     assert.equal(glass.normalMap.image.data,beacon.normalMap.image.data);assert.notEqual(glass.normalMap,beacon.normalMap);
+    const evidence={roughness:new THREE.Texture({width:512,height:512}),height:new THREE.Texture({width:1024,height:1024})};
+    THREE.TextureLoader.prototype.load=()=>assert.fail('cached evidence textures must not start another image request');
+    const prepared=woodMaterial(false,undefined,evidence),inspector=woodMaterial(true,undefined,evidence);
+    assert.notEqual(prepared.roughnessMap,evidence.roughness);assert.notEqual(prepared.roughnessMap,inspector.roughnessMap);
+    assert.equal(prepared.roughnessMap.image,evidence.roughness.image);assert.equal(prepared.bumpMap.image,evidence.height.image);
+    let disposed=0;evidence.roughness.addEventListener('dispose',()=>disposed++);
+    prepared.roughnessMap.dispose();prepared.bumpMap.dispose();assert.equal(disposed,0,'closing a model must not dispose the cached image texture');
+    assert.equal(inspector.bumpMap.image.width,1024);
   }finally{THREE.TextureLoader.prototype.load=load;}
 });

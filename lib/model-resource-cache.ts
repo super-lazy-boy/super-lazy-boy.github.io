@@ -60,6 +60,15 @@ export function roomLoadingPercent(progress:ModelProgress){
   return progress.total>0?Math.min(90,Math.floor(progress.loaded/progress.total*90)):null;
 }
 
+/** A fixed manifest prevents later model discovery from resetting first-load progress. */
+export function roomBatchLoadingPercent(resources:readonly ModelProgress[]){
+  const total=resources.reduce((sum,r)=>sum+r.total,0);
+  if(!total)return 0;
+  const downloaded=resources.reduce((sum,r)=>sum+(r.phase==='ready'||r.phase==='decoding'?r.total:Math.min(r.loaded,r.total)),0);
+  const decoded=resources.reduce((sum,r)=>sum+(r.phase==='ready'?r.total:0),0);
+  return Math.min(96,Math.floor((downloaded*90+decoded*6)/total));
+}
+
 function validGLB(bytes:ArrayBuffer){
   if(bytes.byteLength<12)throw new Error('Incomplete GLB response');
   const header=new DataView(bytes);

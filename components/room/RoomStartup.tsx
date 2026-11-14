@@ -1,7 +1,7 @@
 import {Component,useEffect,type ReactNode} from 'react';
 import {useThree} from '@react-three/fiber';
-import {useMainModelProgress} from '@/lib/room-model-resources';
-import {roomLoadingPercent} from '@/lib/model-resource-cache';
+import {useRoomLoadingPercent} from '@/lib/room-model-resources';
+import {useTardisTexturePhase} from '@/lib/room-texture-resources';
 export {default as RoomFirstFrame} from './RoomFirstFrame';
 
 export class RoomRenderBoundary extends Component<{children:ReactNode;onError:(error:Error)=>void},{failed:boolean}>{
@@ -20,12 +20,19 @@ export function RoomContextMonitor({onError}:{onError:(error:Error)=>void}){
   },[gl,onError]);return null;
 }
 export default function RoomStartup({drawn,error,paused,language,onRetry}:{drawn:boolean;error:Error|null;paused:boolean;language:'zh'|'en';onRetry:()=>void}){
-  const progress=useMainModelProgress(),zh=language==='zh',percent=roomLoadingPercent(progress);
-  const failed=error||progress.error;
-  if(drawn&&!failed)return null;
+  const progress=useRoomLoadingPercent(),textures=useTardisTexturePhase(),zh=language==='zh',failed=!!error,ready=drawn&&!failed;
+  const percent=ready?100:textures==='ready'?progress:Math.min(94,progress);
   const label=failed?(zh?'房间暂时未能打开，请重试。':'The room could not open. Please retry.'):
     paused?(zh?'准备好后返回房间继续打开':'Return to the room to continue opening'):
-    progress.phase==='downloading'||progress.phase==='idle'?(zh?'正在打开这间房间':'Opening the room'):
-    progress.phase==='decoding'?(zh?'正在准备房间中的物品':'Preparing the room'):(zh?'正在准备画面':'Preparing the view');
-  return <div className="room-startup" role={failed?'alert':'status'} aria-live="polite"><div className="room-model-loading"><span>{label}</span>{!failed&&percent!==null&&<small>{percent}%</small>}{failed&&<button className="button subtle" onClick={onRetry}>{zh?'重新打开':'Try again'}</button>}</div></div>;
+    progress<90?(zh?'正在打开这间房间':'Opening the room'):
+    progress<96||textures!=='ready'?(zh?'正在安放物品与贴图':'Preparing objects and textures'):(zh?'正在准备光影与画面':'Preparing the light and view');
+  return <div className={'room-startup'+(ready?' is-ready':'')} aria-hidden={ready} inert={ready}>
+    <div className="room-startup-card" role={failed?'alert':'status'} aria-live="polite">
+      <span className="room-startup-eyebrow">A ROOM OF MY OWN</span>
+      <div className="room-startup-heading"><span>{ready?(zh?'房间已准备好':'The room is ready'):label}</span>{!failed&&<small aria-hidden="true">{percent}%</small>}</div>
+      {!failed&&<progress className="room-startup-progress" value={percent} max={100} aria-label={zh?'房间准备进度':'Room preparation progress'}/>}
+      <p>{failed?(zh?'已载入的模型会保留，重试后继续准备。':'Loaded models are kept for the next attempt.'):(zh?'准备完成后，房间与摆件会一起呈现。':'The room and its collection will appear together.')}</p>
+      {failed&&<button className="button subtle" onClick={onRetry}>{zh?'重新打开':'Try again'}</button>}
+    </div>
+  </div>;
 }

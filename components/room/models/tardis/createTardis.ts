@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {RoundedBoxGeometry} from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import data from './geometry.json';
-import {woodMaterial,frostedMaterial,topSignMaterial,telephoneMaterial,bronzeMaterial} from './TardisMaterials';
+import {woodMaterial,frostedMaterial,topSignMaterial,telephoneMaterial,bronzeMaterial,type TardisEvidenceTextures} from './TardisMaterials';
 import {enableAgedPaint,setWearBounds} from './TardisSurface';
 import {optimizeRepeatedParts} from './TardisOptimization';
 
@@ -10,10 +10,10 @@ type Component={id:string;parent:string|null;role:string;primitive:string;materi
 type Materials=Record<'wood'|'dark'|'glass'|'beacon'|'sign'|'telephone'|'bronze',THREE.MeshPhysicalMaterial>;
 
 /** Same construction as the approved 2005–2010 collectible; no review metadata or placeholder emitters. */
-export function createTardis({onTextureReady,materials,optimized=true}:{onTextureReady?:()=>void;materials?:Materials;optimized?:boolean}={}){
+export function createTardis({onTextureReady,materials,evidenceTextures,optimized=true}:{onTextureReady?:()=>void;materials?:Materials;evidenceTextures?:TardisEvidenceTextures;optimized?:boolean}={}){
  const root=new THREE.Group();root.name='tardis-2005-collectible';
  const wearFrameInverse=new THREE.Matrix4();
- const mats=materials??{wood:woodMaterial(false,onTextureReady),dark:woodMaterial(true,onTextureReady),glass:frostedMaterial(),beacon:frostedMaterial(true),sign:topSignMaterial(),telephone:telephoneMaterial(),bronze:bronzeMaterial()};
+ const mats=materials??{wood:woodMaterial(false,onTextureReady,evidenceTextures),dark:woodMaterial(true,onTextureReady,evidenceTextures),glass:frostedMaterial(),beacon:frostedMaterial(true),sign:topSignMaterial(),telephone:telephoneMaterial(),bronze:bronzeMaterial()};
  if(!materials){enableAgedPaint(mats.wood,wearFrameInverse);enableAgedPaint(mats.dark,wearFrameInverse);}
  const nodes:Record<string,THREE.Object3D>={root},meshes:Record<string,THREE.Mesh>={};
  for(const c of data.components as Component[]){

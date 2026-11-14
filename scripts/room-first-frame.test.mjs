@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import {createRoot,extend,useFrame} from '@react-three/fiber';
 import RoomFirstFrame from '../components/room/RoomFirstFrame.ts';
 import RoomPreparation from '../components/room/RoomPreparation.ts';
+import RoomSceneContent from '../components/room/RoomSceneContent.ts';
 import {ModelResourceCache} from '../lib/model-resource-cache.ts';
 import {useModelPhase,useModelProgress} from '../lib/model-resource-hooks.ts';
 
@@ -38,28 +39,63 @@ test('download byte updates refresh the loading label without rerendering the ca
   }finally{await act(async()=>{pending.resolve({});await loaded;root.unmount();});}
 });
 
-test('the room draws only after shaders are prepared, without waiting for a slow collectible',async()=>{
-  const main=deferred(),extra=deferred(),compiled=deferred(),cache=new ModelResourceCache(async url=>url==='room'?main.promise:extra.promise);
-  const errors=[];let notifications=0;const onReady=()=>notifications++,onError=e=>errors.push(e);
+test('the complete room waits for slow collectibles, textures, custom models, postprocessing and a real prepared frame',async()=>{
+  const pending=Object.fromEntries(['room','collectible','texture','custom'].map(id=>[id,deferred()])),compiled=deferred(),cache=new ModelResourceCache(async url=>pending[url].promise);
+  for(const id of Object.keys(pending))void cache.preload(id);
+  const errors=[];let notifications=0,setEffects;const onReady=()=>notifications++,onError=e=>errors.push(e);
   const renderTarget=new THREE.WebGLRenderTarget(8,8),target=()=>renderTarget;
-  const {root,gl,log}=await fixture(function(){assert.equal(this.getRenderTarget(),renderTarget,'compile for the same linear target as the composer');return compiled.promise;});let store;
-  function Extra(){const object=cache.read('collectible');return React.createElement('primitive',{object});}
-  function Body(){
-    const object=cache.read('room'),[prepared,setPrepared]=useState(false),onPrepared=useCallback(()=>setPrepared(true),[]);
-    return React.createElement(React.Fragment,null,React.createElement('primitive',{object}),React.createElement(RoomPreparation,{onPrepared,onError,target}),React.createElement(Draw,{enabled:prepared}),React.createElement(RoomFirstFrame,{enabled:prepared,onReady}),React.createElement(Suspense,{fallback:null},React.createElement(Extra)));
+  let compileCalls=0;
+  const {root,gl,log}=await fixture(function(scene){
+    compileCalls++;assert.equal(this.getRenderTarget(),renderTarget,'compile for the same linear target as the composer');
+    for(const id of Object.keys(pending))assert.ok(scene.getObjectByName(id),'compile only after '+id+' has committed');
+    return compiled.promise;
+  });let store;
+  function FullRoom(){
+    const objects=Object.keys(pending).map(id=>cache.read(id));
+    return React.createElement('group',null,...objects.map(object=>React.createElement('primitive',{key:object.name,object})));
+  }
+  function App(){
+    const [prepared,setPrepared]=useState(false),[effects,changeEffects]=useState(false),onPrepared=useCallback(()=>setPrepared(true),[]);setEffects=changeEffects;
+    return React.createElement(React.Fragment,null,React.createElement(RoomSceneContent,{mode:'room',room:React.createElement(FullRoom),films:null,books:null,fallback:null,effectsReady:effects,onPrepared,onError,onReady,target}),React.createElement(Draw,{enabled:prepared}));
   }
   try{
-    await act(async()=>{store=root.render(React.createElement(Suspense,{fallback:null},React.createElement(Body)));await tick();});
+    await act(async()=>{store=root.render(React.createElement(App));await tick();});
     await act(async()=>{store.getState().advance(.016);});assert.equal(notifications,0);
-    const mesh=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshStandardMaterial());mesh.name='room';
-    await act(async()=>{main.resolve(mesh);await main.promise;await tick();});
-    await act(async()=>{store.getState().advance(.032);});assert.ok(log.every(frame=>!frame.includes('room')),'room must not draw while shaders are pending');assert.equal(notifications,0);assert.equal(gl.getRenderTarget(),null,'restore the target while asynchronous compilation is pending');
+    for(const [i,id] of Object.keys(pending).entries()){
+      const mesh=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshStandardMaterial());mesh.name=id;
+      await act(async()=>{pending[id].resolve(mesh);await pending[id].promise;await tick();store.getState().advance(.032+i*.016);});
+      assert.equal(notifications,0,'no reveal after only '+id+' is ready');assert.equal(compileCalls,0,'wait for postprocessing lookup images too');
+    }
+    await act(async()=>{setEffects(true);await tick();});assert.equal(compileCalls,1);
+    await act(async()=>{store.getState().advance(.12);});assert.equal(notifications,0);assert.equal(gl.getRenderTarget(),null,'restore the target while asynchronous compilation is pending');
     await act(async()=>{compiled.resolve();await compiled.promise;await tick();});
-    gl.contextLost=true;await act(async()=>{store.getState().advance(.048);});assert.equal(notifications,0,'a lost context cannot report a valid first frame');
-    gl.contextLost=false;await act(async()=>{store.getState().advance(.056);});assert.equal(notifications,1);assert.ok(log.at(-1).includes('room'));assert.equal(cache.snapshot('collectible').phase,'downloading');
-    await act(async()=>{extra.resolve(new THREE.Group());await extra.promise;await tick();store.getState().advance(.064);});
-    assert.equal(notifications,1,'later models cannot restart the startup loader');assert.deepEqual(errors,[]);
-  }finally{main.resolve(new THREE.Group());extra.resolve(new THREE.Group());compiled.resolve();await act(async()=>{await tick();root.unmount();});renderTarget.dispose();}
+    gl.contextLost=true;await act(async()=>{store.getState().advance(.136);});assert.equal(notifications,0,'a lost context cannot report a valid first frame');
+    gl.contextLost=false;await act(async()=>{store.getState().advance(.152);});assert.equal(notifications,1);
+    for(const id of Object.keys(pending))assert.ok(store.getState().scene.getObjectByName(id),'the presented frame contains '+id);
+    await act(async()=>{store.getState().advance(.168);});assert.equal(notifications,1,'later frames cannot restart the startup screen');assert.ok(log.length>0);assert.deepEqual(errors,[]);
+  }finally{for(const value of Object.values(pending))value.resolve(new THREE.Group());compiled.resolve();await act(async()=>{await tick();root.unmount();});renderTarget.dispose();}
+});
+
+test('film and book archives remove every room collectible from drawing, shadows and picking; return reuses cached assets',async()=>{
+  const ids=['millennium-falcon','tardis','anduril','saved-model'];let loads=0;
+  const cache=new ModelResourceCache(async()=>{loads++;return ids.map(id=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshStandardMaterial());mesh.name=id;mesh.castShadow=true;return mesh;});});
+  await cache.preload('collection');const {root}=await fixture(async()=>{});let store;
+  const noop=()=>{},target=()=>null;
+  function Room(){return React.createElement('group',{name:'room-picking',onClick:noop},...cache.read('collection').map(object=>React.createElement('primitive',{key:object.name,object})));}
+  function Archive({name}){return React.createElement('mesh',{name,onClick:noop,castShadow:true},React.createElement('boxGeometry'),React.createElement('meshStandardMaterial'));}
+  const render=async mode=>act(async()=>{store=root.render(React.createElement(React.Fragment,null,React.createElement(RoomSceneContent,{mode,room:React.createElement(Room),films:React.createElement(Archive,{name:'film-cabinet'}),books:React.createElement(Archive,{name:'book-shelf'}),fallback:null,effectsReady:true,onPrepared:noop,onError:assert.fail,onReady:noop,target}),React.createElement(Draw,{enabled:true})));await tick();});
+  try{
+    await render('room');assert.ok(store.getState().scene.getObjectByName('millennium-falcon'));
+    for(const [mode,name] of [['films','film-cabinet'],['books','book-shelf']]){
+      await render(mode);const state=store.getState();state.scene.updateMatrixWorld(true);
+      const ray=new THREE.Raycaster(new THREE.Vector3(0,0,5),new THREE.Vector3(0,0,-1));
+      assert.ok(state.scene.getObjectByName(name));
+      for(const id of ids)assert.equal(state.scene.getObjectByName(id),undefined,id+' cannot render or cast an archive shadow');
+      assert.ok(!state.internal.interaction.some(object=>object.name==='room-picking'),'no room event targets remain');
+      assert.ok(ray.intersectObjects(state.scene.children,true).every(hit=>!ids.includes(hit.object.name)),'room props cannot intercept cabinet picking');
+    }
+    await render('room');for(const id of ids)assert.ok(store.getState().scene.getObjectByName(id));assert.equal(loads,1);
+  }finally{await act(async()=>root.unmount());}
 });
 
 test('shader preparation failures reach recovery without falsely reporting a first frame',async()=>{

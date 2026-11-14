@@ -30,13 +30,15 @@ import {createAviators} from './models/aviators';
 import {roomPointerEvents} from './RoomPointerEvents';
 import SceneActivity from './SceneActivity';
 import RoomAntialiasing from './RoomAntialiasing';
-import RoomStartup,{RoomFirstFrame,RoomContextMonitor,RoomRenderBoundary} from './RoomStartup';
-import DeferredRoomCollectibles,{RoomAssetBoundary} from './DeferredRoomCollectibles';
-import {roomModels,useMainModelPhase} from '@/lib/room-model-resources';
-import RoomPreparation from './RoomPreparation';
+import RoomStartup,{RoomContextMonitor,RoomRenderBoundary} from './RoomStartup';
+import {RoomCollectibles} from './CollectibleModels';
+import TardisOrnament from './TardisOrnament';
+import {readRoomAssets,retryRoomAssets,useRoomAssetPhase} from '@/lib/room-model-resources';
+import RoomSceneContent from './RoomSceneContent';
 
 type Vec3=[number,number,number];
 type Props={
+  recordsReady:boolean;onReadyChange:(ready:boolean)=>void;
   guestbookOpen:boolean;guestbookData:GuestbookData|null;onGuestbook:()=>void;
   zone:Zone;navigationLocked:boolean;paused:boolean;language:'zh'|'en';viewRevision:number;records:RoomRecord[];owner:boolean;bookPage:number;filmPage:number;
   night:boolean;lamps:{desk:boolean;floor:boolean};screenFocused:boolean;onScreenFocus:()=>void;
@@ -114,7 +116,9 @@ function LoadedTape({records}:{records:RoomRecord[]}){
 function RoomLoading({language}:{language:'zh'|'en'}){
   return <Html center><div className="room-model-loading" role="status"><span>{language==='zh'?'正在准备内容…':'Preparing the collection…'}</span></div></Html>;
 }
-function Furniture({props,onReady,prepared,onPrepared,onError,target}:{props:Props;onReady:()=>void;prepared:boolean;onPrepared:()=>void;onError:(error:Error)=>void;target:()=>THREE.WebGLRenderTarget|null}){
+function Furniture({props}:{props:Props}){
+  // Read the complete prefetched manifest before constructing any room objects.
+  readRoomAssets();
   return <RecordMotionProvider request={props.recordRequest} records={props.records} activeBookId={props.activeBookId} loadedTapeId={props.loadedTapeId} zone={props.zone} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onComplete={props.onRecord} onStatus={props.onMotionStatus}
     renderBook={(record,w,h)=><BookObject record={record} w={w} h={h} detail/>} renderTape={record=><TapeCase record={record} slot={filmEntities(props.records).find(e=>e.record.id===record.id)?.slot||0}/> }>
     <SunlitRoom zone={props.zone} night={props.night} playing={!!props.loadedTapeId&&!props.playbackBusy} lamps={props.lamps} onInspectArt={!props.navigationLocked&&!props.screenFocused?()=>props.onInspectCollectible('starry-night'):undefined}/>
@@ -124,7 +128,9 @@ function Furniture({props,onReady,prepared,onPrepared,onError,target}:{props:Pro
     <GuestbookBoard data={props.guestbookData} active={props.zone==='guestbook'&&!props.navigationLocked} onOpen={props.onGuestbook}/>
     <Books {...props}/><Tapes {...props}/><LoadedTape records={props.records}/>
     <ProjectionBeam active={!!props.loadedTapeId&&!props.playbackBusy} night={props.night}/>
-    <RoomPreparation onPrepared={onPrepared} onError={onError} target={target}/><RoomFirstFrame onReady={onReady} enabled={prepared}/>
+    <RoomCollectibles locked={props.navigationLocked||props.screenFocused} onInspect={props.onInspectCollectible}/>
+    <group position={CINEMA_LAYOUT.origin} userData={{roomZone:'cinema'}}><TardisOrnament disabled={props.navigationLocked||props.screenFocused} onInspect={()=>props.onInspectCollectible('tardis')}/></group>
+    {props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><SavedModel key={record.id} record={record}/>)}
   </RecordMotionProvider>;
 }
 export default function RoomScene(props:Props){
@@ -132,31 +138,41 @@ export default function RoomScene(props:Props){
   return <RoomSceneContents {...props}/>;
 }
 function RoomSceneContents(props:Props){
-  const [revision,setRevision]=useState(0),[drawn,setDrawn]=useState(false),[error,setError]=useState<Error|null>(null),[extrasError,setExtrasError]=useState(false),[extrasRevision,setExtrasRevision]=useState(0);
-  const phase=useMainModelPhase(),onReady=useCallback(()=>{setDrawn(true);setError(null);},[]),onError=useCallback((e:Error)=>setError(e),[]),onExtraError=useCallback(()=>setExtrasError(true),[]);
-  const retry=()=>{roomModels.retryFailures();setError(null);setDrawn(false);setExtrasError(false);setRevision(v=>v+1);};
+  const [revision,setRevision]=useState(0),[drawn,setDrawn]=useState(false),[error,setError]=useState<Error|null>(null);
+  const phase=useRoomAssetPhase(),onReady=useCallback(()=>setDrawn(true),[]),onError=useCallback((e:Error)=>setError(e),[]);
+  const retry=()=>{
+    retryRoomAssets();
+    for(const record of props.records)if(record.modelVisible&&(record.modelKey||record.modelUrl))useGLTF.clear(record.modelUrl||assetUrl(record.modelKey));
+    setError(null);setDrawn(false);setRevision(v=>v+1);
+  };
+  useEffect(()=>props.onReadyChange(drawn&&!error),[drawn,error,props.onReadyChange]);
   useEffect(()=>{
-    if(drawn||error||props.paused||phase!=='ready')return;
-    const timer=setTimeout(()=>setError(new Error('Room did not render after decoding')),30000);return()=>clearTimeout(timer);
-  },[drawn,error,props.paused,phase]);
-  return <div className="room-scene"><RoomRenderBoundary key={revision} onError={onError}><RoomCanvas {...props} onReady={onReady} onError={onError} extrasReady={drawn} extrasRevision={extrasRevision} onExtraError={onExtraError}/></RoomRenderBoundary>
+    if(drawn||error||props.paused||!props.recordsReady||phase!=='ready')return;
+    let timer:ReturnType<typeof setTimeout>;
+    const watch=()=>{clearTimeout(timer);if(!document.hidden)timer=setTimeout(()=>setError(new Error('Room did not render after decoding')),30000);};
+    watch();document.addEventListener('visibilitychange',watch);
+    return()=>{clearTimeout(timer);document.removeEventListener('visibilitychange',watch);};
+  },[drawn,error,props.paused,props.recordsReady,phase]);
+  return <div className="room-scene" aria-busy={!drawn||!!error}><RoomRenderBoundary key={revision} onError={onError}><RoomCanvas {...props} interactive={drawn&&!error} onReady={onReady} onError={onError}/></RoomRenderBoundary>
     <RoomStartup drawn={drawn} error={error} paused={props.paused} language={props.language} onRetry={retry}/>
-    {extrasError&&drawn&&!error&&<div className="room-extra-error" role="status"><span>{props.language==='zh'?'有件摆件暂未打开。':'A collectible could not open.'}</span><button onClick={()=>{roomModels.retryFailures();setExtrasError(false);setExtrasRevision(v=>v+1);}}>{props.language==='zh'?'重试摆件':'Retry collectibles'}</button></div>}
   </div>;
 }
-function RoomCanvas(props:Props&{onReady:()=>void;onError:(e:Error)=>void;extrasReady:boolean;extrasRevision:number;onExtraError:()=>void}){
-  const [prepared,setPrepared]=useState(false),onPrepared=useCallback(()=>setPrepared(true),[]);
+function RoomCanvas(props:Props&{onReady:()=>void;onError:(e:Error)=>void;interactive:boolean}){
+  const [prepared,setPrepared]=useState(false),[effectsReady,setEffectsReady]=useState(false),onPrepared=useCallback(()=>setPrepared(true),[]),onEffectsReady=useCallback(()=>setEffectsReady(true),[]);
+  const sceneProps={...props,navigationLocked:props.navigationLocked||!props.interactive};
   const composer=useRef<ComposerInstance>(null),target=useCallback(()=>composer.current?.inputBuffer??null,[]);
-  return <Canvas className="room-canvas" inert={props.guestbookOpen||props.paused} events={roomPointerEvents} raycaster={{firstHitOnly:true}} shadows frameloop={props.paused?'never':'demand'} dpr={[1.5,2]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
+  return <Canvas className="room-canvas" inert={props.guestbookOpen||props.paused||!props.interactive} events={roomPointerEvents} raycaster={{firstHitOnly:true}} shadows frameloop={props.paused?'never':'demand'} dpr={[1.5,2]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
     gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
     {/* Transparent pixels take the page's day/night background independently of room lighting. */}
-    <SceneActivity active={!props.paused}/><RoomContextMonitor onError={props.onError}/><RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
-    <Suspense fallback={props.extrasReady?<RoomLoading language={props.language}/>:null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props} onReady={props.onReady} prepared={prepared} onPrepared={onPrepared} onError={props.onError} target={target}/>}</Suspense>
-    <DeferredRoomCollectibles key={props.extrasRevision} enabled={props.extrasReady} locked={props.navigationLocked||props.screenFocused} onInspect={props.onInspectCollectible} onError={props.onExtraError}/>
-    {props.extrasReady&&props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><RoomAssetBoundary key={record.id+':'+props.extrasRevision} onError={()=>{useGLTF.clear(record.modelUrl||assetUrl(record.modelKey));props.onExtraError();}}><Suspense fallback={null}><SavedModel record={record}/></Suspense></RoomAssetBoundary>)}
-    <EffectComposer ref={composer} enabled={prepared} multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/><RoomAntialiasing/></EffectComposer>
+    <SceneActivity active={!props.paused} interactive={props.interactive}/><RoomContextMonitor onError={props.onError}/><RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
+    <RoomSceneContent mode={props.bookArchiveOpen?'books':props.libraryOpen?'films':'room'} effectsReady={effectsReady&&props.recordsReady} onPrepared={onPrepared} onReady={props.onReady} onError={props.onError} target={target}
+      fallback={props.interactive?<RoomLoading language={props.language}/>:null}
+      room={props.recordsReady?<Furniture props={sceneProps}/>:null}
+      books={<BookArchive records={props.records} layer={props.bookLayer} locked={sceneProps.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>}
+      films={<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={sceneProps.navigationLocked}/>}/>
+    <EffectComposer ref={composer} enabled={prepared} multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/><RoomAntialiasing onReady={onEffectsReady}/></EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}
-    {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation screenFocused={props.screenFocused} zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
+    {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation screenFocused={props.screenFocused} zone={props.zone} revision={props.viewRevision} locked={sceneProps.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;
 }
 export function ReviewScene({item}:{item:string}){

@@ -3,7 +3,8 @@ const S=1024;
 function noise(x:number,y:number,seed:number){const n=Math.sin(x*127.1+y*311.7+seed*13.4)*43758.5453;return n-Math.floor(n);}
 function data(bytes:Uint8Array,color=false){const t=new THREE.DataTexture(bytes,S,S,THREE.RGBAFormat);t.colorSpace=color?THREE.SRGBColorSpace:THREE.NoColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;t.generateMipmaps=true;t.anisotropy=8;t.needsUpdate=true;return t;}
 const evidenceLoader=new THREE.TextureLoader();
-function evidenceMap(file:string,onLoaded?:()=>void){const t=evidenceLoader.load('./media/models/tardis/wood_'+file+'.png',onLoaded);t.colorSpace=THREE.NoColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}
+export type TardisEvidenceTextures={roughness:THREE.Texture;height:THREE.Texture};
+function evidenceMap(file:string,onLoaded?:()=>void,source?:THREE.Texture){const t=source?source.clone():evidenceLoader.load('./media/models/tardis/wood_'+file+'.png',onLoaded);t.colorSpace=THREE.NoColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}
 let woodPixels:{albedo:Uint8Array;normal:Uint8Array;ao:Uint8Array}|undefined;
 function getWoodPixels(){
  if(woodPixels)return woodPixels;
@@ -16,10 +17,10 @@ function getWoodPixels(){
  }
  return woodPixels={albedo,normal,ao};
 }
-export function woodMaterial(dark=false,onLoaded?:()=>void){
+export function woodMaterial(dark=false,onLoaded?:()=>void,evidence?:TardisEvidenceTextures){
  // Reuse immutable pixels across Suspense retries and inspectors; GPU textures stay disposable per model.
  const {albedo,normal,ao}=getWoodPixels();
- const m=new THREE.MeshPhysicalMaterial({color:dark?'#1a3148':'#1c3752',map:data(albedo,true),roughnessMap:evidenceMap('roughness_stabilized',onLoaded),normalMap:data(normal),normalScale:new THREE.Vector2(.35,.35),bumpMap:evidenceMap('height',onLoaded),bumpScale:.000025,aoMap:data(ao),roughness:1,metalness:0,clearcoat:.07,clearcoatRoughness:.65,envMapIntensity:.6});m.name=dark?'深蓝旧漆 · 凹面':'深蓝旧漆 · 木制框架';return m;
+ const m=new THREE.MeshPhysicalMaterial({color:dark?'#1a3148':'#1c3752',map:data(albedo,true),roughnessMap:evidenceMap('roughness_stabilized',onLoaded,evidence?.roughness),normalMap:data(normal),normalScale:new THREE.Vector2(.35,.35),bumpMap:evidenceMap('height',onLoaded,evidence?.height),bumpScale:.000025,aoMap:data(ao),roughness:1,metalness:0,clearcoat:.07,clearcoatRoughness:.65,envMapIntensity:.6});m.name=dark?'深蓝旧漆 · 凹面':'深蓝旧漆 · 木制框架';return m;
 }
 let glassPixels:{normal:Uint8Array;rough:Uint8Array}|undefined;
 function getGlassPixels(){

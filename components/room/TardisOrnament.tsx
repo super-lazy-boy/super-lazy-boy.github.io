@@ -4,14 +4,16 @@ import {useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {CINEMA_LAYOUT} from '@/lib/cinema-layout';
 import {createTardis,disposeTardis} from './models/tardis/createTardis';
+import {readTardisTextures} from '@/lib/room-texture-resources';
 
 export function TardisModel({height}:{height:number}){
  const {gl,invalidate}=useThree();
+ const {roughness,height:heightMap}=readTardisTextures();
  const model=useMemo(()=>{
-  const object=createTardis({onTextureReady:invalidate}),bounds=new THREE.Box3().setFromObject(object),objectHeight=bounds.getSize(new THREE.Vector3()).y;
+  const object=createTardis({evidenceTextures:{roughness,height:heightMap}}),bounds=new THREE.Box3().setFromObject(object),objectHeight=bounds.getSize(new THREE.Vector3()).y;
   object.scale.setScalar(height/objectHeight);
   return object;
- },[invalidate,height]);
+ },[roughness,heightMap,height]);
  useLayoutEffect(()=>{
   model.updateWorldMatrix(true,true);
   // Preserve the approved wood grain/wear frequency when the miniature moves or scales.

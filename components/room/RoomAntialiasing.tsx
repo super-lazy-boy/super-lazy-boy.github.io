@@ -5,15 +5,17 @@ import {SMAAPreset,SMAAEffect} from 'postprocessing';
 type LookupEvents={addEventListener:(type:'load',listener:()=>void)=>void;removeEventListener:(type:'load',listener:()=>void)=>void};
 
 /** Smooth the completed AO/tone-mapped image; canvas MSAA does not cover those passes. */
-export default function RoomAntialiasing(){
+export default function RoomAntialiasing({onReady}:{onReady?:()=>void}={}){
   const effect=useMemo(()=>new SMAAEffect({preset:SMAAPreset.ULTRA}),[]),invalidate=useThree(state=>state.invalidate);
   useLayoutEffect(()=>{
     // postprocessing emits `load`, but its Effect typings currently list only `change`.
     const antialiasing=effect as SMAAEffect&LookupEvents;
     // The lookup images load asynchronously, including when a cached room is already idle.
-    const ready=()=>invalidate();antialiasing.addEventListener('load',ready);invalidate();
+    const ready=()=>{onReady?.();invalidate();};antialiasing.addEventListener('load',ready);
+    if(effect.weightsMaterial.searchTexture?.image&&effect.weightsMaterial.areaTexture?.image)ready();
+    invalidate();
     return()=>antialiasing.removeEventListener('load',ready);
-  },[effect,invalidate]);
+  },[effect,invalidate,onReady]);
   useEffect(()=>()=>effect.dispose(),[effect]);
   return <primitive object={effect}/>;
 }

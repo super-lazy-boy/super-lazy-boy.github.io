@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import {filmEntities,type FilmEntity} from '@/lib/film-library';
 import type {RoomRecord} from '@/lib/room-types';
 import {TapeLabel,TapeTitle} from './TapeSpine';
+import {filmArchiveView} from '@/lib/film-archive-view';
 
 const BAY=4.85;
 const pose=(entity:FilmEntity):[number,number,number]=>[entity.cabinet*BAY-1.98+entity.column*.146,.39+entity.row*.62,.02];
@@ -22,13 +23,16 @@ function Cabinet({index}:{index:number}){
   <Html position={[0,1.75,.02]} center><div className="cabinet-number">{String(index+1).padStart(2,'0')}<span>MEMORIES, KEPT.</span></div></Html>
  </group>;
 }
-function ArchiveCamera({cabinet}:{cabinet:number}){
- const ref=useRef<CameraControlsImpl>(null),{size}=useThree();
- useEffect(()=>{
-  const x=cabinet*BAY,distance=Math.max(4.7,7.0/(size.width/size.height));
-  void ref.current?.setLookAt(x+.10,1.20,distance,x,.76,0,true);
- },[cabinet,size.width,size.height]);
- return <CameraControls ref={ref} makeDefault minDistance={2.7} maxDistance={18} minPolarAngle={1.28} maxPolarAngle={1.8} minAzimuthAngle={-.15} maxAzimuthAngle={.15} mouseButtons={{left:0,middle:CameraControlsImpl.ACTION.DOLLY,right:0,wheel:CameraControlsImpl.ACTION.DOLLY}} touches={{one:0,two:CameraControlsImpl.ACTION.TOUCH_DOLLY,three:0}}/>;
+function ArchiveCamera({cabinet,locked}:{cabinet:number;locked:boolean}){
+ const ref=useRef<CameraControlsImpl>(null),previous=useRef<number|null>(null),{camera,size,invalidate}=useThree();
+ const view=useMemo(()=>filmArchiveView(size.width,size.height,cabinet*BAY),[size.width,size.height,cabinet]);
+ useLayoutEffect(()=>{
+  if(camera instanceof THREE.PerspectiveCamera){camera.fov=view.fov;camera.updateProjectionMatrix();}
+  const animate=previous.current!==null&&previous.current!==cabinet&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  previous.current=cabinet;
+  void ref.current?.setLookAt(...view.position,...view.target,animate);invalidate();
+ },[camera,cabinet,view,invalidate]);
+ return <CameraControls ref={ref} makeDefault enabled={!locked} minDistance={2.7} maxDistance={view.maxDistance} minPolarAngle={1.28} maxPolarAngle={1.8} minAzimuthAngle={-.15} maxAzimuthAngle={.15} mouseButtons={{left:0,middle:CameraControlsImpl.ACTION.DOLLY,right:0,wheel:CameraControlsImpl.ACTION.DOLLY}} touches={{one:0,two:CameraControlsImpl.ACTION.TOUCH_DOLLY,three:0}}/>;
 }
 export default function FilmArchive({records,cabinet,onPick,locked=false}:{records:RoomRecord[];cabinet:number;onPick:(record:RoomRecord)=>void;locked?:boolean}){
  const entities=useMemo(()=>filmEntities(records),[records]);
@@ -52,6 +56,6 @@ export default function FilmArchive({records,cabinet,onPick,locked=false}:{recor
   </instancedMesh>
   {entities.filter(e=>e.cabinet===cabinet).map(entity=><group key={entity.record.id} position={pose(entity)}><TapeLabel record={entity.record} slot={entity.slot}/></group>)}
   {hovered&&hovered.cabinet===cabinet&&<Html position={[pose(hovered)[0],1.10+hovered.row*.34,.5]} center style={{pointerEvents:'none'}}><TapeTitle record={hovered.record} slot={hovered.slot}/></Html>}
-  <ArchiveCamera cabinet={cabinet}/>
+  <ArchiveCamera cabinet={cabinet} locked={locked}/>
  </group>;
 }

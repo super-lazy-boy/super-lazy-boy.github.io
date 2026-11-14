@@ -12,15 +12,16 @@ export default function RoomLighting({night,screening,lamps,beamActive}:{night:b
   // Match transparent edge pixels to the page matte before the final anti-aliasing pass.
   useEffect(()=>{gl.setClearColor(roomBackground(night),0);invalidate();},[night,gl,invalidate]);
   const sun=useRef<THREE.DirectionalLight>(null),fill=useRef<THREE.DirectionalLight>(null),ambient=useRef<THREE.AmbientLight>(null),sky=useRef<THREE.HemisphereLight>(null);
+  const initial=useRef({...lightProfile(night,screening,lamps),beamActive});
   const fixtures=useMemo(()=>{
     const root=new THREE.Group(),lights:Record<string,THREE.Light>={};
     for(const [key,color,angle] of [['desk','#ffd2a1',.86],['floor','#ffd2a0',.88],['picture','#ffe5bb',.72],['projector','#e5edff',.36],['guest','#ffd29b',.85],['console','#ffcd92',1.10]] as const){
-      const a=LIGHT_ANCHORS[key],light=new THREE.SpotLight(color,0,15,angle,.65,2);light.position.fromArray(a.position);light.target.position.fromArray(a.target);
+      const a=LIGHT_ANCHORS[key],light=new THREE.SpotLight(color,key==='projector'&&!initial.current.beamActive?0:initial.current[key],15,angle,.65,2);light.position.fromArray(a.position);light.target.position.fromArray(a.target);
       light.castShadow=['desk','floor','guest','console'].includes(key);light.shadow.mapSize.set(key==='floor'?1024:512,key==='floor'?1024:512);light.shadow.bias=-.00015;light.shadow.normalBias=.008;light.shadow.camera.near=.06;
       root.add(light,light.target);lights[key]=light;
     }
-    LIGHT_ANCHORS.shelves.forEach((p,i)=>{for(const [j,dx] of [-1.15,1.15].entries()){const l=new THREE.PointLight('#ffd4a1',0,2.8,2);l.position.fromArray(p);l.position.x+=dx;root.add(l);lights['shelf'+i+'-'+j]=l;}});
-    LIGHT_ANCHORS.media.forEach((p,i)=>{const light=new THREE.PointLight('#ffcf98',0,2.8,2);light.position.fromArray(p);root.add(light);lights['media'+i]=light;});
+    LIGHT_ANCHORS.shelves.forEach((p,i)=>{for(const [j,dx] of [-1.15,1.15].entries()){const l=new THREE.PointLight('#ffd4a1',initial.current.shelf,2.8,2);l.position.fromArray(p);l.position.x+=dx;root.add(l);lights['shelf'+i+'-'+j]=l;}});
+    LIGHT_ANCHORS.media.forEach((p,i)=>{const light=new THREE.PointLight('#ffcf98',initial.current.media,2.8,2);light.position.fromArray(p);root.add(light);lights['media'+i]=light;});
     return {root,lights};
   },[]);
   useEffect(()=>{invalidate();},[night,screening,lamps.desk,lamps.floor,beamActive,invalidate]);
@@ -38,12 +39,12 @@ export default function RoomLighting({night,screening,lamps,beamActive}:{night:b
     if(moving)invalidate();
   },-1);
   return <>
-    <StudioLight/>
-    <ambientLight ref={ambient} intensity={.10}/><hemisphereLight ref={sky} args={['#eaf2ff','#b6a085',.60]}/>
-    <directionalLight ref={sun} position={[-13,8,1.8]} intensity={2.75} color="#fff0d7" castShadow
+    <StudioLight intensity={initial.current.environment}/>
+    <ambientLight ref={ambient} intensity={initial.current.ambient}/><hemisphereLight ref={sky} args={['#eaf2ff','#b6a085',initial.current.hemisphere]}/>
+    <directionalLight ref={sun} position={[-13,8,1.8]} intensity={initial.current.sun} color="#fff0d7" castShadow
       shadow-mapSize={[size.width<650?1024:2048,size.width<650?1024:2048]} shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={9} shadow-camera-bottom={-9}
       shadow-camera-near={.5} shadow-camera-far={40} shadow-normalBias={.015} shadow-bias={-.00008}/>
-    <directionalLight ref={fill} position={[4,7,9]} intensity={.38} color="#f1f5ff"/>
+    <directionalLight ref={fill} position={[4,7,9]} intensity={initial.current.fill} color="#f1f5ff"/>
     <primitive object={fixtures.root}/><SoftShadows size={8} samples={8} focus={.5}/>
   </>;
 }

@@ -75,9 +75,9 @@ export function useSurface(kind:"wood"|"fabric"|"screen") {
   useEffect(()=>()=>texture.dispose(),[texture]);return texture;
 }
 
-export function StudioLight() {
+export function StudioLight({intensity=.45}:{intensity?:number}={}) {
   const {gl,scene,invalidate}=useThree();
-  useEffect(()=>{const room=new RoomEnvironment(),generator=new THREE.PMREMGenerator(gl),target=generator.fromScene(room,.025);scene.environment=target.texture;scene.environmentIntensity=.45;room.dispose();generator.dispose();invalidate();return()=>{scene.environment=null;target.dispose();};},[gl,scene,invalidate]);
+  useEffect(()=>{const room=new RoomEnvironment(),generator=new THREE.PMREMGenerator(gl),target=generator.fromScene(room,.025);scene.environment=target.texture;scene.environmentIntensity=intensity;room.dispose();generator.dispose();invalidate();return()=>{scene.environment=null;target.dispose();};},[gl,scene,invalidate,intensity]);
   return null;
 }
 export function OakPanel({size,position,rotation=[0,0,0]}:{size:V;position:V;rotation?:V}) {
