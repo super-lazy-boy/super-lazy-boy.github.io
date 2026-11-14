@@ -1,0 +1,47 @@
+{
+  "dimensions": [
+    0.03699999861419201,
+    0.012000000104308128,
+    0.06200000084936619
+  ],
+  "min": [
+    -0.01849999837577343,
+    0.0,
+    -0.03099999949336052
+  ],
+  "max": [
+    0.01850000023841858,
+    0.012000000104308128,
+    0.03100000135600567
+  ],
+  "sourceParts": 449,
+  "groups": 6,
+  "referenceLayout": {
+    "basis": "Supplied White Tower stills and 60-diamond platinum reference; visual study, not an authentication claim",
+    "reference": "https://www.ebay.com/itm/236289129352",
+    "diamondCount": 60,
+    "frontGrid": [
+      5,
+      5
+    ],
+    "reverseGrid": [
+      5,
+      5
+    ],
+    "edgeGrid": [
+      2,
+      5
+    ],
+    "orientation": "Closed, broad jewelled face upward; length along Z; grounded in Y",
+    "features": [
+      "separate radiused flip cap",
+      "real cap seam",
+      "segmented hinge and pin",
+      "recessed 48-tooth roller",
+      "hollow square bezels",
+      "flat brilliant facets",
+      "two recessed slotted valves",
+      "engraved base stamp"
+    ]
+  }
+}

@@ -13,13 +13,18 @@ function indexHash(primitive){
   }
   return {count:values.length,sha256:hashBytes(new Uint8Array(values.buffer))};
 }
-export async function modelFidelity(io,document){
+export async function modelFidelity(io,document,version=1){
   const primitives=document.getRoot().listMeshes().map(mesh=>mesh.listPrimitives().map(p=>({
     mode:p.getMode(),indices:indexHash(p),attributes:Object.fromEntries(p.listSemantics().sort().map(semantic=>[semantic,attributeHash(p.getAttribute(semantic))])),
     targets:p.listTargets().map(target=>Object.fromEntries(target.listSemantics().sort().map(semantic=>[semantic,attributeHash(target.getAttribute(semantic))])))
   })));
   const {json}=await io.writeJSON(document),appearance={};
   for(const key of ['asset','scene','scenes','nodes','meshes','materials','samplers','textures','animations','skins','cameras','extensions'])if(json[key]!==undefined)appearance[key]=json[key];
+  if(version>=2)appearance.meshes=(json.meshes||[]).map(mesh=>({...mesh,primitives:mesh.primitives.map(({indices,attributes,targets,...primitive})=>({
+    ...primitive,attributes:Object.keys(attributes).sort(),...(targets?{targets:targets.map(target=>Object.keys(target).sort())}:{})
+  }))}));
+  // V2 ignores renumbered accessor references, while the geometry hash still checks their full data.
+  // Primitive material bindings, mesh order, transforms and every appearance property remain checked.
   appearance.images=(json.images||[]).map(({bufferView,uri,...image})=>image);
   appearance.extensionsRequired=(json.extensionsRequired||[]).filter(name=>name!=='EXT_meshopt_compression').sort();
   const images=document.getRoot().listTextures().map(texture=>({mime:texture.getMimeType(),sha256:hashBytes(texture.getImage())}));

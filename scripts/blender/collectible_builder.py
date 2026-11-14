@@ -130,7 +130,8 @@ class Builder:
         for o in self.objects:o.matrix_world=transform@o.matrix_world
         lo,hi=self.bounds();size=[hi[i]-lo[i] for i in range(3)]
         native=ROOT/'design/collectibles';native.mkdir(parents=True,exist_ok=True);out=ROOT/'public/models/collectibles';out.mkdir(parents=True,exist_ok=True)
-        scene=bpy.context.scene;scene.world=bpy.data.worlds.new('Neutral inspection');scene.world.use_nodes=True;scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.4
+        scene=bpy.context.scene;scene.world=bpy.data.worlds.new('Neutral inspection');scene.world.use_nodes=True;scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=getattr(self,'studio_world_strength',.4)
+        if hasattr(self,'studio_world_color'):scene.world.node_tree.nodes['Background'].inputs['Color'].default_value=self.studio_world_color
         scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=True;scene.view_settings.view_transform='AgX'
         m=max(size)
         for name,p,power,diameter in [('Softbox',(-2,4,3),140,2.0),('Fill',(3,2,-2),65,2.5)]:

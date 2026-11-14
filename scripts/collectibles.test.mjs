@@ -14,8 +14,8 @@ test('day stays white and night becomes an almost-black imagined space',async()=
   const layout=JSON.parse(await readFile('public/models/sunlit-room/layout.json','utf8'));
   assert.equal(layout.backgrounds.day,roomBackground(false));assert.equal(layout.backgrounds.night,roomBackground(true));
 });
-test('one collapsed collection contains all five named, valid items',()=>{
-  assert.equal(COLLECTIBLE_IDS.length,5);assert.equal(new Set(COLLECTIBLE_IDS).size,5);
+test('one collapsed collection contains all six named, valid items',()=>{
+  assert.equal(COLLECTIBLE_IDS.length,6);assert.equal(new Set(COLLECTIBLE_IDS).size,6);
   for(const id of COLLECTIBLE_IDS){assert.equal(isCollectibleId(id),true);assert.ok(COLLECTIBLE_NAMES[id].every(n=>n.length>2));}
   assert.equal(isCollectibleId(''),false);assert.equal(isCollectibleId('cat'),false);
 });
@@ -38,8 +38,25 @@ for(const id of NEW_COLLECTIBLE_IDS)test(id+' has finite, correctly sized and ve
   assert.ok(vertices>100);const size=bounds.getSize(new THREE.Vector3()).toArray();
   size.forEach((v,i)=>assert.ok(Math.abs(v-version.dimensions[i])<.001,id+' dimension '+i));
   assert.ok(Math.abs(bounds.min.y)<.0001,'grounded origin');assert.ok(Math.abs(bounds.getCenter(new THREE.Vector3()).x)<.001);assert.ok(Math.abs(bounds.getCenter(new THREE.Vector3()).z)<.001);
-  assert.ok(version.sourceParts>={ 'monica-apartment':250,'millennium-falcon':1500,'wish-willow':15}[id]);
+  assert.ok(version.sourceParts>={ 'monica-apartment':250,'millennium-falcon':1500,'wish-willow':15,'zaizen-lighter':250}[id]);
   assert.equal(COLLECTIBLE_PLACEMENTS[id].scale,1/.45);
+});
+
+test('Zaizen lighter has clear solid brilliant facets, a lit platinum case and a batched export',async()=>{
+  const layout=JSON.parse(await readFile('public/models/collectibles/zaizen-lighter-layout.json','utf8'));
+  assert.deepEqual(layout.referenceLayout.frontGrid,[5,5]);assert.deepEqual(layout.referenceLayout.reverseGrid,[5,5]);assert.deepEqual(layout.referenceLayout.edgeGrid,[2,5]);
+  assert.equal(layout.referenceLayout.diamondCount,60);assert.equal(COLLECTIBLE_PLACEMENTS['zaizen-lighter'].zone,'office');
+  const document=await io.read('public/models/collectibles/zaizen-lighter.glb'),materials=document.getRoot().listMaterials();
+  const platinum=materials.find(m=>m.getName().includes('Mirror platinum case')),diamond=materials.find(m=>m.getName().includes('Clear brilliant-cut diamonds'));
+  assert.equal(platinum.getMetallicFactor(),1);assert.ok(platinum.getRoughnessFactor()<.2);
+  assert.ok(diamond.getExtension('KHR_materials_ior').getIOR()>2.4);assert.ok(diamond.getExtension('KHR_materials_transmission').getTransmissionFactor()>.7);
+  let volume=0,primitives=0;
+  for(const mesh of document.getRoot().listMeshes())for(const primitive of mesh.listPrimitives()){
+    primitives++;if(primitive.getMaterial()!==diamond)continue;
+    const position=primitive.getAttribute('POSITION'),indices=primitive.getIndices().getArray(),a=[],b=[],c=[];
+    for(let i=0;i<indices.length;i+=3){position.getElement(indices[i],a);position.getElement(indices[i+1],b);position.getElement(indices[i+2],c);volume+=new THREE.Vector3(...a).dot(new THREE.Vector3(...b).cross(new THREE.Vector3(...c)))/6;}
+  }
+  assert.ok(volume>1e-9&&volume<1e-6,'closed gems face outward and retain their physical volume');assert.ok(primitives<=10,'fine parts are batched for rendering');
 });
 
 async function shape(id){

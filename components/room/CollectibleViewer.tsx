@@ -18,7 +18,7 @@ function InspectionCamera({revision,item,top,active}:{revision:number;item:Colle
  useEffect(()=>{
   if(!active||size.width<=0||size.height<=0)return;
   const distance=5.5*Math.max(1,size.height/size.width*.85),angle=item==='monica-apartment'?.32:item==='millennium-falcon'?.42:.34;
-  const elevation=item==='monica-apartment'?.84:item==='millennium-falcon'?.58:item==='wish-willow'?.34:.19;
+  const elevation=item==='monica-apartment'?.84:item==='millennium-falcon'?.58:item==='zaizen-lighter'?.82:item==='wish-willow'?.34:.19;
   // Flat dioramas need an elevated first view so their interiors are visible.
   if(top)void controls.current?.setLookAt(0,distance,.012,0,0,0,false);
   else void controls.current?.setLookAt(Math.sin(angle)*distance,Math.sin(elevation)*distance,Math.cos(angle)*distance,0,0,0,false);
@@ -50,6 +50,7 @@ export default function CollectibleViewer({item='tardis',night=false,active=true
   {item==='starry-night'&&<p className="artwork-credit">Vincent van Gogh · 1889 · <a href="https://www.moma.org/collection/works/79802" target="_blank" rel="noopener noreferrer">The Starry Night</a><span> · Google Art Project / Wikimedia Commons</span></p>}
   {item==='millennium-falcon'&&<p className="artwork-credit">{t('参照 LEGO UCS 75192 的外观与比例制作','Study based on the appearance and proportions of LEGO UCS 75192')} · <a href="https://www.lego.com/en-us/product/millennium-falcon-75192" target="_blank" rel="noopener noreferrer">LEGO</a></p>}
   {item==='wish-willow'&&<p className="artwork-credit">Obsession · <a href="https://onewishwillow.app/zh/" target="_blank" rel="noopener noreferrer">One Wish Willow</a></p>}
-  <div className="collectible-controls"><p>{t('拖动旋转 · 滚轮或双指缩放 · Esc 返回房间','Drag to rotate · Scroll or pinch to zoom · Esc to return')}</p>{(item==='monica-apartment'||item==='millennium-falcon')&&<button className="button subtle" aria-pressed={top} onClick={()=>setTop(value=>!value)}>{top?t('立体视角','Perspective'):t('俯视查看','Top view')}</button>}<button className="button subtle" onClick={()=>{setTop(false);setRevision(value=>value+1);}}><RotateCcw size={14}/>{t('重置角度','Reset view')}</button></div>
+  {item==='zaizen-lighter'&&<p className="artwork-credit">{t('白色巨塔 · 财前五郎','The White Tower · Goro Zaizen')} · S.T. Dupont · 60 DIAMANTS</p>}
+  <div className="collectible-controls"><p>{t('拖动旋转 · 滚轮或双指缩放 · Esc 返回房间','Drag to rotate · Scroll or pinch to zoom · Esc to return')}</p>{(item==='monica-apartment'||item==='millennium-falcon'||item==='zaizen-lighter')&&<button className="button subtle" aria-pressed={top} onClick={()=>setTop(value=>!value)}>{top?t('立体视角','Perspective'):t('俯视查看','Top view')}</button>}<button className="button subtle" onClick={()=>{setTop(false);setRevision(value=>value+1);}}><RotateCcw size={14}/>{t('重置角度','Reset view')}</button></div>
  </div>;
 }

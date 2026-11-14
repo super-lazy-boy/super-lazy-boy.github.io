@@ -8,7 +8,7 @@ import {createModelIO} from './model-io.mjs';
 import {modelFidelity,hashBytes} from './model-fidelity.mjs';
 import {copyRaycastGeometry,buildRoomBoundsTree} from '../lib/room-raycast-geometry.ts';
 import {ROOM_VIEWS} from '../lib/room-navigation.ts';
-import {COLLECTIBLE_PLACEMENTS} from '../lib/collectibles.ts';
+import {COLLECTIBLE_PLACEMENTS,NEW_COLLECTIBLE_IDS} from '../lib/collectibles.ts';
 
 const io=createModelIO(),manifest=JSON.parse(await readFile('design/model-compression.json','utf8'));
 const scene=new THREE.Scene(),meshes=[],documents=[];
@@ -35,11 +35,12 @@ test('compressed models retain the approved geometry, texture pixels, materials 
   let before=0,after=0,triangles=0;
   for(const {item,document,bytes} of documents){
     assert.equal(hashBytes(bytes),item.afterSha256);assert.equal(bytes.length,item.afterBytes);
-    const fidelity=await modelFidelity(io,document);
+    const fidelity=await modelFidelity(io,document,item.fidelityVersion??1);
     for(const key of ['geometrySha256','appearanceSha256','triangles','primitives','images'])assert.equal(fidelity[key],item[key],item.file+' '+key);
     before+=item.beforeBytes;after+=bytes.length;triangles+=fidelity.triangles;
   }
-  assert.equal(triangles,821579);assert.ok(after<before*.70);assert.equal(before,26444020);
+  assert.deepEqual(manifest.models.map(item=>item.file).sort(),['public/models/sunlit-room/room.glb',...NEW_COLLECTIBLE_IDS.map(id=>'public/models/collectibles/'+id+'.glb')].sort());
+  assert.equal(triangles,manifest.models.reduce((sum,item)=>sum+item.triangles,0));assert.ok(triangles>821579);assert.ok(after<before*.70);
 });
 
 test('off-thread picking preserves every original vertex buffer and nearest visible hit',()=>{

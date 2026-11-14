@@ -220,12 +220,20 @@ test('new console, guitar, tea table and greenery do not cut through the other f
   for(const prefix of ['Motherboard PCB','CPU cooler fin','Curved cooling impeller','Real perforated hexagonal front grille','Tower side glass window','USB-C port'])assert.ok(pc.some(p=>p.name.startsWith(prefix)),'PC detail missing: '+prefix);
 });
 
-test('all three collectibles fit their supports and avoid every other room object',()=>{
+test('all collectibles fit their supports and avoid every other room object',()=>{
   for(const id of NEW_COLLECTIBLE_IDS){
     const item=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]===id));assert.ok(item.attributes.position.count>30);
     const other=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]!==id)));
     assert.equal(other.intersectsGeometry(item,identity),false,id+' intersects the room or another collectible');
   }
+});
+
+test('the lighter rests just above the real desktop, clear of the notebook and keyboard',()=>{
+  const item=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='zaizen-lighter'));item.computeBoundingBox();const bounds=item.boundingBox;
+  const desk=new THREE.Mesh(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='desk')),new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));desk.updateMatrixWorld();
+  const point=bounds.getCenter(new THREE.Vector3()),ray=new THREE.Raycaster(new THREE.Vector3(point.x,bounds.max.y+.1,point.z),new THREE.Vector3(0,-1,0));
+  const hit=ray.intersectObject(desk)[0];assert.ok(hit,'the collectible has a real desk surface beneath it');
+  assert.ok(hit.point.y>1.688&&hit.point.y<1.693);assert.ok(bounds.min.y-hit.point.y>0&&bounds.min.y-hit.point.y<.0015,'grounded without piercing the desktop');
 });
 
 test('all mouse-follow camera positions and their transition envelopes clear furniture',()=>{

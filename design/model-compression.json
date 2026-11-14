@@ -48,6 +48,19 @@
       "triangles": 9726,
       "primitives": 8,
       "images": 1
+    },
+    {
+      "file": "public/models/collectibles/zaizen-lighter.glb",
+      "fidelityVersion": 2,
+      "beforeBytes": 2117112,
+      "afterBytes": 1131020,
+      "beforeSha256": "c0d501dac1f8b8bbb022c33e1668c1e3ce8a10065d6268d068364534249f7383",
+      "afterSha256": "ecbfbf6250b7946093269c56931365ce47f521550f88f0e90dcbe44eb6d999ae",
+      "geometrySha256": "4acc4999bbe6c17b75bb6f54bfbf7516cf938221539667a11a167aa1e989ed62",
+      "appearanceSha256": "04619394075de172abb19d1050fc4388bc1effc0636cc309912c79d971c30920",
+      "triangles": 44340,
+      "primitives": 7,
+      "images": 0
     }
   ]
 }
