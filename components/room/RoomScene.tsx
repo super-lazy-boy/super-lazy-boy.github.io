@@ -32,7 +32,7 @@ import SceneActivity from './SceneActivity';
 import RoomAntialiasing from './RoomAntialiasing';
 import RoomStartup,{RoomFirstFrame,RoomContextMonitor,RoomRenderBoundary} from './RoomStartup';
 import DeferredRoomCollectibles,{RoomAssetBoundary} from './DeferredRoomCollectibles';
-import {roomModels,useMainModelProgress} from '@/lib/room-model-resources';
+import {roomModels,useMainModelPhase} from '@/lib/room-model-resources';
 import RoomPreparation from './RoomPreparation';
 
 type Vec3=[number,number,number];
@@ -133,12 +133,12 @@ export default function RoomScene(props:Props){
 }
 function RoomSceneContents(props:Props){
   const [revision,setRevision]=useState(0),[drawn,setDrawn]=useState(false),[error,setError]=useState<Error|null>(null),[extrasError,setExtrasError]=useState(false),[extrasRevision,setExtrasRevision]=useState(0);
-  const progress=useMainModelProgress(),onReady=useCallback(()=>{setDrawn(true);setError(null);},[]),onError=useCallback((e:Error)=>setError(e),[]),onExtraError=useCallback(()=>setExtrasError(true),[]);
+  const phase=useMainModelPhase(),onReady=useCallback(()=>{setDrawn(true);setError(null);},[]),onError=useCallback((e:Error)=>setError(e),[]),onExtraError=useCallback(()=>setExtrasError(true),[]);
   const retry=()=>{roomModels.retryFailures();setError(null);setDrawn(false);setExtrasError(false);setRevision(v=>v+1);};
   useEffect(()=>{
-    if(drawn||error||props.paused||progress.phase!=='ready')return;
+    if(drawn||error||props.paused||phase!=='ready')return;
     const timer=setTimeout(()=>setError(new Error('Room did not render after decoding')),30000);return()=>clearTimeout(timer);
-  },[drawn,error,props.paused,progress.phase]);
+  },[drawn,error,props.paused,phase]);
   return <div className="room-scene"><RoomRenderBoundary key={revision} onError={onError}><RoomCanvas {...props} onReady={onReady} onError={onError} extrasReady={drawn} extrasRevision={extrasRevision} onExtraError={onExtraError}/></RoomRenderBoundary>
     <RoomStartup drawn={drawn} error={error} paused={props.paused} language={props.language} onRetry={retry}/>
     {extrasError&&drawn&&!error&&<div className="room-extra-error" role="status"><span>{props.language==='zh'?'有件摆件暂未打开。':'A collectible could not open.'}</span><button onClick={()=>{roomModels.retryFailures();setExtrasError(false);setExtrasRevision(v=>v+1);}}>{props.language==='zh'?'重试摆件':'Retry collectibles'}</button></div>}

@@ -6,6 +6,7 @@ import {createRoot,extend,useFrame} from '@react-three/fiber';
 import RoomFirstFrame from '../components/room/RoomFirstFrame.ts';
 import RoomPreparation from '../components/room/RoomPreparation.ts';
 import {ModelResourceCache} from '../lib/model-resource-cache.ts';
+import {useModelPhase,useModelProgress} from '../lib/model-resource-hooks.ts';
 
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;
 extend(THREE);
@@ -21,6 +22,21 @@ async function fixture(compile){
   return {root,gl,log};
 }
 function Draw({enabled}){useFrame(({gl,scene,camera})=>{if(enabled)gl.render(scene,camera);},1);return null;}
+
+test('download byte updates refresh the loading label without rerendering the canvas owner',async()=>{
+  const pending=deferred();let controls,canvasRenders=0,labelRenders=0;
+  const cache=new ModelResourceCache(async(_,ctx)=>{controls=ctx;return pending.promise;}),loaded=cache.preload('room');
+  await tick();const {root}=await fixture(async()=>{});
+  function CanvasOwner(){useModelPhase(cache,'room');canvasRenders++;return null;}
+  function Label(){useModelProgress(cache,'room');labelRenders++;return null;}
+  try{
+    await act(async()=>{root.render(React.createElement(React.Fragment,null,React.createElement(CanvasOwner),React.createElement(Label)));await tick();});
+    const initialCanvas=canvasRenders,initialLabel=labelRenders;
+    for(let i=1;i<=8;i++)await act(async()=>{controls.download(i*100,1000);});
+    assert.equal(canvasRenders,initialCanvas);assert.ok(labelRenders>initialLabel);
+    await act(async()=>{controls.decoding();});assert.ok(canvasRenders>initialCanvas,'phase changes still reach the startup controller');
+  }finally{await act(async()=>{pending.resolve({});await loaded;root.unmount();});}
+});
 
 test('the room draws only after shaders are prepared, without waiting for a slow collectible',async()=>{
   const main=deferred(),extra=deferred(),compiled=deferred(),cache=new ModelResourceCache(async url=>url==='room'?main.promise:extra.promise);

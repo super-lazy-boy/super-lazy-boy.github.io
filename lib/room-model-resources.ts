@@ -1,7 +1,7 @@
-import {useSyncExternalStore} from 'react';
 import {GLTFLoader,MeshoptDecoder,type GLTF} from 'three-stdlib';
 import {LoadingManager} from 'three';
 import {ModelResourceCache,downloadModel} from './model-resource-cache';
+import {useModelProgress,useModelPhase} from './model-resource-hooks';
 import release from '../public/room-version.json';
 import collectibles from '../public/collectibles-version.json';
 import type {NewCollectibleId} from './collectibles';
@@ -22,5 +22,6 @@ export const roomModels=new ModelResourceCache<GLTF>(async(url,context)=>{
   return result;
 });
 export function useRoomModel(url:string){return roomModels.read(url);}
-export function useMainModelProgress(){return useSyncExternalStore(roomModels.subscribe,()=>roomModels.snapshot(ROOM_MODEL_URL),()=>roomModels.snapshot(ROOM_MODEL_URL));}
+export function useMainModelProgress(){return useModelProgress(roomModels,ROOM_MODEL_URL);}
+export function useMainModelPhase(){return useModelPhase(roomModels,ROOM_MODEL_URL);}
 if(typeof window!=='undefined')void roomModels.preload(ROOM_MODEL_URL);
