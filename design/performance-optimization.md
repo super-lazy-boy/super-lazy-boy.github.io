@@ -19,3 +19,5 @@
 验证包括 `npm run typecheck`、`npm run test:interaction`、`npm run test:performance`、`npm run test:clearance`、`npm run test:public` 和生产构建。性能测试还会通过真实 Worker 验证归一化、交错属性的数据传递，并比较所有房间视角中的原始与加速命中结果。
 
 离线 CPU 检测及文件体积不等同于浏览器帧率。本轮没有浏览器 GPU 性能录制，不能据此承诺任何设备上的固定帧率。
+
+首屏 100% 闪烁与加载恢复的后续处理见 [房间首屏加载与恢复](loading-reliability.md)：主房间先绘制，摆件逐件装入，版本化解码缓存、异步着色器准备、真实首帧判断及超时重试均保留完整画质。

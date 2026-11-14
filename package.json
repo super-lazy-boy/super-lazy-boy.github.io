@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test:interaction": "node --test scripts/room-navigation.test.mjs scripts/frame-events.test.mjs scripts/record-print.test.mjs scripts/collectibles.test.mjs",
     "test:performance": "node --test scripts/room-performance.test.mjs",
+    "test:loading": "node --test scripts/room-loading.test.mjs scripts/room-first-frame.test.mjs",
     "test:clearance": "node --test scripts/scene-clearance.test.mjs scripts/motion-clearance.test.mjs scripts/memory-drawer.test.mjs",
     "test:permissions": "node --test scripts/room-permissions.test.mjs",
     "check:backend": "node scripts/check-backend.mjs",

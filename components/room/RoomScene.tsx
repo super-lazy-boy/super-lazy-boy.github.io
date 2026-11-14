@@ -1,10 +1,10 @@
 "use client";
-import {Suspense,useEffect,useMemo,useState,type ReactNode} from 'react';
+import {Suspense,useCallback,useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
 import {Canvas,useThree} from '@react-three/fiber';
-import {CameraControls,Center,Html,SoftShadows,useGLTF,useProgress} from '@react-three/drei';
+import {CameraControls,Center,Html,useGLTF} from '@react-three/drei';
 import './SunlitRoom.css';
 import {EffectComposer,N8AO,ToneMapping} from '@react-three/postprocessing';
-import {ToneMappingMode} from 'postprocessing';
+import {ToneMappingMode,type EffectComposer as ComposerInstance} from 'postprocessing';
 import * as THREE from 'three';
 import {ROOM_VIEWS} from '@/lib/room-navigation';
 import {assetUrl,type RoomRecord,type Zone} from '@/lib/room-types';
@@ -15,7 +15,6 @@ import {StudioLight} from './RoomDecor';
 import SunlitRoom from './SunlitRoom';
 import RoomLighting from './RoomLighting';
 import ProjectionBeam from './ProjectionBeam';
-import {RoomCollectibles} from './CollectibleModels';
 import type {CollectibleId} from '@/lib/collectibles';
 import RoomNavigation from './RoomNavigation';
 import {RecordMotionProvider,useRecordAnchor,useRecordMotion,type RecordRequest,type MotionStatus} from './RecordMotion';
@@ -27,11 +26,14 @@ import BookArchive from './BookArchive';
 import FilmArchive from './FilmArchive';
 import MemoryDrawer from './MemoryDrawer';
 import GuestbookBoard,{GuestbookCamera} from './GuestbookBoard';
-import TardisOrnament from './TardisOrnament';
 import {createAviators} from './models/aviators';
 import {roomPointerEvents} from './RoomPointerEvents';
 import SceneActivity from './SceneActivity';
 import RoomAntialiasing from './RoomAntialiasing';
+import RoomStartup,{RoomFirstFrame,RoomContextMonitor,RoomRenderBoundary} from './RoomStartup';
+import DeferredRoomCollectibles,{RoomAssetBoundary} from './DeferredRoomCollectibles';
+import {roomModels,useMainModelProgress} from '@/lib/room-model-resources';
+import RoomPreparation from './RoomPreparation';
 
 type Vec3=[number,number,number];
 type Props={
@@ -87,7 +89,6 @@ function Tapes(props:Props){
       if(record&&keptIds.has(record.id))return null;
       return <Tape active={props.zone==='cinema'&&!props.navigationLocked} key={slot} slot={slot} record={record} position={[-1.98+(i%28)*.146,.15+Math.floor(i/28)*.62,.02]} onBlank={()=>props.owner&&props.onBlank('movie',slot)}/>;
     })}
-    <TardisOrnament onInspect={()=>props.onInspectCollectible('tardis')} disabled={props.navigationLocked}/>
     {keepsakes.map((e,i)=><group key={e.record.id} position={CINEMA_LAYOUT.keepsakes[i]} rotation={[0,CINEMA_LAYOUT.keepsakeYaws[i],Math.PI/2]}><Tape active={props.zone==='cinema'&&!props.navigationLocked} record={e.record} slot={e.slot} position={[0,-.24,0]} onBlank={()=>{}}/></group>)}
     <MemoryDrawer active={props.zone==='cinema'} locked={props.navigationLocked} opening={props.drawerOpening} request={props.drawerRequest} onRequest={props.onDrawerRequest} onOpened={props.onOpenLibrary}/>
     {props.zone==='cinema'&&<Html transform position={[0,3.05,-.105]} distanceFactor={1} occlude><div className={'projection-content'+(props.playbackBusy?' projection-loading':'')} onClick={e=>e.stopPropagation()}>{props.projection}</div></Html>}
@@ -111,10 +112,9 @@ function LoadedTape({records}:{records:RoomRecord[]}){
   return <group position={[CINEMA_LAYOUT.origin[0]+CINEMA_LAYOUT.tapePlayerX,PLAYER_Y,PLAYER_INSIDE]} rotation={[0,0,Math.PI/2]}><TapeCase record={record}/></group>;
 }
 function RoomLoading({language}:{language:'zh'|'en'}){
-  const {progress}=useProgress();
-  return <Html center><div className="room-model-loading" role="status"><span>{language==='zh'?'正在打开这间房间':'Opening the room'}</span><small>{Math.round(progress)}%</small></div></Html>;
+  return <Html center><div className="room-model-loading" role="status"><span>{language==='zh'?'正在准备内容…':'Preparing the collection…'}</span></div></Html>;
 }
-function Furniture({props}:{props:Props}){
+function Furniture({props,onReady,prepared,onPrepared,onError,target}:{props:Props;onReady:()=>void;prepared:boolean;onPrepared:()=>void;onError:(error:Error)=>void;target:()=>THREE.WebGLRenderTarget|null}){
   return <RecordMotionProvider request={props.recordRequest} records={props.records} activeBookId={props.activeBookId} loadedTapeId={props.loadedTapeId} zone={props.zone} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onComplete={props.onRecord} onStatus={props.onMotionStatus}
     renderBook={(record,w,h)=><BookObject record={record} w={w} h={h} detail/>} renderTape={record=><TapeCase record={record} slot={filmEntities(props.records).find(e=>e.record.id===record.id)?.slot||0}/> }>
     <SunlitRoom zone={props.zone} night={props.night} playing={!!props.loadedTapeId&&!props.playbackBusy} lamps={props.lamps} onInspectArt={!props.navigationLocked&&!props.screenFocused?()=>props.onInspectCollectible('starry-night'):undefined}/>
@@ -122,19 +122,39 @@ function Furniture({props}:{props:Props}){
       <Html transform position={[0,2.70,.067]} distanceFactor={1} occlude style={{pointerEvents:props.zone==='office'?'auto':'none'}}><div className="monitor-content" inert={props.zone!=='office'} onClick={e=>e.stopPropagation()} onPointerDown={e=>e.stopPropagation()} onWheel={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key!=='Escape')e.stopPropagation();}}><div inert={!props.screenFocused} className="monitor-application">{props.computer}</div>{props.zone==='office'&&!props.screenFocused&&<button className="screen-entry" aria-label={props.language==='zh'?'点击使用电脑':'Click to use the computer'} onClick={e=>{e.stopPropagation();props.onScreenFocus();}}/>}</div></Html>
     </group></group>
     <GuestbookBoard data={props.guestbookData} active={props.zone==='guestbook'&&!props.navigationLocked} onOpen={props.onGuestbook}/>
-    <Books {...props}/><Tapes {...props}/><LoadedTape records={props.records}/><Suspense fallback={null}><RoomCollectibles locked={props.navigationLocked||props.screenFocused} onInspect={props.onInspectCollectible}/></Suspense>
-    {props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><Suspense key={record.id} fallback={null}><SavedModel record={record}/></Suspense>)}
+    <Books {...props}/><Tapes {...props}/><LoadedTape records={props.records}/>
     <ProjectionBeam active={!!props.loadedTapeId&&!props.playbackBusy} night={props.night}/>
+    <RoomPreparation onPrepared={onPrepared} onError={onError} target={target}/><RoomFirstFrame onReady={onReady} enabled={prepared}/>
   </RecordMotionProvider>;
 }
 export default function RoomScene(props:Props){
   const [ready,setReady]=useState(false);useEffect(()=>setReady(true),[]);if(!ready)return null;
+  return <RoomSceneContents {...props}/>;
+}
+function RoomSceneContents(props:Props){
+  const [revision,setRevision]=useState(0),[drawn,setDrawn]=useState(false),[error,setError]=useState<Error|null>(null),[extrasError,setExtrasError]=useState(false),[extrasRevision,setExtrasRevision]=useState(0);
+  const progress=useMainModelProgress(),onReady=useCallback(()=>{setDrawn(true);setError(null);},[]),onError=useCallback((e:Error)=>setError(e),[]),onExtraError=useCallback(()=>setExtrasError(true),[]);
+  const retry=()=>{roomModels.retryFailures();setError(null);setDrawn(false);setExtrasError(false);setRevision(v=>v+1);};
+  useEffect(()=>{
+    if(drawn||error||props.paused||progress.phase!=='ready')return;
+    const timer=setTimeout(()=>setError(new Error('Room did not render after decoding')),30000);return()=>clearTimeout(timer);
+  },[drawn,error,props.paused,progress.phase]);
+  return <div className="room-scene"><RoomRenderBoundary key={revision} onError={onError}><RoomCanvas {...props} onReady={onReady} onError={onError} extrasReady={drawn} extrasRevision={extrasRevision} onExtraError={onExtraError}/></RoomRenderBoundary>
+    <RoomStartup drawn={drawn} error={error} paused={props.paused} language={props.language} onRetry={retry}/>
+    {extrasError&&drawn&&!error&&<div className="room-extra-error" role="status"><span>{props.language==='zh'?'有件摆件暂未打开。':'A collectible could not open.'}</span><button onClick={()=>{roomModels.retryFailures();setExtrasError(false);setExtrasRevision(v=>v+1);}}>{props.language==='zh'?'重试摆件':'Retry collectibles'}</button></div>}
+  </div>;
+}
+function RoomCanvas(props:Props&{onReady:()=>void;onError:(e:Error)=>void;extrasReady:boolean;extrasRevision:number;onExtraError:()=>void}){
+  const [prepared,setPrepared]=useState(false),onPrepared=useCallback(()=>setPrepared(true),[]);
+  const composer=useRef<ComposerInstance>(null),target=useCallback(()=>composer.current?.inputBuffer??null,[]);
   return <Canvas className="room-canvas" inert={props.guestbookOpen||props.paused} events={roomPointerEvents} raycaster={{firstHitOnly:true}} shadows frameloop={props.paused?'never':'demand'} dpr={[1.5,2]} camera={{position:ROOM_VIEWS.overview.camera,fov:38,near:.08,far:100}}
     gl={{antialias:true,alpha:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#ffffff',0);gl.toneMapping=THREE.AgXToneMapping;gl.toneMappingExposure=1.0;gl.shadowMap.type=THREE.PCFSoftShadowMap;}}>
     {/* Transparent pixels take the page's day/night background independently of room lighting. */}
-    <SceneActivity active={!props.paused}/><RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
-    <Suspense fallback={<RoomLoading language={props.language}/>}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props}/>}</Suspense>
-    <EffectComposer multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/><RoomAntialiasing/></EffectComposer>
+    <SceneActivity active={!props.paused}/><RoomContextMonitor onError={props.onError}/><RoomLighting night={props.night} screening={!!props.loadedTapeId} lamps={props.lamps} beamActive={!!props.loadedTapeId&&!props.playbackBusy}/>{(props.bookArchiveOpen||props.libraryOpen)&&<ambientLight intensity={props.night?.15:.65}/>}
+    <Suspense fallback={props.extrasReady?<RoomLoading language={props.language}/>:null}>{props.bookArchiveOpen?<BookArchive records={props.records} layer={props.bookLayer} locked={props.navigationLocked} owner={props.owner} request={props.recordRequest} activeBookId={props.activeBookId} viewRevision={props.viewRevision} skipRevision={props.skipRevision} onSelect={props.onSelect} onRecord={props.onRecord} onStatus={props.onMotionStatus} onBlank={slot=>props.onBlank('book',slot)}/>:props.libraryOpen?<FilmArchive records={props.records} cabinet={props.filmPage} onPick={props.onSelect} locked={props.navigationLocked}/>:<Furniture props={props} onReady={props.onReady} prepared={prepared} onPrepared={onPrepared} onError={props.onError} target={target}/>}</Suspense>
+    <DeferredRoomCollectibles key={props.extrasRevision} enabled={props.extrasReady} locked={props.navigationLocked||props.screenFocused} onInspect={props.onInspectCollectible} onError={props.onExtraError}/>
+    {props.extrasReady&&props.records.filter(r=>r.modelVisible&&(r.modelKey||r.modelUrl)).map(record=><RoomAssetBoundary key={record.id+':'+props.extrasRevision} onError={()=>{useGLTF.clear(record.modelUrl||assetUrl(record.modelKey));props.onExtraError();}}><Suspense fallback={null}><SavedModel record={record}/></Suspense></RoomAssetBoundary>)}
+    <EffectComposer ref={composer} enabled={prepared} multisampling={0}><N8AO halfRes aoRadius={.25} intensity={.8} distanceFalloff={1} color="#5c594f"/><ToneMapping mode={ToneMappingMode.AGX}/><RoomAntialiasing/></EffectComposer>
     {props.guestbookOpen&&<GuestbookCamera/>}
     {!props.guestbookOpen&&!props.libraryOpen&&!props.bookArchiveOpen&&<RoomNavigation screenFocused={props.screenFocused} zone={props.zone} revision={props.viewRevision} locked={props.navigationLocked} onZone={props.onZone}/>}
   </Canvas>;

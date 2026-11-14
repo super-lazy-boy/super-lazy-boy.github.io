@@ -1,5 +1,6 @@
 .room-model-loading{display:flex;align-items:center;gap:16px;white-space:nowrap;padding:15px 22px;background:#fffffff2;border:1px solid #e4e3db;border-radius:3px;box-shadow:0 5px 30px #55513a08;color:#6b7267;font-size:12px;letter-spacing:.04em}
 .room-model-loading small{color:#989d92;font-size:10px;font-variant-numeric:tabular-nums}
+.room-scene{position:absolute;inset:0}.room-startup{position:absolute;inset:0;display:grid;place-items:center;z-index:3;pointer-events:none}.room-startup .room-model-loading{pointer-events:auto}.room-extra-error{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:12px;align-items:center;font-size:12px;padding:10px 14px;background:var(--paper);border:1px solid var(--line);border-radius:4px}.room-extra-error button{text-decoration:underline;text-underline-offset:3px}
 .current-room-name{font-size:12px;color:#7b8577;letter-spacing:.03em}
 .zone-select{display:block;min-width:124px;border:1px solid #d4cabc;background:#fffcf6;color:#5d6554;border-radius:4px;padding:7px 11px;font-size:12px;cursor:pointer}
 .collectible-select{max-width:185px;border:1px solid #d4cabc;border-radius:4px;background:#fffcf6;color:#5d6554;padding:7px 10px;font-size:11px;cursor:pointer}

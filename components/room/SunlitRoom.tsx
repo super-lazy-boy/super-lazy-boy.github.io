@@ -1,17 +1,15 @@
 "use client";
 import {useEffect,useMemo,useRef} from 'react';
-import {useGLTF} from '@react-three/drei';
 import {useFrame,useThree,type ThreeEvent} from '@react-three/fiber';
 import * as THREE from 'three';
 import type {Zone} from '@/lib/room-types';
 import {ASSET_ZONES} from '@/lib/room-navigation';
-import release from '@/public/room-version.json';
 import {accelerateRoomObject} from '@/lib/room-raycast';
+import {useRoomModel,ROOM_MODEL_URL} from '@/lib/room-model-resources';
 
-const URL='./models/sunlit-room/room.glb?v='+release.modelSha256.slice(0,12);
 type Props={zone?:Zone;night?:boolean;playing?:boolean;lamps?:{desk:boolean;floor:boolean};onInspectArt?:()=>void;part?:string};
 export default function SunlitRoom({zone='overview',night=false,playing=false,lamps={desk:true,floor:true},onInspectArt,part}:Props){
-  const {scene}=useGLTF(URL),{gl,invalidate}=useThree(),mix=useRef(0),power=useRef(0);
+  const {scene}=useRoomModel(ROOM_MODEL_URL),{gl,invalidate}=useThree(),mix=useRef(0),power=useRef(0);
   const data=useMemo(()=>{
     const root=scene.clone(true),materials=new Map<string,THREE.MeshStandardMaterial>(),curtains:THREE.Group[]=[];
     const meshes:THREE.Mesh[]=[];root.traverse(o=>{if(o instanceof THREE.Mesh)meshes.push(o);});
@@ -63,4 +61,3 @@ export default function SunlitRoom({zone='overview',night=false,playing=false,la
     onPointerOver={onInspectArt?(e:ThreeEvent<PointerEvent>)=>{if(groupOf(e)==='starry night')document.body.style.cursor='zoom-in';}:undefined}
     onPointerOut={onInspectArt?()=>{document.body.style.cursor='';}:undefined}/>;
 }
-if(typeof window!=='undefined')useGLTF.preload(URL);
