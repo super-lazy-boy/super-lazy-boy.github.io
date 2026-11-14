@@ -1,0 +1,73 @@
+{
+  "release": "sunlit-18adafa71f25",
+  "validation": {
+    "interactionTests": 34,
+    "clearanceTests": 26,
+    "performanceTests": 3,
+    "publicContentTests": 4,
+    "typecheck": "passed",
+    "productionBuild": "passed"
+  },
+  "geometry": {
+    "modelTriangles": 1187695,
+    "sourceParts": 1673,
+    "renderGroups": 277,
+    "trajectories": 185,
+    "poses": 306185
+  },
+  "nativeGeometry": {
+    "anduril": {
+      "closedBladeGuardPommel": true,
+      "displaySupportParts": 90
+    },
+    "elder-wand": {
+      "closedSkin": true,
+      "sixKnots": true,
+      "cradleGapsMetres": [
+        -0.00010286271572113037,
+        -6.376206874847412e-05
+      ]
+    },
+    "wish-willow": {
+      "closedWoodSkin": true,
+      "oneConnectedHollowBranch": true,
+      "windowRows": 5
+    }
+  },
+  "assets": {
+    "anduril": {
+      "sha256": "4f09455ae18591de01c99b882d66b2f2060d68930b94997473a478d6e96b09e7",
+      "bytes": 1704332,
+      "dimensions": [
+        0.33154794573783875,
+        1.3449699878692627,
+        0.05274999886751175
+      ],
+      "sourceParts": 125,
+      "nativeSha256": "641379f472c82150051845d6d2d6ad9a16052e5c31606b525f9494e0727799ce"
+    },
+    "elder-wand": {
+      "sha256": "e9c205857cf756c979194d7bd8e993e5220f4ea102305e2079a6cf2cd2eef62b",
+      "bytes": 2348624,
+      "dimensions": [
+        0.4099999964237213,
+        0.06319642812013626,
+        0.05999999865889549
+      ],
+      "sourceParts": 35,
+      "nativeSha256": "ce41305c237bae634d39881aa93deaae0a64c6c687519cc21c500fc56374586a"
+    },
+    "wish-willow": {
+      "sha256": "0fe9b1f3fca57a94d2aea45c29729b2eaa497da9c41a379d7ee2ee5ae6643bea",
+      "bytes": 2364704,
+      "dimensions": [
+        0.26000000536441803,
+        0.07000000029802322,
+        0.11800000071525574
+      ],
+      "sourceParts": 27,
+      "nativeSha256": "0799efcd3a5c0110850bf1121d0e0c1a16bd4dc56fa8f50269ac1133efee1135"
+    }
+  },
+  "limitations": "Native Blender renders and CPU geometry verification; browser visual/FPS validation was not performed."
+}

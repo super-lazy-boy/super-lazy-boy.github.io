@@ -1,0 +1,35 @@
+{
+  "dimensions": [
+    0.4099999964237213,
+    0.06319642812013626,
+    0.05999999865889549
+  ],
+  "min": [
+    -0.20499999821186066,
+    0.0,
+    -0.029999999329447746
+  ],
+  "max": [
+    0.20499999821186066,
+    0.06319642812013626,
+    0.029999999329447746
+  ],
+  "sourceParts": 35,
+  "groups": 6,
+  "referenceLayout": {
+    "reference": "Supplied Elder Wand photographs and Noble Collection 15-inch proportions",
+    "wandLength": 0.381,
+    "knotCount": 6,
+    "recessedPores": 168,
+    "paleRunicCollar": true,
+    "displaySupportCanHide": true,
+    "features": [
+      "continuous gently curved wood shaft",
+      "six uneven ovoid knots",
+      "real recessed surface pits",
+      "flared heel",
+      "engraved pale collar",
+      "low walnut and bronze stand"
+    ]
+  }
+}

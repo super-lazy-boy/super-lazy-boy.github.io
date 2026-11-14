@@ -20,14 +20,14 @@
     "sourceParts": 2517
   },
   "wish-willow": {
-    "sha256": "2191f83c86e5881942a67a019b7f31b27e8d5553fa7f03cf45c9d4e056c8e6e2",
-    "bytes": 1156648,
+    "sha256": "0fe9b1f3fca57a94d2aea45c29729b2eaa497da9c41a379d7ee2ee5ae6643bea",
+    "bytes": 2364704,
     "dimensions": [
       0.26000000536441803,
       0.07000000029802322,
-      0.07999999821186066
+      0.11800000071525574
     ],
-    "sourceParts": 50
+    "sourceParts": 27
   },
   "zaizen-lighter": {
     "sha256": "ecbfbf6250b7946093269c56931365ce47f521550f88f0e90dcbe44eb6d999ae",
@@ -38,5 +38,25 @@
       0.06200000084936619
     ],
     "sourceParts": 449
+  },
+  "anduril": {
+    "sha256": "4f09455ae18591de01c99b882d66b2f2060d68930b94997473a478d6e96b09e7",
+    "bytes": 1704332,
+    "dimensions": [
+      0.33154794573783875,
+      1.3449699878692627,
+      0.05274999886751175
+    ],
+    "sourceParts": 125
+  },
+  "elder-wand": {
+    "sha256": "e9c205857cf756c979194d7bd8e993e5220f4ea102305e2079a6cf2cd2eef62b",
+    "bytes": 2348624,
+    "dimensions": [
+      0.4099999964237213,
+      0.06319642812013626,
+      0.05999999865889549
+    ],
+    "sourceParts": 35
   }
 }

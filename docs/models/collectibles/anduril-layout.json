@@ -1,0 +1,36 @@
+{
+  "dimensions": [
+    0.33154794573783875,
+    1.3449699878692627,
+    0.05274999886751175
+  ],
+  "min": [
+    -0.16577397286891937,
+    0.0,
+    -0.026374999433755875
+  ],
+  "max": [
+    0.16577397286891937,
+    1.3449699878692627,
+    0.026374999433755875
+  ],
+  "sourceParts": 125,
+  "groups": 12,
+  "referenceLayout": {
+    "reference": "User supplied Anduril/Narsil-form movie-prop photographs",
+    "swordLength": 1.346,
+    "bladeLength": 1.042,
+    "runeContours": 73,
+    "sunMoonAndSevenStars": true,
+    "piercedPommel": true,
+    "displaySupportCanHide": true,
+    "features": [
+      "double edge and recessed fuller",
+      "reference-traced rune geometry",
+      "leather binding",
+      "sculpted quillons",
+      "open pommel",
+      "walnut display with gold tree"
+    ]
+  }
+}

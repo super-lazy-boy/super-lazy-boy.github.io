@@ -1,11 +1,10 @@
-"""Paper sleeve and a partially withdrawn willow, matching the .app reference."""
-import math
+"""Printed paper sleeve, withdrawn tray, and the separate hollow willow prop."""
 from collectible_builder import Builder
+from collectible_willow_cage import add_cage
 
 def build():
     b=Builder('wish-willow');paper=b.material('Uncoated cream paper stock','#f0e8ce',.88);edge=b.material('Cut paper fibres','#d5c8a6',.96);inside=b.material('Unprinted inner tray','#e8dcc0',.92)
     printed=b.material('Reference sleeve print atlas','#ffffff',.78,texture='public/models/collectibles/wish-package-print.png')
-    bark=b.material('Willow chocolate bark','#3e3026',.93);barklight=b.material('Raised bark fibres','#705842',.96);char=b.material('Spark darkened middle','#211d18',.98);grain=b.material('Exposed end grain','#bd9b68',.93)
     x0,x1=-.128,.098;cross=[(.003,.04),(.073,0),(.003,-.04)];cy=sum(y for y,z in cross)/3
     inner=[(cy+(y-cy)*.982,z*.982) for y,z in cross]
     # Panel crops are UV windows into the published paper net, not screenshots.
@@ -33,23 +32,10 @@ def build():
         b.mesh('Folded inner tray lip',[(xa,.0048,side*.032),(xb,.0048,side*.032),(xb,.014,side*.027),(xa,.014,side*.027)],[(0,1,2,3)],paper)
         b.tube('Tray rolled cut edge',[(xa,.014,side*.027),(xb,.014,side*.027)],.00022,edge,segments=6)
     b.mesh('Tray triangular pull flap',[(xb,.0048,-.032),(xb,.0048,.032),(xb,.010,0)],[(0,1,2)],paper)
-    # Asymmetric bark is a closed mesh, not a featureless straight cylinder.
-    N,M=18,41;v=[];f=[]
-    for j in range(M):
-        t=j/(M-1);x=-.09+t*.240;yc=.020+.0014*math.sin(t*9);zc=.0028*math.sin(t*11);r=.0036*(1-.40*t)*(1+.11*math.sin(t*63))
-        for i in range(N):
-            a=i*math.tau/N;rr=r*(1+.10*math.sin(i*2.2+j*.25));v.append((x,yc+math.cos(a)*rr,zc+math.sin(a)*rr))
-            if j:k=j*N+i;l=j*N+(i+1)%N;f.append((k-N,l-N,l,k))
-    f.extend([tuple(reversed(range(N))),tuple(range((M-1)*N,M*N))]);b.mesh('Naturally uneven willow bark',v,f,bark,smooth=True)
-    for i in range(14):
-        a=i*math.tau/14;pts=[]
-        for j in range(33):
-            t=j/32;x=-.089+t*.238;r=.0036*(1-.40*t)*1.02;pts.append((x,.020+.0014*math.sin(t*9)+math.cos(a+t*.3)*r,.0028*math.sin(t*11)+math.sin(a+t*.3)*r))
-        b.tube('Continuous fine bark furrow',pts,.00010,barklight,segments=5)
-    b.tube('Single willow offshoot',[(.115,.020,-.003),(.126,.025,-.009),(.135,.025,-.015)],.00075,bark,segments=9)
-    for x in (.111,.125,.139):
-        b.cushion('Bark node',(x,.020,.001),(.0025,.0046,.0046),bark,power=.8)
-    b.cylinder('Visible fibrous cut end',(.1503,.0186,-.0027),.00215,.00035,grain,direction=(1,0,0),segments=18)
-    for i in range(3):b.ring('Willow end growth ring',(.1505,.0186,-.0027),.00055+i*.00055,.00009,barklight,normal=(1,0,0),segments=18)
-    b.cylinder('Charred spark patch',(.025,.020,.0027),.0039,.009,char,direction=(1,0,0),segments=18)
-    b.finish((.26,.070,.080))
+    # Keep the existing printed paper net, but display the corrected prop alongside it.
+    for obj in b.objects:obj.location.y+=.020;obj.location.z-=.003
+    add_cage(b)
+    b.camera_view=(.70,1.90,2.5);b.studio_world_color=(.52,.52,.52,1);b.studio_world_strength=.65
+    b.layout_details={'reference':'User-supplied black hollow willow prop photographs','openLattice':True,'windowRows':5,'forkedEnds':True,
+        'display':'Paper sleeve and fully visible, separate charred lattice side by side','paperPrintPreserved':True}
+    b.finish((.26,.070,.118))

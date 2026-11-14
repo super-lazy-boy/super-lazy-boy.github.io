@@ -8,7 +8,9 @@ def add_models(root,names=None):
         'monica-apartment':((-2.75,4.38,-3.75),math.pi/2),
         'millennium-falcon':((.25,.761,3.57),math.pi/2),
         'wish-willow':((4.85,1.455,-3.75),-.10),
-        'zaizen-lighter':((-3.30,1.6907,.56),math.pi/2+.18)
+        'zaizen-lighter':((-3.30,1.6907,.56),math.pi/2+.18),
+        'anduril':((5.95,1.29,-4.1907),0),
+        'elder-wand':((-.61,4.374,-3.4615),0)
     }
     for name,(position,yaw) in placements.items():
         if names is not None and name not in names:continue

@@ -2,18 +2,26 @@
   "dimensions": [
     0.26000000536441803,
     0.07000000029802322,
-    0.07999999821186066
+    0.11800000071525574
   ],
   "min": [
-    -0.12999999523162842,
+    -0.1300000101327896,
     0.0,
-    -0.03999999910593033
+    -0.05900000035762787
   ],
   "max": [
-    0.1300000101327896,
+    0.12999999523162842,
     0.07000000029802322,
-    0.03999999910593033
+    0.05900000035762787
   ],
-  "sourceParts": 50,
-  "groups": 8
+  "sourceParts": 27,
+  "groups": 5,
+  "referenceLayout": {
+    "reference": "User-supplied black hollow willow prop photographs",
+    "openLattice": true,
+    "windowRows": 5,
+    "forkedEnds": true,
+    "display": "Paper sleeve and fully visible, separate charred lattice side by side",
+    "paperPrintPreserved": true
+  }
 }

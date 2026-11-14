@@ -1,12 +1,15 @@
 # 收藏摆件 · 精细建模与验收
 
-三件收藏由 Blender 5.3 原生建模，保存可编辑的独立零件；网页导出按材质合并，再进行顶点去重和量化。它们与 TARDIS、《星空》共用左下角折叠收藏菜单，可独立旋转、缩放和重置视角。公寓的初始角度朝向后方窗区；公寓和飞船均增加「俯视查看」，便于直接核对户型与舰艏轮廓。
+六件独立收藏由 Blender 5.3 原生建模，保存可编辑的独立零件；网页导出按材质合并，再进行无损 Meshopt 编码，保留全部顶点、法线、纹理与材质。它们与 TARDIS、《星空》共用左下角折叠收藏菜单，可独立旋转、缩放和重置视角。公寓和飞船提供俯视查看；安督利尔提供正面查看，剑与魔杖均可隐藏展示底座或背板，查看物品背面。
 
 | 收藏 | 宽 × 深 × 高 | 房间中的位置 |
 | --- | --- | --- |
 | 莫妮卡公寓 | 31 × 40.8 × 14 cm | 书架顶层，侧向陈列 |
 | 千年隼 | 60 × 84 × 21 cm | 前景胡桃木低展示台 |
-| One Wish Willow | 26 × 8 × 7 cm | 影音柜右侧 |
+| One Wish Willow | 26 × 11.8 × 7 cm | 影音柜右侧，柳条单独平放在纸盒旁 |
+| 财前五郎打火机 | 3.7 × 6.2 × 1.2 cm | 书桌侧面空位 |
+| 安督利尔 | 约 33.15 × 5.28 × 134.50 cm（含背板） | 放映区右侧墙面 |
+| 接骨木魔杖 | 41 × 6 × 6.32 cm（含底座） | 书柜顶层，档案盒前方 |
 
 ## 莫妮卡公寓
 
@@ -38,19 +41,30 @@
 
 ## One Wish Willow
 
-以用户新指定的 [One Wish Willow 互动网站](https://onewishwillow.app/zh/) 为准，将旧的三角锥改为长条三棱柱纸套。纸套具有真实纸张厚度、内外表面、长边压痕、端部折片、开口和部分抽出的内托。柳枝保留不均匀轮廓、树皮沟纹、细分枝、节疤与端部年轮。
+纸盒以用户指定的 [One Wish Willow 互动网站](https://onewishwillow.app/zh/) 为准，制作长条三棱柱纸套。纸套具有真实纸张厚度、内外表面、长边压痕、端部折片、开口和部分抽出的内托。
+
+柳条按最新两张实物参考重建为黑色中空木质结构，替换旧棕色细枝。连续厚壁外壳上切出五组狭长椭圆孔，端部开槽形成四股不齐的分叉；开孔边缘圆滑过渡，表面增加细小起伏。孔洞和内部空腔均为真实几何。枝条平放在盒前，完整露出，没有藏入纸盒或与纸盒穿插。
 
 印刷使用参考站公开展示的完整包装展开图，通过独立 UV 窗口映射三个长面与端盖；转到背面时图文保持正向。包装图的出处记录在 [资产来源](../public/models/collectibles/ASSET-CREDITS.md)。参考站的三维网格没有导入本项目。
+
+## 安督利尔与接骨木魔杖
+
+安督利尔以用户提供的正面佩剑照片确定轮廓，包含约 1.346 m 的长剑、双刃斜面、真实凹槽、皮革螺旋缠柄、银色长剑首、镂空叶形剑首与开孔护手。剑身的 73 组刻纹轮廓从用户照片读取并转为矢量几何，两面保留刻纹、日月与七星细节；没有将另一种字体当作精灵文字。胡桃木盾形背板、金色树纹和软衬挂钩属于独立展示装配。
+
+接骨木魔杖按十五英寸（38.1 cm）长度制作，参考 [Noble Collection](https://noblecollection.com/Item--i-PRP-HP-7145) 和用户提供的照片。连续弯曲木身有六处大小不同的瘤节、168 处真实表面凹坑、细小木纹色差、喇叭形尾端及浅色刻纹环。两只黄铜软衬托架按对应处木杆半径定位，木底座位于书柜顶层。
+
+两者的展示部件使用独立材质及 `display_support` GLTF 标记。独立查看窗口只改变自己的场景副本，隐藏展架不会影响房间中的陈列。新材质继续接受日夜灯光，未使用不受光的贴色材质。
 
 ## 重建与检查
 
 ```powershell
 python scripts/blender/make_collectible_textures.py
 & 'D:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe' --background --factory-startup --python-exit-code 1 --python scripts/blender/build_collectibles.py
-node scripts/optimize-collectibles.mjs
+node scripts/compress-models.mjs
 & 'D:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe' --background --factory-startup --python-exit-code 1 --python scripts/blender/check_collectible_clearance.py
 npm run typecheck
 npm run test:interaction
+npm run test:performance
 npm run test:clearance
 npm run test:public
 npm run build:github
@@ -62,7 +76,9 @@ npm run build:github
 
 形体回归检查直接对最终 GLB 发射射线：核对千年隼前体填充、前端短缺口和窄叉尖；核对公寓后左侧空缺、向后延伸的窗区、错位前沿与真实抬高的地板。
 
-完整房间检查使用最终量化 GLB 的实际三角网格，覆盖三件摆件与既有物品、185 条取放与镜头路径、306,185 个姿态及连续扫过体积。尺寸、归一化原点、顶点和着色属性的有限值、受光材质、文件体积与版本哈希另行校验。
+完整房间检查使用最终 GLB 的实际三角网格，覆盖所有独立摆件与既有物品、185 条取放与镜头路径、306,185 个姿态及连续扫过体积。尺寸、归一化原点、顶点和着色属性的有限值、受光材质、文件体积与版本哈希另行校验。`check_fantasy_collectibles.py` 另行核对剑的实体闭合性、魔杖与软托接触、柳条单一连通结构，并生成近景和房间日夜渲染。
+
+本轮 67 项自动检查、类型检查及生产构建通过。模型版本、原生文件哈希和几何验收计数记录在 [藏品验收记录](fantasy-collectibles-verification.json)。魔杖底座完整位于柜顶前沿，避开原有花盆、藤蔓与档案盒把手；剑的背板位于墙面前方，未嵌入墙体。
 
 `render_collectible_details.py` 渲染正面、背面、俯视、底部和近景；`render_details.py -- --records` 检查放回完整房间后的日夜效果。离线渲染是原生源文件的检查图，不能作为浏览器截图。浏览器预览权限在本会话中被拒绝，网站的浏览器视觉与端到端交互验收仍由用户审核；发布结果通过公开 HTTP 文件与资产哈希核对。
 

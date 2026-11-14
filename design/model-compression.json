@@ -39,14 +39,15 @@
     },
     {
       "file": "public/models/collectibles/wish-willow.glb",
-      "beforeBytes": 1232524,
-      "afterBytes": 1156648,
-      "beforeSha256": "ba68256000a31cbca0f839eb9990dfed1cd0255ae687e3a4bb44a43cadf604f6",
-      "afterSha256": "2191f83c86e5881942a67a019b7f31b27e8d5553fa7f03cf45c9d4e056c8e6e2",
-      "geometrySha256": "91df3bf838449f58d3475ae105fc919e6aa390aaac9b2736d6267fc336d9b2ac",
-      "appearanceSha256": "129bcfcaff01c233e9274af6c501ee16c0f90d9bb47e69c2ea02a81aeda5e07b",
-      "triangles": 9726,
-      "primitives": 8,
+      "fidelityVersion": 2,
+      "beforeBytes": 2992496,
+      "afterBytes": 2364704,
+      "beforeSha256": "213599ad4bb53bd43a509e09347b257b5604f152ba055737a6b73de5640357ba",
+      "afterSha256": "0fe9b1f3fca57a94d2aea45c29729b2eaa497da9c41a379d7ee2ee5ae6643bea",
+      "geometrySha256": "3efff418efb9ef1b3ba83f85d34c5b07de646554abeb2c2bdaf88c32a19278d8",
+      "appearanceSha256": "d611f3bf80c8d84d00e5e6bb919a098440b61436c00c3a4f55943b21ad5e7578",
+      "triangles": 105560,
+      "primitives": 5,
       "images": 1
     },
     {
@@ -61,6 +62,32 @@
       "triangles": 44340,
       "primitives": 7,
       "images": 0
+    },
+    {
+      "file": "public/models/collectibles/anduril.glb",
+      "fidelityVersion": 2,
+      "beforeBytes": 2831220,
+      "afterBytes": 1704332,
+      "beforeSha256": "b9579b1bbed611aa91899719782f0416587965628d6a0510105500b3e66fee69",
+      "afterSha256": "4f09455ae18591de01c99b882d66b2f2060d68930b94997473a478d6e96b09e7",
+      "geometrySha256": "4e1e073a538134228f208168e65b83ccf18688240d7e56fb8d6b17615ac78075",
+      "appearanceSha256": "357ff00ef328b7dc6893ddce10aad3ebea573ef5b2c18be92c21dad6a9c10e17",
+      "triangles": 105850,
+      "primitives": 14,
+      "images": 1
+    },
+    {
+      "file": "public/models/collectibles/elder-wand.glb",
+      "fidelityVersion": 2,
+      "beforeBytes": 3566508,
+      "afterBytes": 2348624,
+      "beforeSha256": "015463c9599e8264b4eb60bf5125ea59ffb6d827e9402a8a6d88d1a08d503f59",
+      "afterSha256": "e9c205857cf756c979194d7bd8e993e5220f4ea102305e2079a6cf2cd2eef62b",
+      "geometrySha256": "b29f3ed5f402545648954484c34af9eaef03a8e4cc90b8d55d6d745a87bb19e0",
+      "appearanceSha256": "2028a0882527758fcfbf30d9a2242d02c626db4130d2001a998d43d42ce0b869",
+      "triangles": 120092,
+      "primitives": 6,
+      "images": 1
     }
   ]
 }

@@ -224,7 +224,8 @@ test('all collectibles fit their supports and avoid every other room object',()=
   for(const id of NEW_COLLECTIBLE_IDS){
     const item=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]===id));assert.ok(item.attributes.position.count>30);
     const other=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]!==id)));
-    assert.equal(other.intersectsGeometry(item,identity),false,id+' intersects the room or another collectible');
+    const hit=other.intersectsGeometry(item,identity);
+    assert.equal(hit,false,id+' intersects the room or another collectible'+(hit?' : '+geometry.filter((g,i)=>geometryGroups[i]!==id&&new MeshBVH(g.clone()).intersectsGeometry(item,identity)).map(g=>geometryNames[geometry.indexOf(g)]).join(', '):''));
   }
 });
 
@@ -234,6 +235,18 @@ test('the lighter rests just above the real desktop, clear of the notebook and k
   const point=bounds.getCenter(new THREE.Vector3()),ray=new THREE.Raycaster(new THREE.Vector3(point.x,bounds.max.y+.1,point.z),new THREE.Vector3(0,-1,0));
   const hit=ray.intersectObject(desk)[0];assert.ok(hit,'the collectible has a real desk surface beneath it');
   assert.ok(hit.point.y>1.688&&hit.point.y<1.693);assert.ok(bounds.min.y-hit.point.y>0&&bounds.min.y-hit.point.y<.0015,'grounded without piercing the desktop');
+});
+
+test('the wand sits on the bookcase crown and the sword plaque clears the wall',()=>{
+  const wand=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='elder-wand'));wand.computeBoundingBox();
+  const shelf=new THREE.Mesh(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='bookshelf')),new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));shelf.updateMatrixWorld();
+  const p=wand.boundingBox.getCenter(new THREE.Vector3()),hit=new THREE.Raycaster(new THREE.Vector3(p.x,4.38,p.z),new THREE.Vector3(0,-1,0)).intersectObject(shelf)[0];
+  assert.ok(hit&&hit.point.y>4.37,'the wand has a real shelf directly beneath its plinth');
+  assert.ok(wand.boundingBox.min.y-hit.point.y>0&&wand.boundingBox.min.y-hit.point.y<.003,'the plinth rests just above the crown');
+  assert.ok(wand.boundingBox.min.z> -4.115&&wand.boundingBox.max.z< -3.385,'the whole plinth stays within the crown depth');
+  const sword=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='anduril'));sword.computeBoundingBox();
+  assert.ok(sword.boundingBox.min.z> -4.25&&sword.boundingBox.min.z< -4.246,'plaque is in front of the wall face');
+  assert.ok(sword.boundingBox.max.x<6.50&&sword.boundingBox.max.y<5.1,'full sword is within the wall bounds');
 });
 
 test('all mouse-follow camera positions and their transition envelopes clear furniture',()=>{

@@ -6,7 +6,9 @@ from collectible_monica import build as monica
 from collectible_falcon import build as falcon
 from collectible_willow import build as willow
 from collectible_zaizen_lighter import build as lighter
+from collectible_anduril import build as anduril
+from collectible_elder_wand import build as wand
 
-for name,fn in [('monica-apartment',monica),('millennium-falcon',falcon),('wish-willow',willow),('zaizen-lighter',lighter)]:
+for name,fn in [('monica-apartment',monica),('millennium-falcon',falcon),('wish-willow',willow),('zaizen-lighter',lighter),('anduril',anduril),('elder-wand',wand)]:
     if '--only' in sys.argv and name not in sys.argv[sys.argv.index('--only')+1:]:continue
     print('BUILDING_COLLECTIBLE',name,flush=True);fn()
