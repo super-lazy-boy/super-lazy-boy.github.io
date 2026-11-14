@@ -8,6 +8,7 @@ import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {MeshBVH} from 'three-mesh-bvh';
 import {COLLECTIBLE_IDS,NEW_COLLECTIBLE_IDS,COLLECTIBLE_NAMES,COLLECTIBLE_PLACEMENTS,isCollectibleId} from '../lib/collectibles.ts';
 import {roomBackground} from '../lib/room-theme.ts';
+import {inspectionTransform,inspectionFraming} from '../lib/collectible-inspection.ts';
 
 test('day stays white and night becomes an almost-black imagined space',async()=>{
   assert.equal(roomBackground(false),'#ffffff');assert.equal(roomBackground(true),'#030405');
@@ -74,8 +75,26 @@ async function shape(id,accept=()=>true){
   });
   const geometry=mergeGeometries(parts);geometry.computeBoundingBox();
   const tree=new MeshBVH(geometry),size=geometry.boundingBox.getSize(new THREE.Vector3());
-  return {size,bounds:geometry.boundingBox,tree,hit:(x,z)=>tree.raycastFirst(new THREE.Ray(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0)),THREE.DoubleSide)};
+  return {size,geometry,bounds:geometry.boundingBox,tree,hit:(x,z)=>tree.raycastFirst(new THREE.Ray(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0)),THREE.DoubleSide)};
 }
+
+test('switching collectibles keeps the whole current model centred and framed in wide and tall windows',async()=>{
+  const actor=new THREE.Group();
+  for(const id of ['wish-willow','anduril','monica-apartment','elder-wand','anduril','millennium-falcon','zaizen-lighter']){
+    const {bounds,size}=await shape(id),transform=inspectionTransform(size.toArray());
+    actor.position.set(0,transform.offsetY,0);actor.scale.setScalar(transform.scale);actor.updateMatrixWorld(true);
+    const centred=bounds.clone().applyMatrix4(actor.matrixWorld);assert.ok(Math.abs(centred.getCenter(new THREE.Vector3()).y)<.0001,'current item determines centring: '+id);
+    for(const [w,h] of [[1000,540],[540,1000],[375,410],[1200,300]])for(const alternate of [false,true]){
+      const framing=inspectionFraming(id,transform.size,w/h,alternate),camera=new THREE.PerspectiveCamera(38,w/h,.05,50);
+      camera.position.fromArray(framing.position);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+      assert.ok(framing.distance<=framing.maxDistance,'controls permit the fitted distance');
+      for(const x of [bounds.min.x,bounds.max.x])for(const y of [bounds.min.y,bounds.max.y])for(const z of [bounds.min.z,bounds.max.z]){
+        const projected=new THREE.Vector3(x,y,z).applyMatrix4(actor.matrixWorld).project(camera);
+        assert.ok(Math.abs(projected.x)<=.831&&Math.abs(projected.y)<=.831&&projected.z>-1&&projected.z<1,id+' must fit with margin after switching, '+w+'x'+h);
+      }
+    }
+  }
+});
 
 test('Anduril retains an open pommel, full-length blade, and independently hideable plaque',async()=>{
   const doc=await io.read('public/models/collectibles/anduril.glb');let supportCount=0,parts=0;
@@ -107,18 +126,39 @@ test('Elder Wand exports six progressively smaller knots and a continuous pitted
   assert.equal(layout.referenceLayout.recessedPores,168);assert.equal(layout.referenceLayout.wandLength,.381);
 });
 
-test('corrected willow has a real empty lumen, oval side windows, and thick black wood',async()=>{
+test('willow has a real lumen and irregular openings staggered around all four sides',async()=>{
   const {tree,bounds,size}=await shape('wish-willow',(_,p)=>p.getMaterial().getName().includes('Charred black willow lattice'));
-  const center=bounds.getCenter(new THREE.Vector3()),direction=new THREE.Vector3(0,-Math.SQRT1_2,-Math.SQRT1_2);
+  const center=bounds.getCenter(new THREE.Vector3());
   assert.equal(tree.raycastFirst(new THREE.Ray(new THREE.Vector3(bounds.min.x-.01,center.y,center.z),new THREE.Vector3(1,0,0)),THREE.DoubleSide),null,'lumen is open from one forked end to the other');
-  let windows=0,bridges=0,previous=null;
-  for(let i=0;i<300;i++){
-    const x=bounds.min.x+.019+(size.x-.038)*i/299,origin=new THREE.Vector3(x,center.y,center.z).addScaledVector(direction,-.05);
-    const hit=tree.raycastFirst(new THREE.Ray(origin,direction),THREE.DoubleSide),open=!hit||hit.distance>.05;
-    if(open!==previous){if(open)windows++;else bridges++;previous=open;}
+  const patterns=[];
+  for(let side=0;side<4;side++){
+    const angle=Math.PI/4+side*Math.PI/2,direction=new THREE.Vector3(0,-Math.cos(angle),-Math.sin(angle)),intervals=[];
+    let start=null;
+    for(let i=0;i<=500;i++){
+      const x=bounds.min.x+.014+(size.x-.028)*i/500,origin=new THREE.Vector3(x,center.y,center.z).addScaledVector(direction,-.05);
+      const hit=tree.raycastFirst(new THREE.Ray(origin,direction),THREE.DoubleSide),open=!hit||hit.distance>.05;
+      if(open&&start===null)start=x;
+      // Tiny slivers at the split tips are end notches, not side openings.
+      if(start!==null&&(!open||i===500)){if(x-start>.006)intervals.push({center:(start+x)/2,length:x-start});start=null;}
+    }
+    assert.ok(intervals.length>=3,'substantial through-openings on every face');patterns.push(intervals);
   }
-  assert.ok(windows>=5&&bridges>=4,'five long openings are divided by actual wood bridges');
+  const lengths=patterns.flatMap(p=>p.map(v=>v.length));assert.ok(Math.max(...lengths)/Math.min(...lengths)>1.5,'openings vary in actual size');
+  const aligned=patterns[0].filter(a=>patterns[1].some(b=>Math.abs(a.center-b.center)<.003));
+  assert.ok(aligned.length<patterns[0].length/2,'adjacent faces do not share uniform rows: '+JSON.stringify(patterns));
   assert.ok(size.y>.018&&size.y<.04,'thick hollow branch, not a thin painted twig');
+});
+
+test('willow is inserted in a simple triangular carton with an exposed end and no paper tray',async()=>{
+  const wood=await shape('wish-willow',(_,p)=>p.getMaterial().getName().includes('Charred black willow lattice'));
+  const paper=await shape('wish-willow',(_,p)=>!p.getMaterial().getName().includes('Charred black willow lattice'));
+  const length=paper.bounds.max.x-paper.bounds.min.x,exposed=wood.bounds.max.x-paper.bounds.max.x;
+  assert.ok(length>.225&&length<.228,'paper ends at the actual carton opening');
+  assert.ok(exposed>.070&&exposed<.10,'only a section of willow protrudes from the right opening');
+  assert.ok(wood.bounds.min.x>paper.bounds.min.x+.001&&wood.bounds.min.x<paper.bounds.max.x-.12,'most of the branch stays inside');
+  assert.equal(wood.tree.intersectsGeometry(paper.geometry,new THREE.Matrix4()),false,'wood never cuts through the paper walls or closed end');
+  const layout=JSON.parse(await readFile('public/models/collectibles/wish-willow-layout.json','utf8'));
+  assert.equal(layout.referenceLayout.slidingTray,false);assert.equal(layout.referenceLayout.branchInserted,true);
 });
 test('Falcon has tapered narrow tips and a shallow forward slot',async()=>{
   const {size,hit}=await shape('millennium-falcon');

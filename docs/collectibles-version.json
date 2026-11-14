@@ -20,14 +20,14 @@
     "sourceParts": 2517
   },
   "wish-willow": {
-    "sha256": "0fe9b1f3fca57a94d2aea45c29729b2eaa497da9c41a379d7ee2ee5ae6643bea",
-    "bytes": 2364704,
+    "sha256": "1b350ebde8d06ae0c9a974099289ed3b8f31f977c77f72028c68a0692069a2f0",
+    "bytes": 2862296,
     "dimensions": [
-      0.26000000536441803,
-      0.07000000029802322,
-      0.11800000071525574
+      0.3126385360956192,
+      0.0702771320939064,
+      0.08032000064849854
     ],
-    "sourceParts": 27
+    "sourceParts": 21
   },
   "zaizen-lighter": {
     "sha256": "ecbfbf6250b7946093269c56931365ce47f521550f88f0e90dcbe44eb6d999ae",

@@ -10,7 +10,7 @@ the reference website expressly supplied by the user:
 
 The packaging artwork and film-related marks remain the work of their respective
 creators. This is a fan display study. Its paper thickness, folds, end flap,
-sliding inner tray and willow geometry were separately authored in Blender.
+triangular carton walls and willow geometry were separately authored in Blender.
 
 The parquet, brick, textile, rug, patchwork and radar maps are original,
 deterministically generated assets. All collectible meshes were authored
@@ -29,5 +29,7 @@ The six knots, recessed pits, collar, wood colours and display stand are origina
 Blender geometry. No commercial model, texture or 3D scan was imported.
 
 The black hollow willow prop was rebuilt from the user's latest photographs,
-with actual side openings, hollow core and forked ends. The existing source
-packaging artwork above is retained unchanged.
+with asymmetric, staggered side openings, a hollow core and uneven forked ends.
+It now sits mostly inside the triangular carton, protruding through its open
+right end. No sliding paper tray is included. The source packaging artwork above
+is retained unchanged.

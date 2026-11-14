@@ -40,14 +40,14 @@
     {
       "file": "public/models/collectibles/wish-willow.glb",
       "fidelityVersion": 2,
-      "beforeBytes": 2992496,
-      "afterBytes": 2364704,
-      "beforeSha256": "213599ad4bb53bd43a509e09347b257b5604f152ba055737a6b73de5640357ba",
-      "afterSha256": "0fe9b1f3fca57a94d2aea45c29729b2eaa497da9c41a379d7ee2ee5ae6643bea",
-      "geometrySha256": "3efff418efb9ef1b3ba83f85d34c5b07de646554abeb2c2bdaf88c32a19278d8",
-      "appearanceSha256": "d611f3bf80c8d84d00e5e6bb919a098440b61436c00c3a4f55943b21ad5e7578",
-      "triangles": 105560,
-      "primitives": 5,
+      "beforeBytes": 4571920,
+      "afterBytes": 2862296,
+      "beforeSha256": "26e1de4c230ea2bea041159e5fabb27b3d87c99257f47a0d557ff68c3a2a7b9b",
+      "afterSha256": "1b350ebde8d06ae0c9a974099289ed3b8f31f977c77f72028c68a0692069a2f0",
+      "geometrySha256": "75b48d84a3f5f3ecbfbebbddeeb50ab419beffdc04d47a606789b9298c9ae2c9",
+      "appearanceSha256": "fd1fc2a5e4cf6b434fe84a9a17cf3b3415d245a4cb8dcd195a9ae2366326ff77",
+      "triangles": 145198,
+      "primitives": 4,
       "images": 1
     },
     {

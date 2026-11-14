@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import {COLLECTIBLE_PLACEMENTS,NEW_COLLECTIBLE_IDS,type CollectibleId,type NewCollectibleId} from '@/lib/collectibles';
 import versions from '@/public/collectibles-version.json';
 import {accelerateRoomObject} from '@/lib/room-raycast';
+import {inspectionTransform} from '@/lib/collectible-inspection';
 
 const assetURL=(id:NewCollectibleId)=>'./models/collectibles/'+id+'.glb?v='+versions[id].sha256.slice(0,12);
 export function CollectibleModel({id,onInspect,locked=false,showSupport=true}:{id:NewCollectibleId;onInspect?:(id:CollectibleId)=>void;locked?:boolean;showSupport?:boolean}){
@@ -21,6 +22,6 @@ export function RoomCollectibles({locked,onInspect}:{locked:boolean;onInspect:(i
   return <>{NEW_COLLECTIBLE_IDS.map(id=>{const p=COLLECTIBLE_PLACEMENTS[id];return <group key={id} position={p.position} rotation={[0,p.yaw,0]} scale={p.scale} userData={{roomZone:p.zone,collectibleId:id}}><CollectibleModel id={id} locked={locked} onInspect={onInspect}/></group>;})}</>;
 }
 export function InspectCollectible({id,showSupport=true}:{id:NewCollectibleId;showSupport?:boolean}){
-  const max=Math.max(...versions[id].dimensions);
-  return <group scale={3/max}><CollectibleModel id={id} showSupport={showSupport}/></group>;
+  const {scale,offsetY}=inspectionTransform(versions[id].dimensions);
+  return <group scale={scale} position={[0,offsetY,0]}><CollectibleModel id={id} showSupport={showSupport}/></group>;
 }

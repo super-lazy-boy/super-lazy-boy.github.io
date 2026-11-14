@@ -1,7 +1,7 @@
 {
-  "release": "sunlit-18adafa71f25",
+  "release": "sunlit-25eff0ccef38",
   "validation": {
-    "interactionTests": 34,
+    "interactionTests": 36,
     "clearanceTests": 26,
     "performanceTests": 3,
     "publicContentTests": 4,
@@ -9,9 +9,9 @@
     "productionBuild": "passed"
   },
   "geometry": {
-    "modelTriangles": 1187695,
+    "modelTriangles": 1227333,
     "sourceParts": 1673,
-    "renderGroups": 277,
+    "renderGroups": 276,
     "trajectories": 185,
     "poses": 306185
   },
@@ -30,8 +30,10 @@
     },
     "wish-willow": {
       "closedWoodSkin": true,
-      "oneConnectedHollowBranch": true,
-      "windowRows": 5
+      "oneConnectedBranch": true,
+      "irregularSideOpenings": 20,
+      "insertedInCarton": true,
+      "noPaperTray": true
     }
   },
   "assets": {
@@ -58,16 +60,27 @@
       "nativeSha256": "ce41305c237bae634d39881aa93deaae0a64c6c687519cc21c500fc56374586a"
     },
     "wish-willow": {
-      "sha256": "0fe9b1f3fca57a94d2aea45c29729b2eaa497da9c41a379d7ee2ee5ae6643bea",
-      "bytes": 2364704,
+      "sha256": "1b350ebde8d06ae0c9a974099289ed3b8f31f977c77f72028c68a0692069a2f0",
+      "bytes": 2862296,
       "dimensions": [
-        0.26000000536441803,
-        0.07000000029802322,
-        0.11800000071525574
+        0.3126385360956192,
+        0.0702771320939064,
+        0.08032000064849854
       ],
-      "sourceParts": 27,
-      "nativeSha256": "0799efcd3a5c0110850bf1121d0e0c1a16bd4dc56fa8f50269ac1133efee1135"
+      "sourceParts": 21,
+      "nativeSha256": "1edfe0a3ff82eecf510efb9ed829cc35553b3b7c5014baf81f725706aca07147"
     }
   },
-  "limitations": "Native Blender renders and CPU geometry verification; browser visual/FPS validation was not performed."
+  "limitations": "Native Blender renders and CPU geometry verification; browser visual/FPS validation was not performed.",
+  "inspectionFraming": {
+    "cpuPerspectiveFitCases": 56,
+    "nativeViews": [
+      "anduril-framed-1000x540",
+      "anduril-framed-375x540",
+      "wish-willow-framed-1000x540",
+      "wish-willow-framed-375x540"
+    ],
+    "centering": "Current asset dimensions, independent of previous item",
+    "browserPreviewPerformed": false
+  }
 }

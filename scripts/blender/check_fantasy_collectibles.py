@@ -59,7 +59,7 @@ render('elder-wand-detail',(-.10,.18,.33),(-.077,.053,0),.20)
 
 objects=load('wish-willow');cage=next(o for o in objects if o.get('assembly')=='hollow willow')
 assert closed(cage)==1
-report['wish-willow']={'closedWoodSkin':True,'oneConnectedHollowBranch':True,'windowRows':cage['large_window_rows']}
+report['wish-willow']={'closedWoodSkin':True,'oneConnectedHollowBranch':True,'sideOpenings':cage['side_opening_count'],'irregularOpenings':cage['irregular_openings'],'insertedInCarton':cage['inserted_in_carton']}
 (ROOT/'work/qa/fantasy-native-check.json').write_text(json.dumps(report,indent=2))
 print('FANTASY_NATIVE_VERIFIED',json.dumps(report),flush=True)
 if '--geometry-only' in sys.argv:sys.exit(0)
