@@ -1,5 +1,5 @@
 {
-  "version": "sunlit-room-5-beanbag",
+  "version": "sunlit-room-6-stuffed-beanbag",
   "units": "existing room world units, Y up",
   "assets": [
     "architecture",
@@ -354,9 +354,9 @@
         -0.31
       ],
       "max": [
-        4.07,
-        1.72,
-        1.91
+        4.1,
+        1.4,
+        1.95
       ]
     },
     {
@@ -23390,312 +23390,74 @@
       "name": "Sculpted continuous beanbag shell",
       "group": "lounge",
       "min": [
-        1.985257,
-        0.04407,
-        -0.252622
+        1.968919,
+        0.044,
+        -0.260952
       ],
       "max": [
-        3.986792,
-        1.643845,
-        1.857425
+        4.009165,
+        1.294048,
+        1.83075
       ]
     },
     {
       "name": "Cotton double topstitch",
       "group": "lounge",
       "min": [
-        2.991919,
-        0.101386,
-        0.546998
+        2.99156,
+        0.041029,
+        0.79909
       ],
       "max": [
-        3.007597,
-        1.387564,
-        1.82914
+        3.008015,
+        1.218408,
+        1.830571
       ]
     },
     {
       "name": "Cotton double topstitch.001",
       "group": "lounge",
       "min": [
-        2.992507,
-        0.101435,
-        -0.217192
+        2.99262,
+        0.041029,
+        -0.130512
       ],
       "max": [
-        3.007579,
-        0.638399,
-        0.394747
-      ]
-    },
-    {
-      "name": "Cotton double topstitch.002",
-      "group": "lounge",
-      "min": [
-        3.828736,
-        0.10143,
-        0.772021
-      ],
-      "max": [
-        3.98679,
-        1.155009,
-        0.789014
-      ]
-    },
-    {
-      "name": "Cotton double topstitch.003",
-      "group": "lounge",
-      "min": [
-        1.985695,
-        0.10139,
-        0.771698
-      ],
-      "max": [
-        2.160457,
-        1.202137,
-        0.788988
+        3.007096,
+        0.689274,
+        0.77912
       ]
     },
     {
       "name": "Concealed rear fabric zip",
       "group": "lounge",
       "min": [
-        3.00732,
-        0.417717,
-        1.749788
+        3.009397,
+        0.155935,
+        1.697771
       ],
       "max": [
-        3.015953,
-        1.04457,
-        1.836038
+        3.016946,
+        0.473952,
+        1.828512
       ]
     },
     {
-      "name": "Plump moss pillow on beanbag",
+      "name": "Plump moss pillow beside beanbag",
       "group": "soft furnishings",
       "min": [
-        2.38,
-        0.508155,
-        0.425
+        1.2,
+        0.045,
+        0.185
       ],
       "max": [
-        2.94,
-        1.122637,
-        0.855
-      ]
-    },
-    {
-      "name": "Draped golden woven blanket on beanbag",
-      "group": "soft furnishings",
-      "min": [
-        3.135591,
-        0.269227,
-        -0.125863
-      ],
-      "max": [
-        3.899171,
-        0.92507,
-        0.455939
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag",
-      "group": "soft furnishings",
-      "min": [
-        3.840907,
-        0.251141,
-        0.245512
-      ],
-      "max": [
-        3.85771,
-        0.283062,
-        0.260635
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.001",
-      "group": "soft furnishings",
-      "min": [
-        3.834484,
-        0.245423,
-        0.213618
-      ],
-      "max": [
-        3.850011,
-        0.277787,
-        0.228812
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.002",
-      "group": "soft furnishings",
-      "min": [
-        3.810789,
-        0.250227,
-        0.1907
-      ],
-      "max": [
-        3.825955,
-        0.282476,
-        0.206586
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.003",
-      "group": "soft furnishings",
-      "min": [
-        3.798934,
-        0.246508,
-        0.160265
-      ],
-      "max": [
-        3.814988,
-        0.277986,
-        0.177352
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.004",
-      "group": "soft furnishings",
-      "min": [
-        3.780894,
-        0.246815,
-        0.136172
-      ],
-      "max": [
-        3.79469,
-        0.279371,
-        0.152348
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.005",
-      "group": "soft furnishings",
-      "min": [
-        3.759068,
-        0.249209,
-        0.112226
-      ],
-      "max": [
-        3.774794,
-        0.280355,
-        0.130349
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.006",
-      "group": "soft furnishings",
-      "min": [
-        3.747148,
-        0.243917,
-        0.083544
-      ],
-      "max": [
-        3.761131,
-        0.275937,
-        0.100969
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.007",
-      "group": "soft furnishings",
-      "min": [
-        3.720371,
-        0.249475,
-        0.06463
-      ],
-      "max": [
-        3.734549,
-        0.280946,
-        0.083167
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.008",
-      "group": "soft furnishings",
-      "min": [
-        3.705798,
-        0.244384,
-        0.035469
-      ],
-      "max": [
-        3.720149,
-        0.275312,
-        0.054992
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.009",
-      "group": "soft furnishings",
-      "min": [
-        3.682194,
-        0.246263,
-        0.016268
-      ],
-      "max": [
-        3.694497,
-        0.278217,
-        0.034832
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.010",
-      "group": "soft furnishings",
-      "min": [
-        3.658645,
-        0.247256,
-        -0.005725
-      ],
-      "max": [
-        3.672381,
-        0.277648,
-        0.015106
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.011",
-      "group": "soft furnishings",
-      "min": [
-        3.640567,
-        0.242645,
-        -0.029549
-      ],
-      "max": [
-        3.652241,
-        0.274386,
-        -0.01025
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.012",
-      "group": "soft furnishings",
-      "min": [
-        3.611488,
-        0.248408,
-        -0.043542
-      ],
-      "max": [
-        3.623808,
-        0.279143,
-        -0.022636
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe on beanbag.013",
-      "group": "soft furnishings",
-      "min": [
-        3.593478,
-        0.242245,
-        -0.069584
-      ],
-      "max": [
-        3.605605,
-        0.272773,
-        -0.048234
+        1.76,
+        0.247,
+        0.615
       ]
     }
   ],
-  "sourceObjectCount": 1675,
+  "sourceObjectCount": 1658,
   "lights": {
     "desk": {
       "position": [
@@ -23831,13 +23593,13 @@
     "night": "#030405"
   },
   "lounge": {
-    "construction": "one closed weighted cotton shell",
+    "construction": "low stuffed ovoid with a compressed seat and two gathered front lobes",
     "reference": "2026-11-15 user beanbag photograph",
     "body": "Sculpted continuous beanbag shell",
     "seatDepression": true,
     "rigidFrame": false,
     "clothMaps": 1024,
-    "largeFolds": 48,
-    "finish": "dry woven cotton, slub yarns and double topstitching"
+    "largeFolds": 37,
+    "finish": "quiet heathered cotton, gathered normal atlas and two central seams"
   }
 }

@@ -202,11 +202,11 @@ test('night lighting, screening dimming and manual lamp switches restore predict
 test('the beanbag has a sunken seat, a rounded filled shell and full-resolution woven fabric',()=>{
   const index=geometryNames.findIndex(name=>name.includes('Oatmeal beanbag woven upholstery'));assert.ok(index>=0,'new upholstery is missing from the actual GLB');
   const shell=geometry[index];shell.computeBoundingBox();const size=shell.boundingBox.getSize(new THREE.Vector3());
-  assert.ok(size.x>1.8&&size.x<2.2&&size.y/size.x>.65&&size.y/size.x<.9,'beanbag proportions must remain broad and low');
+  assert.ok(size.x>1.95&&size.x<2.2&&size.y/size.x>.55&&size.y/size.x<.75,'the reference requires a low filled bag rather than the previous upright back');
   assert.ok(shell.boundingBox.min.y>.039,'weighted base must sit above the rug');
-  const body=new MeshBVH(shell.clone()),hit=body.raycastFirst(new THREE.Ray(new THREE.Vector3(3,5,.47),new THREE.Vector3(0,-1,0)),THREE.DoubleSide);
+  const body=new MeshBVH(shell.clone()),hit=body.raycastFirst(new THREE.Ray(new THREE.Vector3(3.075,5,.61),new THREE.Vector3(0,-1,0)),THREE.DoubleSide);
   assert.ok(hit&&hit.point.y>.40&&hit.point.y<.65,'the seating well must remain deeply recessed');
-  assert.ok(shell.boundingBox.max.y-hit.point.y>.95,'the filled back must rise above the seat');
+  assert.ok(shell.boundingBox.max.y-hit.point.y>.60&&shell.boundingBox.max.y-hit.point.y<1.05,'the seat must press into the filled volume without an upright wall');
   const node=doc.getRoot().listNodes().find(node=>node.getMesh()?.listPrimitives().some(p=>p.getMaterial()?.getName()==='Oatmeal beanbag woven upholstery'));
   const material=node.getMesh().listPrimitives().find(p=>p.getMaterial()?.getName()==='Oatmeal beanbag woven upholstery').getMaterial();
   for(const texture of [material.getBaseColorTexture(),material.getNormalTexture(),material.getMetallicRoughnessTexture()]){
@@ -215,11 +215,13 @@ test('the beanbag has a sunken seat, a rounded filled shell and full-resolution 
   }
   const sheen=material.getExtension('KHR_materials_sheen');assert.ok(sheen&&sheen.getSheenColorFactor().some(value=>value>0),'soft fabric sheen must survive export');
   const specular=material.getExtension('KHR_materials_specular');assert.ok(specular&&specular.getSpecularFactor()*Math.max(...specular.getSpecularColorFactor())<.6,'cotton must retain its reduced surface reflection');
-  assert.ok(material.getRoughnessFactor()>=.9&&material.getNormalScale()>=.9,'the dry weave must retain its roughness and yarn relief');
+  assert.ok(material.getRoughnessFactor()>=.9&&material.getNormalScale()>=.6,'the dry cloth must retain its subtle fibre and pressure relief');
+  assert.equal(material.getNormalTextureInfo().getTexCoord(),1,'fine pressure folds need their own unique atlas');
+  assert.ok(node.getMesh().listPrimitives().some(p=>p.getAttribute('TEXCOORD_1')),'the wrinkle atlas UVs must survive export');
   assert.ok(!ledger.components.some(p=>/^(Floor chair|Low oak tatami|Recessed platform foot|Footstool|Reclining filled back|Overfilled floor seat)/.test(p.name)),'old rigid frame remains');
 });
 
-test('beanbag pillow, draped throw and floor pillow stay outside the actual upholstered shell',()=>{
+test('floor pillows stay clear of the filled beanbag and rug',()=>{
   const seat=new MeshBVH(mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='lounge')));
   const soft=mergeGeometries(geometry.filter((_,i)=>geometryGroups[i]==='soft furnishings'));
   soft.boundsTree=new MeshBVH(soft);

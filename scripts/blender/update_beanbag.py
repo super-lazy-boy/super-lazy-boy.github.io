@@ -4,11 +4,12 @@ from pathlib import Path
 from mathutils import Vector
 
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(Path(__file__).parent))
-from beanbag_surface import replaced
+from beanbag_surface import replaced,FOLDS
 from floor_lounge import build
 OUT=ROOT/'public/models/sunlit-room';QA=ROOT/'work/qa';QA.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.open_mainfile(filepath=str(ROOT/'design/sunlit-room.blend'))
 layout=json.loads((OUT/'layout.json').read_text(encoding='utf-8'))
+prototype='--prototype' in sys.argv
 
 def fixed_digest():
     result={}
@@ -44,11 +45,13 @@ for obj in bpy.context.scene.objects:
     if obj.type!='MESH':continue
     corners=[obj.matrix_world@Vector(p) for p in obj.bound_box];corners=[(p.x,p.z,-p.y) for p in corners]
     components.append({'name':obj.name,'group':obj.get('asset_group',''),'min':[round(min(p[a] for p in corners),6) for a in range(3)],'max':[round(max(p[a] for p in corners),6) for a in range(3)]})
-layout.update(version='sunlit-room-5-beanbag',components=components,sourceObjectCount=len(bpy.context.scene.objects))
-layout['lounge']={'construction':'one closed weighted cotton shell','reference':'2026-11-15 user beanbag photograph','body':'Sculpted continuous beanbag shell','seatDepression':True,'rigidFrame':False,'clothMaps':1024,'largeFolds':48,'finish':'dry woven cotton, slub yarns and double topstitching'}
-(OUT/'layout.json').write_text(json.dumps(layout,indent=2)+'\n',encoding='utf-8')
+layout.update(version='sunlit-room-6-stuffed-beanbag',components=components,sourceObjectCount=len(bpy.context.scene.objects))
+layout['lounge']={'construction':'low stuffed ovoid with a compressed seat and two gathered front lobes','reference':'2026-11-15 user beanbag photograph','body':'Sculpted continuous beanbag shell','seatDepression':True,'rigidFrame':False,'clothMaps':1024,'largeFolds':len(FOLDS),'finish':'quiet heathered cotton, gathered normal atlas and two central seams'}
+if not prototype:(OUT/'layout.json').write_text(json.dumps(layout,indent=2)+'\n',encoding='utf-8')
 (QA/'beanbag-preserved-room.json').write_text(json.dumps({'unchangedObjects':len(before),'before':before,'after':fixed_digest()},indent=2),encoding='utf-8')
-bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'design/sunlit-room.blend'))
+bpy.ops.wm.save_as_mainfile(filepath=str(QA/'beanbag-prototype.blend' if prototype else ROOT/'design/sunlit-room.blend'))
+if prototype:
+    print('BEANBAG_PROTOTYPE_READY');sys.exit(0)
 groups={}
 for obj in bpy.context.scene.objects:
     if obj.type=='MESH':groups.setdefault((obj.get('asset_group','room'),obj.data.materials[0].name),[]).append(obj)

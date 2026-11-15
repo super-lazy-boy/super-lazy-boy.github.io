@@ -6,7 +6,8 @@ from mathutils.bvhtree import BVHTree
 
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(Path(__file__).parent))
 from beanbag_surface import point,base
-bpy.ops.wm.open_mainfile(filepath=str(ROOT/'design/sunlit-room.blend'))
+prototype='--prototype' in sys.argv
+bpy.ops.wm.open_mainfile(filepath=str(ROOT/'work/qa/beanbag-prototype.blend' if prototype else ROOT/'design/sunlit-room.blend'))
 body=bpy.data.objects['Sculpted continuous beanbag shell'];bm=bmesh.new();bm.from_mesh(body.data)
 assert all(edge.is_manifold for edge in bm.edges),'Beanbag shell must be closed and manifold'
 assert bm.calc_volume(signed=True)>0,'Beanbag normals must point outwards';bm.free()
@@ -37,8 +38,11 @@ for i,a in enumerate(textiles):
         if blanket(a) and blanket(b):continue
         assert not bvh(a).overlap(bvh(b)),a.name+' intersects '+b.name
 minimum=min(v.z for v in vertices);assert minimum>.039,'Beanbag sinks into the rug'
-seat=point(1,0)[1];back=max(v.z for v in vertices)
-assert back-seat>.95,'Seat depression is insufficient'
+seat_hit=tree.ray_cast(Vector((3.075,-.61,5)),Vector((0,0,-1)))[0];assert seat_hit is not None
+seat=seat_hit.z;back=max(v.z for v in vertices)
+width=max(v.x for v in vertices)-min(v.x for v in vertices)
+assert .60<back-seat<1.05,'Seat must press into a broad filled bag'
+assert (back-minimum)/width<.78,'The back is too upright for the reference'
 assert len(vertices)>30000,'Large fabric folds must be represented in the mesh'
 changes=[math.dist(point(u,a),base(u,a)) for u in (.48,.6,.72,.84,.9) for a in [i*.05 for i in range(126)]]
 assert max(changes)>.04,'Pressure creases are missing'
@@ -48,7 +52,7 @@ for image in images:
     expected=ROOT/'public/models/sunlit-room'/Path(image.filepath).name
     assert hashlib.sha256(image.packed_file.data).digest()==hashlib.sha256(expected.read_bytes()).digest(),'A stale packed cotton map remains: '+image.name
 shader=material.node_tree.nodes.get('Principled BSDF')
-assert shader.inputs['Specular IOR Level'].default_value<.25 and shader.inputs['Sheen Weight'].default_value>.3,'Cotton must retain its dry reflection and fibre sheen'
+assert shader.inputs['Specular IOR Level'].default_value<.25 and .15<shader.inputs['Sheen Weight'].default_value<.4,'Cotton must retain its dry reflection and subdued fibre sheen'
 assert not any(obj.name.startswith(('Floor chair','Low oak tatami','Recessed platform foot','Footstool','Reclining filled back','Overfilled floor seat')) for obj in bpy.context.scene.objects),'Rigid frame or old cushions remain'
-report={'vertices':len(vertices),'triangles':len(triangles),'largeFolds':body['large_fold_count'],'closedManifold':True,'selfIntersections':0,'textileIntersections':0,'minY':minimum,'seatY':seat,'backY':back,'pressureCreaseDepth':max(changes),'fabricResolution':1024,'textileParts':len(textiles),'independentTextileAssemblies':3,'specularIORLevel':shader.inputs['Specular IOR Level'].default_value,'fibreSheen':shader.inputs['Sheen Weight'].default_value,'packedMapsMatchFiles':True}
-(ROOT/'design/beanbag-verification.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8');print('BEANBAG_VERIFIED',json.dumps(report))
+report={'vertices':len(vertices),'triangles':len(triangles),'largeFolds':body['large_fold_count'],'closedManifold':True,'selfIntersections':0,'textileIntersections':0,'minY':minimum,'seatY':seat,'backY':back,'pressureCreaseDepth':max(changes),'fabricResolution':1024,'textileParts':len(textiles),'independentTextileAssemblies':2,'specularIORLevel':shader.inputs['Specular IOR Level'].default_value,'fibreSheen':shader.inputs['Sheen Weight'].default_value,'packedMapsMatchFiles':True}
+(ROOT/('work/qa/beanbag-prototype-verification.json' if prototype else 'design/beanbag-verification.json')).write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8');print('BEANBAG_VERIFIED',json.dumps(report))
