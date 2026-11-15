@@ -1,0 +1,18 @@
+{
+  "vertices": 48898,
+  "triangles": 97792,
+  "largeFolds": 48,
+  "closedManifold": true,
+  "selfIntersections": 0,
+  "textileIntersections": 0,
+  "minY": 0.04407047852873802,
+  "seatY": 0.485,
+  "backY": 1.6438454389572144,
+  "pressureCreaseDepth": 0.059774900732447525,
+  "fabricResolution": 1024,
+  "textileParts": 17,
+  "independentTextileAssemblies": 3,
+  "specularIORLevel": 0.20000000298023224,
+  "fibreSheen": 0.3400000035762787,
+  "packedMapsMatchFiles": true
+}

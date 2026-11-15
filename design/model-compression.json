@@ -3,15 +3,16 @@
   "models": [
     {
       "file": "public/models/sunlit-room/room.glb",
-      "beforeBytes": 16506964,
-      "afterBytes": 11323476,
-      "beforeSha256": "976ecdec9ce253b8e6bec2d4ac0238c39c2f13ea2a75ee0ed6cf420d26a52f5b",
-      "afterSha256": "7dc6f4b753b29c9e78bc16bee49e8e9d8250565af9eabdda49ad071ece68dce0",
-      "geometrySha256": "be1907f929dcc2f8fdc7a9f02a57aff13775e4457f03fa2051074f3b7632823b",
-      "appearanceSha256": "a27575c4af9dbdd3193f113c857d8e82e410a3557502bdb7a74cb1cfa5a57980",
-      "triangles": 497405,
-      "primitives": 207,
-      "images": 18
+      "fidelityVersion": 2,
+      "beforeBytes": 20948148,
+      "afterBytes": 14974372,
+      "beforeSha256": "9efdbd0a36e4d855aacb890fe2fd460000f28c6e120e2133e4891375e2b813f2",
+      "afterSha256": "c41d511fec9b6e92b9981ee4befec5960a7c77b7ec95694aa3ee0dd683363366",
+      "geometrySha256": "1975784761a0210f71825f4d68736fb2cd67e8791318e27a5ddf8fca7d1cce93",
+      "appearanceSha256": "7fd3aae0b4bf772ac1d02e3a46c299902fbf5e15eaa8c86da44016dbc666a032",
+      "triangles": 567377,
+      "primitives": 206,
+      "images": 19
     },
     {
       "file": "public/models/collectibles/monica-apartment.glb",

@@ -1,5 +1,5 @@
 {
-  "version": "sunlit-room-4",
+  "version": "sunlit-room-5-beanbag",
   "units": "existing room world units, Y up",
   "assets": [
     "architecture",
@@ -349,14 +349,14 @@
     {
       "name": "single lounge envelope",
       "min": [
-        1.92,
+        1.93,
         0.04,
-        -0.42
+        -0.31
       ],
       "max": [
-        4.08,
-        2.02,
-        2.22
+        4.07,
+        1.72,
+        1.91
       ]
     },
     {
@@ -10168,146 +10168,6 @@
         4.775,
         0.020998,
         2.9901
-      ]
-    },
-    {
-      "name": "Low oak tatami platform",
-      "group": "lounge",
-      "min": [
-        1.93,
-        0.035,
-        -0.41
-      ],
-      "max": [
-        4.07,
-        0.225,
-        2.11
-      ]
-    },
-    {
-      "name": "Recessed platform foot",
-      "group": "lounge",
-      "min": [
-        2.055,
-        0.032,
-        -0.24
-      ],
-      "max": [
-        2.185,
-        0.072,
-        -0.08
-      ]
-    },
-    {
-      "name": "Recessed platform foot.001",
-      "group": "lounge",
-      "min": [
-        2.055,
-        0.032,
-        1.77
-      ],
-      "max": [
-        2.185,
-        0.072,
-        1.93
-      ]
-    },
-    {
-      "name": "Recessed platform foot.002",
-      "group": "lounge",
-      "min": [
-        3.815,
-        0.032,
-        -0.24
-      ],
-      "max": [
-        3.945,
-        0.072,
-        -0.08
-      ]
-    },
-    {
-      "name": "Recessed platform foot.003",
-      "group": "lounge",
-      "min": [
-        3.815,
-        0.032,
-        1.77
-      ],
-      "max": [
-        3.945,
-        0.072,
-        1.93
-      ]
-    },
-    {
-      "name": "Footstool oak tray",
-      "group": "lounge",
-      "min": [
-        2.26,
-        0.06,
-        -1.36
-      ],
-      "max": [
-        3.74,
-        0.18,
-        -0.48
-      ]
-    },
-    {
-      "name": "Footstool hidden foot",
-      "group": "lounge",
-      "min": [
-        2.38,
-        0.0345,
-        -1.26
-      ],
-      "max": [
-        2.48,
-        0.0695,
-        -1.16
-      ]
-    },
-    {
-      "name": "Footstool hidden foot.001",
-      "group": "lounge",
-      "min": [
-        2.38,
-        0.0345,
-        -0.68
-      ],
-      "max": [
-        2.48,
-        0.0695,
-        -0.58
-      ]
-    },
-    {
-      "name": "Footstool hidden foot.002",
-      "group": "lounge",
-      "min": [
-        3.52,
-        0.0345,
-        -1.26
-      ],
-      "max": [
-        3.62,
-        0.0695,
-        -1.16
-      ]
-    },
-    {
-      "name": "Footstool hidden foot.003",
-      "group": "lounge",
-      "min": [
-        3.52,
-        0.0345,
-        -0.68
-      ],
-      "max": [
-        3.62,
-        0.0695,
-        -0.58
       ]
     },
     {
@@ -23373,328 +23233,6 @@
       ]
     },
     {
-      "name": "Overfilled floor seat cushion",
-      "group": "lounge",
-      "min": [
-        2.04,
-        0.225,
-        -0.24
-      ],
-      "max": [
-        3.96,
-        0.875,
-        1.4
-      ]
-    },
-    {
-      "name": "Reclining filled back cushion",
-      "group": "lounge",
-      "min": [
-        2.08,
-        0.710241,
-        1.322366
-      ],
-      "max": [
-        3.92,
-        1.929759,
-        2.117634
-      ]
-    },
-    {
-      "name": "Plump foot cushion",
-      "group": "lounge",
-      "min": [
-        2.285,
-        0.18,
-        -1.345
-      ],
-      "max": [
-        3.715,
-        0.54,
-        -0.495
-      ]
-    },
-    {
-      "name": "Floor chair curved back support",
-      "group": "lounge",
-      "min": [
-        2.185,
-        0.216618,
-        1.547659
-      ],
-      "max": [
-        2.255,
-        1.452133,
-        2.07283
-      ]
-    },
-    {
-      "name": "Floor chair curved back support.001",
-      "group": "lounge",
-      "min": [
-        3.745,
-        0.216618,
-        1.547659
-      ],
-      "max": [
-        3.815,
-        1.452133,
-        2.07283
-      ]
-    },
-    {
-      "name": "Floor chair back lower rail",
-      "group": "lounge",
-      "min": [
-        2.18,
-        0.635,
-        1.78
-      ],
-      "max": [
-        3.82,
-        0.705,
-        1.86
-      ]
-    },
-    {
-      "name": "Seat cushion stitched welt",
-      "group": "lounge",
-      "min": [
-        2.030885,
-        0.556,
-        -0.249099
-      ],
-      "max": [
-        3.969,
-        0.564,
-        1.409099
-      ]
-    },
-    {
-      "name": "Back cushion stitched welt",
-      "group": "lounge",
-      "min": [
-        2.070952,
-        0.735429,
-        1.435681
-      ],
-      "max": [
-        3.928999,
-        1.90462,
-        2.004368
-      ]
-    },
-    {
-      "name": "Plump moss pillow",
-      "group": "soft furnishings",
-      "min": [
-        2.92,
-        0.871821,
-        0.54
-      ],
-      "max": [
-        3.56,
-        1.095343,
-        1.02
-      ]
-    },
-    {
-      "name": "Draped golden woven blanket",
-      "group": "soft furnishings",
-      "min": [
-        2.3,
-        0.834657,
-        0.08
-      ],
-      "max": [
-        2.83,
-        0.909551,
-        0.92
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe",
-      "group": "soft furnishings",
-      "min": [
-        2.307734,
-        0.830028,
-        0.039373
-      ],
-      "max": [
-        2.319266,
-        0.843519,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.001",
-      "group": "soft furnishings",
-      "min": [
-        2.349734,
-        0.839523,
-        0.039373
-      ],
-      "max": [
-        2.361266,
-        0.853014,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.002",
-      "group": "soft furnishings",
-      "min": [
-        2.391734,
-        0.847064,
-        0.039373
-      ],
-      "max": [
-        2.403266,
-        0.860555,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.003",
-      "group": "soft furnishings",
-      "min": [
-        2.433734,
-        0.853088,
-        0.039373
-      ],
-      "max": [
-        2.445266,
-        0.866579,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.004",
-      "group": "soft furnishings",
-      "min": [
-        2.475734,
-        0.857903,
-        0.039373
-      ],
-      "max": [
-        2.487266,
-        0.871394,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.005",
-      "group": "soft furnishings",
-      "min": [
-        2.517734,
-        0.861733,
-        0.039373
-      ],
-      "max": [
-        2.529266,
-        0.875224,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.006",
-      "group": "soft furnishings",
-      "min": [
-        2.559734,
-        0.864753,
-        0.039373
-      ],
-      "max": [
-        2.571266,
-        0.878244,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.007",
-      "group": "soft furnishings",
-      "min": [
-        2.601734,
-        0.867101,
-        0.039373
-      ],
-      "max": [
-        2.613266,
-        0.880592,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.008",
-      "group": "soft furnishings",
-      "min": [
-        2.643734,
-        0.868891,
-        0.039373
-      ],
-      "max": [
-        2.655266,
-        0.882382,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.009",
-      "group": "soft furnishings",
-      "min": [
-        2.685734,
-        0.870222,
-        0.039373
-      ],
-      "max": [
-        2.697266,
-        0.883713,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.010",
-      "group": "soft furnishings",
-      "min": [
-        2.727734,
-        0.871176,
-        0.039373
-      ],
-      "max": [
-        2.739266,
-        0.884667,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.011",
-      "group": "soft furnishings",
-      "min": [
-        2.769734,
-        0.87183,
-        0.039373
-      ],
-      "max": [
-        2.781266,
-        0.885321,
-        0.080627
-      ]
-    },
-    {
-      "name": "Blanket twisted fringe.012",
-      "group": "soft furnishings",
-      "min": [
-        2.811734,
-        0.872248,
-        0.039373
-      ],
-      "max": [
-        2.823266,
-        0.885739,
-        0.080627
-      ]
-    },
-    {
       "name": "Media concealed light channel",
       "group": "media shelf light",
       "min": [
@@ -23847,9 +23385,317 @@
         0.715,
         4.332
       ]
+    },
+    {
+      "name": "Sculpted continuous beanbag shell",
+      "group": "lounge",
+      "min": [
+        1.985257,
+        0.04407,
+        -0.252622
+      ],
+      "max": [
+        3.986792,
+        1.643845,
+        1.857425
+      ]
+    },
+    {
+      "name": "Cotton double topstitch",
+      "group": "lounge",
+      "min": [
+        2.991919,
+        0.101386,
+        0.546998
+      ],
+      "max": [
+        3.007597,
+        1.387564,
+        1.82914
+      ]
+    },
+    {
+      "name": "Cotton double topstitch.001",
+      "group": "lounge",
+      "min": [
+        2.992507,
+        0.101435,
+        -0.217192
+      ],
+      "max": [
+        3.007579,
+        0.638399,
+        0.394747
+      ]
+    },
+    {
+      "name": "Cotton double topstitch.002",
+      "group": "lounge",
+      "min": [
+        3.828736,
+        0.10143,
+        0.772021
+      ],
+      "max": [
+        3.98679,
+        1.155009,
+        0.789014
+      ]
+    },
+    {
+      "name": "Cotton double topstitch.003",
+      "group": "lounge",
+      "min": [
+        1.985695,
+        0.10139,
+        0.771698
+      ],
+      "max": [
+        2.160457,
+        1.202137,
+        0.788988
+      ]
+    },
+    {
+      "name": "Concealed rear fabric zip",
+      "group": "lounge",
+      "min": [
+        3.00732,
+        0.417717,
+        1.749788
+      ],
+      "max": [
+        3.015953,
+        1.04457,
+        1.836038
+      ]
+    },
+    {
+      "name": "Plump moss pillow on beanbag",
+      "group": "soft furnishings",
+      "min": [
+        2.38,
+        0.508155,
+        0.425
+      ],
+      "max": [
+        2.94,
+        1.122637,
+        0.855
+      ]
+    },
+    {
+      "name": "Draped golden woven blanket on beanbag",
+      "group": "soft furnishings",
+      "min": [
+        3.135591,
+        0.269227,
+        -0.125863
+      ],
+      "max": [
+        3.899171,
+        0.92507,
+        0.455939
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag",
+      "group": "soft furnishings",
+      "min": [
+        3.840907,
+        0.251141,
+        0.245512
+      ],
+      "max": [
+        3.85771,
+        0.283062,
+        0.260635
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.001",
+      "group": "soft furnishings",
+      "min": [
+        3.834484,
+        0.245423,
+        0.213618
+      ],
+      "max": [
+        3.850011,
+        0.277787,
+        0.228812
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.002",
+      "group": "soft furnishings",
+      "min": [
+        3.810789,
+        0.250227,
+        0.1907
+      ],
+      "max": [
+        3.825955,
+        0.282476,
+        0.206586
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.003",
+      "group": "soft furnishings",
+      "min": [
+        3.798934,
+        0.246508,
+        0.160265
+      ],
+      "max": [
+        3.814988,
+        0.277986,
+        0.177352
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.004",
+      "group": "soft furnishings",
+      "min": [
+        3.780894,
+        0.246815,
+        0.136172
+      ],
+      "max": [
+        3.79469,
+        0.279371,
+        0.152348
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.005",
+      "group": "soft furnishings",
+      "min": [
+        3.759068,
+        0.249209,
+        0.112226
+      ],
+      "max": [
+        3.774794,
+        0.280355,
+        0.130349
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.006",
+      "group": "soft furnishings",
+      "min": [
+        3.747148,
+        0.243917,
+        0.083544
+      ],
+      "max": [
+        3.761131,
+        0.275937,
+        0.100969
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.007",
+      "group": "soft furnishings",
+      "min": [
+        3.720371,
+        0.249475,
+        0.06463
+      ],
+      "max": [
+        3.734549,
+        0.280946,
+        0.083167
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.008",
+      "group": "soft furnishings",
+      "min": [
+        3.705798,
+        0.244384,
+        0.035469
+      ],
+      "max": [
+        3.720149,
+        0.275312,
+        0.054992
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.009",
+      "group": "soft furnishings",
+      "min": [
+        3.682194,
+        0.246263,
+        0.016268
+      ],
+      "max": [
+        3.694497,
+        0.278217,
+        0.034832
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.010",
+      "group": "soft furnishings",
+      "min": [
+        3.658645,
+        0.247256,
+        -0.005725
+      ],
+      "max": [
+        3.672381,
+        0.277648,
+        0.015106
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.011",
+      "group": "soft furnishings",
+      "min": [
+        3.640567,
+        0.242645,
+        -0.029549
+      ],
+      "max": [
+        3.652241,
+        0.274386,
+        -0.01025
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.012",
+      "group": "soft furnishings",
+      "min": [
+        3.611488,
+        0.248408,
+        -0.043542
+      ],
+      "max": [
+        3.623808,
+        0.279143,
+        -0.022636
+      ]
+    },
+    {
+      "name": "Blanket twisted fringe on beanbag.013",
+      "group": "soft furnishings",
+      "min": [
+        3.593478,
+        0.242245,
+        -0.069584
+      ],
+      "max": [
+        3.605605,
+        0.272773,
+        -0.048234
+      ]
     }
   ],
-  "sourceObjectCount": 1673,
+  "sourceObjectCount": 1675,
   "lights": {
     "desk": {
       "position": [
@@ -23983,5 +23829,15 @@
   "backgrounds": {
     "day": "#ffffff",
     "night": "#030405"
+  },
+  "lounge": {
+    "construction": "one closed weighted cotton shell",
+    "reference": "2026-11-15 user beanbag photograph",
+    "body": "Sculpted continuous beanbag shell",
+    "seatDepression": true,
+    "rigidFrame": false,
+    "clothMaps": 1024,
+    "largeFolds": 48,
+    "finish": "dry woven cotton, slub yarns and double topstitching"
   }
 }
